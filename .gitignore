@@ -31,3 +31,7 @@ package-lock.json
 
 # Storybook
 storybook-static
+
+# Video render artifacts (output goes to R2, not git)
+apps/video-studio/*.mp4
+apps/video-studio/*.webm

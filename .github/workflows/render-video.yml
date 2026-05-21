@@ -637,7 +637,7 @@ jobs:
         id: stream
         env:
           VIDEO_URL: ${{ steps.video_upload.outputs.video_url }}
-          TOPIC: ${{ inputs.topic }}
+          TOPIC: ${{ steps.brief.outputs.topic }}
           APP_ID: ${{ inputs.app_id }}
         run: |
           set -euo pipefail
@@ -699,7 +699,7 @@ jobs:
           DURATION_SECONDS: ${{ steps.stream.outputs.duration_seconds }}
           THUMBNAIL_URL: ${{ steps.stream.outputs.thumbnail_url }}
           TITLE: ${{ steps.script.outputs.headline }}
-          DESCRIPTION: ${{ inputs.topic }}
+          DESCRIPTION: ${{ steps.brief.outputs.topic }}
           TRANSCRIPT: ${{ steps.script.outputs.narration }}
           TRANSCRIPT_LANGUAGE: 'en'
           CAPRICAST_API_URL: 'https://api.capricast.com'
