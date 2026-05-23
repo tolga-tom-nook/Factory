@@ -1,7 +1,7 @@
 {
-  "generated": "2026-05-18T11:31:21.390416+00:00",
-  "date": "2026-05-18",
-  "org_composite": 22.8,
+  "generated": "2026-05-23T09:23:04.690208+00:00",
+  "date": "2026-05-23",
+  "org_composite": 28.0,
   "apps": [
     {
       "repo_key": "HD",
@@ -11,12 +11,12 @@
     {
       "repo_key": "CC",
       "repo_name": "capricast",
-      "composite": 16.0
+      "composite": 24.7
     },
     {
       "repo_key": "FA",
       "repo_name": "factory-admin-studio",
-      "composite": 19.3
+      "composite": 36.7
     },
     {
       "repo_key": "CH",
