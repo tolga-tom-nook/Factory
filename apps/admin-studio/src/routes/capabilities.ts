@@ -235,7 +235,7 @@ capabilities.post('/provision-staging', async (c) => {
       handoffId: handoff.id,
       requestId: request.id,
     },
-  });
+  }, 201);
 });
 
 /**

@@ -112,6 +112,7 @@ async function ensureSchema(hyperdrive: HyperdriveBinding): Promise<void> {
       await db.execute(sql`CREATE INDEX IF NOT EXISTS idx_capability_provision_requests_status ON capability_provision_requests (status, requested_at DESC)`);
     })();
     schemaInitCache.set(hyperdrive, init);
+    init.catch(() => { schemaInitCache.delete(hyperdrive); });
   }
   await init;
 }
