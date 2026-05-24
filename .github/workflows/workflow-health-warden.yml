@@ -82,7 +82,15 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
           PUSHOVER_APP_TOKEN: ${{ secrets.PUSHOVER_APP_TOKEN }}
-          WARDEN_DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          # DRY-RUN DEFAULT for the first week post-merge. Scheduled runs
+          # produce WARDEN_AUDIT log lines but make no state changes (no
+          # issues opened, no Pushover paging, no workflow disables). This
+          # lets the operator inspect actual evaluations before letting the
+          # Warden act.
+          # To go live: change the schedule default to 'false' in a follow-up
+          # PR after observing 7+ days of clean dry-run output. Manual
+          # workflow_dispatch can override per-run via the dry_run input.
+          WARDEN_DRY_RUN: ${{ github.event.inputs.dry_run || 'true' }}
         run: node .github/scripts/workflow-health-warden.mjs
 
       - name: Summary
