@@ -120,6 +120,9 @@ jobs:
             -d '{"status":"dispatched","notes":"dispatched via GH Actions"}' \
             "${STUDIO_API_BASE}/capabilities/provision-requests/${PROVISION_REQUEST_ID}/transition"
 
+      - name: Install scaffold prerequisites (wrangler)
+        run: npm install -g wrangler@latest
+
       - name: Run scaffold against handoff
         id: scaffold
         env:
@@ -133,8 +136,15 @@ jobs:
           if [ "${NO_DEPLOY_INPUT}" = "true" ]; then
             NO_DEPLOY_FLAG="--no-deploy --no-install"
           fi
+          # Pass placeholder IDs so scaffold skips its interactive prompts in CI;
+          # the generated wrangler.jsonc gets these as defaults — an operator
+          # replaces them with real CF resources during human-in-the-loop
+          # provisioning. The dispatcher only produces the artifact today.
           node ../packages/deploy/scripts/scaffold.mjs "${APP_NAME}" \
-            --handoff ../.factory-handoff/handoff.json $NO_DEPLOY_FLAG
+            --handoff ../.factory-handoff/handoff.json \
+            --hyperdrive-id REPLACE_WITH_HYPERDRIVE_ID \
+            --rate-limiter-id REPLACE_WITH_RATE_LIMITER_NAMESPACE_ID \
+            $NO_DEPLOY_FLAG
 
       - name: Upload scaffolded workspace as artifact
         if: always()
