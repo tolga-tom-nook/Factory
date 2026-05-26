@@ -166,8 +166,9 @@ async function createTagTaxonomy(token) {
 // Step 2: Create claude-code-agent-readonly SA + per-secret IAM
 // ---------------------------------------------------------------------------
 
-async function createReadonlySA(token) {
+async function createReadonlySA(token, iamToken) {
   if (!step(2, 'Create claude-code-agent-readonly SA + per-secret IAM')) return;
+  // iamToken is an Owner-level OAuth token for setIamPolicy calls (requires elevated perms)
 
   // Create SA
   log(`Creating SA: ${READONLY_SA}...`);
@@ -223,7 +224,8 @@ async function createReadonlySA(token) {
         bindings.push({ role: 'roles/secretmanager.secretAccessor', members: [readonlyMember] });
       }
       if (!DRY_RUN) {
-        await apiFetch(token, `${SM_BASE}/secrets/${encodeURIComponent(name)}:setIamPolicy`, {
+        const iamCallToken = iamToken ?? token;
+        await apiFetch(iamCallToken, `${SM_BASE}/secrets/${encodeURIComponent(name)}:setIamPolicy`, {
           method: 'POST',
           body: JSON.stringify({ policy: { bindings, version: 1 } }),
         });
@@ -378,9 +380,7 @@ async function createAuditAlerts(token) {
 async function hardenAgentSARoles(token) {
   if (!step(4, 'Strip roles/editor from claude-code-agent SA')) return;
 
-  // Check if we have an owner-level token passed as --oauth=
-  const oauthArg = args.find(a => a.startsWith('--oauth='));
-  const oauthToken = oauthArg ? oauthArg.split('=').slice(1).join('=') : null;
+  const oauthToken = OAUTH_TOKEN;
 
   if (!oauthToken) {
     log('  SKIPPED — roles/editor removal requires resourcemanager.projects.setIamPolicy');
@@ -494,8 +494,13 @@ log(DRY_RUN ? '🔍 DRY-RUN mode\n' : '🔐 GCP Security Hardening\n');
 const token = await getAccessToken();
 log(`✅ Auth OK (${AGENT_SA})\n`);
 
-await createTagTaxonomy(token);
-await createReadonlySA(token);
+// OAuth token (Owner-level) for operations that require elevated IAM permissions
+const OAUTH_ARG = args.find(a => a.startsWith('--oauth='));
+const OAUTH_TOKEN = OAUTH_ARG ? OAUTH_ARG.split('=').slice(1).join('=') : null;
+if (OAUTH_TOKEN) log('✅ Owner OAuth token provided — elevated IAM operations enabled\n');
+
+await createTagTaxonomy(OAUTH_TOKEN ?? token);
+await createReadonlySA(token, OAUTH_TOKEN);
 await createAuditAlerts(token);
 await hardenAgentSARoles(token);
 await rotateAgentSAKey(token);
