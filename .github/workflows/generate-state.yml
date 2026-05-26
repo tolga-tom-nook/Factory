@@ -65,6 +65,13 @@ jobs:
             echo "STATE.md unchanged."
             exit 0
           fi
+          # Close stale state-snapshot PRs to prevent conflict accumulation
+          # when this workflow is triggered multiple times in one day.
+          gh pr list \
+            --state open \
+            --json number,headRefName \
+            --jq '.[] | select(.headRefName | startswith("chore/state-snapshot-")) | .number' \
+            | xargs -I{} gh pr close {} --comment "Superseded by a newer state snapshot run." 2>/dev/null || true
           DATE=$(date -u +%F)
           BRANCH="chore/state-snapshot-$DATE-$(date -u +%H%M)"
           git config user.name "github-actions[bot]"

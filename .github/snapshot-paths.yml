@@ -42,6 +42,7 @@ paths:
 
   # KPI tracking
   - docs/kpis/**
+  - kpi-history.csv
 
 # Branch prefixes — PR must originate from a branch whose name starts with
 # one of these. Independent guard layered on top of the path check to defend
