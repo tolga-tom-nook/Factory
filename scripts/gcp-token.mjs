@@ -14,17 +14,39 @@
  */
 import { createSign } from 'node:crypto';
 
-const b64 = process.env.GCP_SA_KEY;
-if (!b64) {
+const rawKey = process.env.GCP_SA_KEY;
+if (!rawKey) {
   process.stderr.write('gcp-token: GCP_SA_KEY is not set\n');
   process.exit(1);
 }
 
-let sa;
-try {
-  sa = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
-} catch {
-  process.stderr.write('gcp-token: GCP_SA_KEY is not valid base64-encoded JSON\n');
+/**
+ * Parse the service-account key, tolerating the formats seen in practice:
+ *   1. base64-encoded JSON (the documented format)
+ *   2. raw JSON pasted directly into the env var
+ *   3. raw JSON whose wrapping `{ }` braces were stripped by an env-var
+ *      input field (observed on code.claude.com) — re-wrap and retry
+ * A candidate is only accepted if it has the client_email + private_key
+ * fields, so a coincidental JSON parse of garbage is rejected.
+ */
+function parseServiceAccount(value) {
+  const candidates = [
+    () => Buffer.from(value, 'base64').toString('utf8'),
+    () => value,
+    () => `{${value.trim().replace(/,\s*$/, '')}}`,
+  ];
+  for (const build of candidates) {
+    try {
+      const obj = JSON.parse(build());
+      if (obj && obj.client_email && obj.private_key) return obj;
+    } catch { /* try the next candidate */ }
+  }
+  return null;
+}
+
+const sa = parseServiceAccount(rawKey);
+if (!sa) {
+  process.stderr.write('gcp-token: GCP_SA_KEY could not be parsed as base64-encoded or raw service-account JSON\n');
   process.exit(1);
 }
 
