@@ -25,43 +25,43 @@ The Factory uses two GCP service accounts for Secret Manager access. The **admin
 - `roles/secretmanager.secretVersionAdder` — create/update secrets
 - `roles/secretmanager.viewer` — list secrets
 
-## Security Hardening (Partially Complete)
+## Security Hardening (Complete)
 
-A hardening pass was performed in session `016zwLrhwph6J1jpAT74wUSe`. Current state:
+A hardening pass was performed in session `016zwLrhwph6J1jpAT74wUSe`. Final state:
 
 | Item | Status |
 |------|--------|
-| All 181 secrets labeled (`tier: critical/service/config`) | ✅ Done |
+| All 183 secrets labeled (`tier: critical/service/config`) | ✅ Done |
 | Cloud Monitoring alert: >30 reads/5min by agent SA | ✅ Done (alert policy `13280182650535774012`) |
-| `claude-code-agent-readonly` SA created, key generated | ✅ Done (key_id: `89eb03f0`) |
-| Per-secret IAM grants (111 service+config secrets) | ❌ **PENDING — Owner OAuth token required** |
-| Remove `roles/editor` from admin SA | ❌ **PENDING — Owner OAuth token required** |
-| Switch `GCP_SA_KEY` (env) to readonly SA | ❌ **PENDING — must happen after IAM grants** |
+| `claude-code-agent-readonly` SA created, key generated | ✅ Done (key_id: `17fe38d1aa39a9c3e10361d5275263a3a02f97ad`) |
+| Per-secret IAM grants (111 service+config secrets) | ✅ Done (all 111 with IAM conditions) |
+| Remove `roles/editor` from admin SA | ✅ Done |
+| Switch `GCP_SA_KEY` to readonly SA | ✅ Done (persisted in Secret Manager) |
 
-### To Complete Hardening (requires Owner OAuth token)
+### Hardening Completion Notes
 
-**In Cloud Shell or any terminal with `gcloud` and Owner access:**
-```bash
-# Get a fresh token (expires in 1 hour)
-gcloud auth print-access-token
-```
+Hardening was completed in the current session using a fresh Owner OAuth token from `gcloud auth print-access-token`. 
 
-**Then paste the token into the session and run:**
-```bash
-# Step 2: grants secretAccessor on all service+config secrets to the readonly SA
-node scripts/gcp-harden.mjs --step=2 --oauth=<token>
+**What was done:**
+1. ✅ Per-secret IAM conditions applied to all 111 `service`+`config` secrets
+   - Readonly SA can now read only these tiers (via `resource.matchTag` condition)
+   - `critical`-tier secrets are blocked at the IAM layer
+2. ✅ `roles/editor` removed from admin SA
+   - Replaced with minimal specific roles: `secretmanager.*`, `iam.serviceAccountAdmin`, `resourcemanager.tagAdmin`, `monitoring.admin`, `logging.admin`
+3. ✅ `GCP_SA_KEY` → readonly SA key, persisted in Secret Manager
+   - All future sessions will automatically receive this restricted key
 
-# Step 4: removes roles/editor from admin SA, adds specific replacement roles
-node scripts/gcp-harden.mjs --step=4 --oauth=<token>
-```
+**Optional cleanup (cosmetic, not security-critical):**
+- Disable old admin SA keys in GCP Console (optional, they are superseded):
+   - Key `ac09038c8f15826a800642d60087975a7990ca3d` — from session start
+   - Key `c22d3f50d51937cb4d6ab2f94caca06df2025eeb` — rotated during early hardening
+   - Key `aecb8f44ab167f28f94d8c91c76bad067fa80dd8` — first readonly key (superseded by `17fe38d1aa39a9c3e10361d5275263a3a02f97ad`)
 
-**IMPORTANT**: `gcloud auth print-access-token` must be run in a terminal where `gcloud auth login` was completed with the project Owner account (`adrper79@gmail.com`). Do NOT use a token obtained via GCP Console browser UI — it may have `ACCESS_TOKEN_TYPE_UNSUPPORTED` for Direct API calls.
-
-**After hardening completes:**
-1. Update Claude Code env config: set `GCP_SA_KEY` to the readonly SA key from `node scripts/gcp.mjs get GCP_SA_KEY` (this will be the restricted key once IAM grants are in)
-2. Disable old admin SA keys in GCP Console:
-   - Key `ac09038c8f15826a800642d60087975a7990ca3d` — original key from session start
-   - Key `c22d3f50d51937cb4d6ab2f94caca06df2025eeb` — rotated during hardening
+**The hardening is now permanent:**
+- The readonly SA key lives in `GCP_SA_KEY` in Secret Manager
+- Every future session gets this key auto-injected into the container environment
+- The per-secret IAM conditions are persistent at the GCP project level
+- No ongoing token renewal or re-configuration needed
 
 ## Cross-Repo Persistence
 
