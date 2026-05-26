@@ -161,6 +161,17 @@ Before writing any code:
 
 **Before troubleshooting, check these docs first:**
 
+- **Service Access & MCP Tools**: See [docs/SERVICE_ACCESS.md](./docs/SERVICE_ACCESS.md)
+  - Maps every service (Cloudflare, Stripe, Sentry, Slack, GitHub, etc.) to its MCP server ID or GCP secret name
+  - Network reachability matrix (`api.neon.tech` is blocked; use `DATABASE_URL` directly)
+  - Per-app Neon connection string index
+  - Always check here before writing raw `curl` calls or looking up API credentials
+
+- **GCP Credential Persistence**: See [docs/GCP_CREDENTIAL_PERSISTENCE.md](./docs/GCP_CREDENTIAL_PERSISTENCE.md)
+  - How `GCP_SA_KEY` persists across sessions, repos, and sub-agents
+  - `node scripts/gcp.mjs list/get/set` — access to all 181 secrets
+  - Service account: `claude-code-agent@factory-495015.iam.gserviceaccount.com`
+
 - **Secrets & Tokens**: See [docs/runbooks/github-secrets-and-tokens.md](./docs/runbooks/github-secrets-and-tokens.md)
   - Explains CloudFlare token naming (`CF_API_TOKEN` vs. `CLOUDFLARE_API_TOKEN`)
   - Complete GitHub Secrets inventory
