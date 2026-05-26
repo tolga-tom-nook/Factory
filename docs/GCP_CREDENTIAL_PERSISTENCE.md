@@ -2,20 +2,66 @@
 
 ## Overview
 
-The Factory uses a single GCP service account (`claude-code-agent@factory-495015.iam.gserviceaccount.com`) for all GCP API access across all repositories and sub-agents. Credentials persist at the **container environment level**, not per-repo or per-agent.
+The Factory uses two GCP service accounts for Secret Manager access. The **admin SA** is used by agents for full secret read/write. A **readonly SA** is being prepared as the session default (restricted to `service`+`config` tier secrets only) — see Security Hardening below.
 
 ## Credential Setup
 
 ### What Persists
-- **`GCP_SA_KEY` environment variable**: Contains the service account JSON key (with outer braces stripped for compact storage)
+- **`GCP_SA_KEY` environment variable**: Contains the service account JSON key. Currently = admin SA (`claude-code-agent`). Will become the readonly SA (`claude-code-agent-readonly`) once IAM grants are complete.
+- **`GCP_SA_KEY_ADMIN` secret in GCP Secret Manager**: Backup of the admin SA key. Fetch with `node scripts/gcp.mjs get GCP_SA_KEY_ADMIN`.
 - **IAM permissions**: Granted at the GCP project level; apply globally to the service account
 - **`scripts/gcp.mjs` helper**: Available in every repo via shared scripts directory
 
-### Service Account Permissions
-- `roles/secretmanager.secretAccessor` — read secret values
+### Service Accounts
+
+| SA | Key | Tier | Status |
+|----|-----|------|--------|
+| `claude-code-agent@factory-495015` | `GCP_SA_KEY` (env) | Admin — can read ALL secrets | Active, session default |
+| `claude-code-agent-readonly@factory-495015` | `GCP_SA_KEY` (SM, key_id: `89eb03f0`) | Restricted — `service`+`config` tier only | **Created, IAM grants PENDING** |
+
+### Service Account Permissions (admin SA, current)
+- `roles/editor` — broad project access (target: remove once readonly SA is active)
+- `roles/secretmanager.secretAccessor` — read all secret values
 - `roles/secretmanager.secretVersionAdder` — create/update secrets
 - `roles/secretmanager.viewer` — list secrets
-- Plus broad editor-level permissions for other GCP services
+
+## Security Hardening (Partially Complete)
+
+A hardening pass was performed in session `016zwLrhwph6J1jpAT74wUSe`. Current state:
+
+| Item | Status |
+|------|--------|
+| All 181 secrets labeled (`tier: critical/service/config`) | ✅ Done |
+| Cloud Monitoring alert: >30 reads/5min by agent SA | ✅ Done (alert policy `13280182650535774012`) |
+| `claude-code-agent-readonly` SA created, key generated | ✅ Done (key_id: `89eb03f0`) |
+| Per-secret IAM grants (111 service+config secrets) | ❌ **PENDING — Owner OAuth token required** |
+| Remove `roles/editor` from admin SA | ❌ **PENDING — Owner OAuth token required** |
+| Switch `GCP_SA_KEY` (env) to readonly SA | ❌ **PENDING — must happen after IAM grants** |
+
+### To Complete Hardening (requires Owner OAuth token)
+
+**In Cloud Shell or any terminal with `gcloud` and Owner access:**
+```bash
+# Get a fresh token (expires in 1 hour)
+gcloud auth print-access-token
+```
+
+**Then paste the token into the session and run:**
+```bash
+# Step 2: grants secretAccessor on all service+config secrets to the readonly SA
+node scripts/gcp-harden.mjs --step=2 --oauth=<token>
+
+# Step 4: removes roles/editor from admin SA, adds specific replacement roles
+node scripts/gcp-harden.mjs --step=4 --oauth=<token>
+```
+
+**IMPORTANT**: `gcloud auth print-access-token` must be run in a terminal where `gcloud auth login` was completed with the project Owner account (`adrper79@gmail.com`). Do NOT use a token obtained via GCP Console browser UI — it may have `ACCESS_TOKEN_TYPE_UNSUPPORTED` for Direct API calls.
+
+**After hardening completes:**
+1. Update Claude Code env config: set `GCP_SA_KEY` to the readonly SA key from `node scripts/gcp.mjs get GCP_SA_KEY` (this will be the restricted key once IAM grants are in)
+2. Disable old admin SA keys in GCP Console:
+   - Key `ac09038c8f15826a800642d60087975a7990ca3d` — original key from session start
+   - Key `c22d3f50d51937cb4d6ab2f94caca06df2025eeb` — rotated during hardening
 
 ## Cross-Repo Persistence
 
