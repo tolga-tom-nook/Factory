@@ -61,9 +61,12 @@ jobs:
       id-token: write  # required for GCP WIF
     env:
       STAGING_WORKER_URL: https://${{ inputs.app_name }}-staging.adrper79.workers.dev
-      # GitHub Actions repo secrets (NOT in GCP Secret Manager)
-      GH_PAT: ${{ secrets.GH_PAT }}
-      NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      # GH_PAT is fetched from GCP Secret Manager in step a; set here as a
+      # fallback so it's available before the GCP fetch runs (unused at job
+      # env level — the GCP-fetched value in $GITHUB_ENV takes precedence).
+      # NODE_AUTH_TOKEN uses the auto-provided GITHUB_TOKEN (same as ci.yml,
+      # deploy-supervisor.yml, etc.) — no stored PAT needed.
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -91,10 +94,8 @@ jobs:
           # Cloudflare — wrangler reads CF_API_TOKEN natively (not CLOUDFLARE_API_TOKEN)
           fetch_to_env CF_API_TOKEN        CF_API_TOKEN
           fetch_to_env CF_ACCOUNT_ID       CF_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
-          # GitHub — GH_PAT: classic PAT with repo + read:packages scopes
+          # GitHub — GH_PAT: classic PAT with repo + read:packages scopes (seeded by seed-provisioner-secrets-to-gcp.yml)
           fetch_to_env GH_PAT              GH_PAT
-          # npm — for @latimer-woods-tech/* GitHub Packages
-          fetch_to_env NODE_AUTH_TOKEN     NODE_AUTH_TOKEN
 
       - name: Validate required creds
         run: |
@@ -106,10 +107,10 @@ jobs:
           [ -z "${CF_API_TOKEN:-}" ]       && missing="$missing CF_API_TOKEN"
           [ -z "${CF_ACCOUNT_ID:-}" ]      && missing="$missing CF_ACCOUNT_ID"
           [ -z "${GH_PAT:-}" ]             && missing="$missing GH_PAT"
-          [ -z "${NODE_AUTH_TOKEN:-}" ]    && missing="$missing NODE_AUTH_TOKEN"
+          # NODE_AUTH_TOKEN is GITHUB_TOKEN (auto-provided); not validated here
           if [ -n "$missing" ]; then
             echo "::error::Missing required creds from GCP Secret Manager:$missing"
-            echo "::error::Add them to factory-495015 with 'printf '%s' value | gcloud secrets create ...'"
+            echo "::error::Run seed-provisioner-secrets-to-gcp.yml to populate factory-495015"
             exit 1
           fi
           echo "✅ All required creds present"
