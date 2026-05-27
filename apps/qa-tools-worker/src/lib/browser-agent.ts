@@ -17,11 +17,23 @@ import { PROFILE_DEFAULTS } from '../types.js';
 // Types
 // ---------------------------------------------------------------------------
 
+/** Optional authentication credentials for authenticated audit scenarios. */
+export interface AuditAuth {
+  /** Login username or email. */
+  username: string;
+  /** Login password. */
+  password: string;
+  /** Optional TOTP secret (base32) for MFA flows. */
+  mfaSecret?: string;
+}
+
 export interface AuditDispatchParams {
   targetUrl: string;
   profile: Profile;
   steps?: ScenarioStep[];
   runAxe?: boolean;
+  /** When provided, browser-agent will perform a login flow before auditing. */
+  auth?: AuditAuth;
 }
 
 export interface AuditDispatchResult {
@@ -90,6 +102,16 @@ export async function dispatchAudit(
     payload['steps'] = params.steps.filter((s) =>
       ['goto', 'fill', 'click', 'wait', 'waitForSelector'].includes(s.action),
     );
+  }
+
+  if (params.auth) {
+    // Pass credentials to browser-agent for authenticated scenarios.
+    // The browser-agent uses these to perform a login flow before the audit.
+    payload['auth'] = {
+      username: params.auth.username,
+      password: params.auth.password,
+      ...(params.auth.mfaSecret ? { mfaSecret: params.auth.mfaSecret } : {}),
+    };
   }
 
   const controller = new AbortController();

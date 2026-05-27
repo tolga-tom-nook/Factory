@@ -22,18 +22,23 @@ import {
   markRunStarted,
   updateRun,
   insertResults,
+  insertRun,
+  getRunById,
   type InsertResultParams,
 } from './db.js';
 import {
   dispatchAudit,
   mapAxeImpact,
   buildRemediationHint,
+  type AuditAuth,
 } from './browser-agent.js';
 import {
   uploadViewportScreenshots,
   buildR2Prefix,
   validateScreenshotBase64,
 } from './r2.js';
+import { getCredentialById } from './phase2-db.js';
+import { decryptCredential } from './crypto.js';
 
 // ---------------------------------------------------------------------------
 // Target URL resolution
@@ -78,7 +83,17 @@ export async function runAudit(
     const targetUrl = resolveTargetUrl(request);
     const profile = PROFILE_DEFAULTS[request.profile];
 
-    // Phase 1: visual-review with runAxe=true
+    // Phase 2: resolve authentication credentials if requested
+    let auth: AuditAuth | undefined;
+    if (request.testConfig?.includeAuthentication && request.testConfig.credentialId) {
+      auth = await resolveCredentialAuth(
+        connectionString,
+        request.testConfig.credentialId,
+        env.QA_TOOLS_ENCRYPT_KEY,
+      );
+    }
+
+    // visual-review with runAxe=true
     // This gets us: axe violations + desktop screenshot in one call
     const { visualReview, durationMs } = await dispatchAudit(
       env.BROWSER_AGENT_URL,
@@ -89,6 +104,7 @@ export async function runAudit(
         profile: request.profile,
         steps: request.testConfig?.scenario?.steps,
         runAxe: true,
+        auth,
       },
     );
 
@@ -206,7 +222,109 @@ export async function runAudit(
       durationMs: Date.now() - startMs,
       errorMessage: message.slice(0, 500),
     }).catch(() => { /* Best-effort DB update on error path */ });
+
+    // Auto-retry: if this run has remaining attempts, dispatch a new one.
+    // The retry inherits the same request, increments attempt_number,
+    // and sets parent_run_id → current run for audit trail grouping.
+    await maybeDispatchRetry(connectionString, runId, request, env)
+      .catch((retryErr: unknown) => {
+        // Never let a retry failure surface — the original error is already recorded.
+        const retryMsg = retryErr instanceof Error ? retryErr.message : String(retryErr);
+        console.error(`[qa-tools] retry dispatch failed for parentRunId=${runId}:`, retryMsg);
+      });
   }
+}
+
+// ---------------------------------------------------------------------------
+// Credential resolution (Phase 2)
+// ---------------------------------------------------------------------------
+
+/**
+ * Fetches and decrypts a stored credential for authenticated audit scenarios.
+ * Returns null (no auth) when the encrypt key or credential is unavailable.
+ * Throws InternalError if the credential exists but cannot be decrypted.
+ */
+async function resolveCredentialAuth(
+  connectionString: string,
+  credentialId: string,
+  encryptKey: string | undefined,
+): Promise<AuditAuth | undefined> {
+  if (!encryptKey) {
+    // Key not configured — authenticated scenarios will run without credentials.
+    // This is a soft-fail: we log a warning rather than blocking the audit.
+    console.warn('[qa-tools] QA_TOOLS_ENCRYPT_KEY not set; skipping credential injection');
+    return undefined;
+  }
+
+  const row = await getCredentialById(connectionString, credentialId);
+  if (!row) {
+    throw new InternalError(`Credential ${credentialId} not found — cannot authenticate audit`);
+  }
+
+  const payload = await decryptCredential(row.encrypted_payload, encryptKey);
+
+  return {
+    username: payload.username,
+    password: payload.password,
+    ...(payload.mfaSecret ? { mfaSecret: payload.mfaSecret } : {}),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Retry dispatch (Phase 2)
+// ---------------------------------------------------------------------------
+
+/**
+ * If the failed run has remaining attempts, inserts a new run with
+ * attempt_number + 1 and parent_run_id pointing to the current run,
+ * then immediately invokes runAudit for the new run.
+ *
+ * Called from the error path of runAudit — never throws.
+ */
+async function maybeDispatchRetry(
+  connectionString: string,
+  failedRunId: string,
+  request: CreateRunRequest,
+  env: Env,
+): Promise<void> {
+  const failedRun = await getRunById(connectionString, failedRunId);
+  if (!failedRun) return; // Shouldn't happen but guard defensively
+
+  const attemptNumber = failedRun.attempt_number;
+  const maxAttempts = failedRun.max_attempts;
+
+  if (attemptNumber >= maxAttempts) return; // No retries remaining
+
+  const backoffMs = request.testConfig?.retryPolicy?.backoffMs ?? 2_000;
+  const nextAttempt = attemptNumber + 1;
+
+  console.info(
+    `[qa-tools] scheduling retry attempt ${String(nextAttempt)}/${String(maxAttempts)} for parentRunId=${failedRunId} in ${String(backoffMs)}ms`,
+  );
+
+  // Wait for backoff before retrying (stays inside waitUntil budget)
+  await new Promise<void>((resolve) => setTimeout(resolve, backoffMs));
+
+  const retryRunId = await insertRun(connectionString, {
+    appId: request.appId,
+    environment: request.environment,
+    customUrl: request.customUrl,
+    testType: request.testType,
+    profile: request.profile,
+    testConfig: request.testConfig ?? {},
+    maxAttempts,
+    attemptNumber: nextAttempt,
+    parentRunId: failedRunId,
+    createdBy: failedRun.created_by,
+    tags: failedRun.tags,
+    ciContext: failedRun.ci_context,
+    templateId: failedRun.template_id,
+  });
+
+  console.info(`[qa-tools] retry run created: runId=${retryRunId}`);
+
+  // runAudit is self-contained and never throws — safe to await in waitUntil
+  await runAudit(retryRunId, request, env);
 }
 
 // ---------------------------------------------------------------------------

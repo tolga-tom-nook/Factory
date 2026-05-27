@@ -103,7 +103,7 @@ describe('GET /version', () => {
     const res = await req('GET', '/version');
     expect(res.status).toBe(200);
     const body = await res.json() as Record<string, unknown>;
-    expect(body['phase']).toBe('phase-1');
+    expect(body['phase']).toBe('phase-2');
   });
 });
 

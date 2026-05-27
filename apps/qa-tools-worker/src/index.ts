@@ -19,6 +19,19 @@
  *   POST /runs/:id/rerun      Manual rerun (§4.5)
  *   PATCH /runs/:id/results/:resultId  Acknowledge finding (§4.8)
  *   GET  /apps/:appId/health  App health summary (§4.6)
+ *
+ * Phase 2 routes:
+ *   POST   /credentials               Store encrypted credentials (§3.3)
+ *   GET    /credentials               List credentials for an app (§3.3)
+ *   GET    /credentials/:id           Credential metadata (§3.3)
+ *   DELETE /credentials/:id           Delete credential (§3.3)
+ *   POST   /credentials/:id/test      Verify decrypt (§3.3)
+ *   POST   /templates                 Create custom template (§3.5)
+ *   GET    /templates                 List templates (§3.5)
+ *   GET    /templates/:id             Get template (§3.5)
+ *   DELETE /templates/:id             Delete custom template (§3.5)
+ *   GET    /notifications             Get/list notification prefs (§3.6)
+ *   PUT    /notifications             Upsert notification prefs (§3.6)
  */
 
 import { Hono } from 'hono';
@@ -26,6 +39,9 @@ import { AuthError, ValidationError, NotFoundError, InternalError } from '@latim
 import type { Env } from './env.js';
 import { runsRouter } from './routes/runs.js';
 import { appsRouter } from './routes/apps.js';
+import { credentialsRouter } from './routes/credentials.js';
+import { templatesRouter } from './routes/templates.js';
+import { notificationsRouter } from './routes/notifications.js';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -45,8 +61,8 @@ app.get('/health', (c) =>
 app.get('/version', (c) =>
   c.json({
     service: 'qa-tools-worker',
-    version: '1.0.0',
-    phase: 'phase-1',
+    version: '2.0.0',
+    phase: 'phase-2',
     environment: c.env.ENVIRONMENT,
   }),
 );
@@ -57,6 +73,9 @@ app.get('/version', (c) =>
 
 app.route('/runs', runsRouter);
 app.route('/apps', appsRouter);
+app.route('/credentials', credentialsRouter);
+app.route('/templates', templatesRouter);
+app.route('/notifications', notificationsRouter);
 
 // ---------------------------------------------------------------------------
 // 404 handler

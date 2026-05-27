@@ -16,6 +16,26 @@ vi.mock('../../src/lib/db.js', () => ({
   markRunStarted: vi.fn().mockResolvedValue(undefined),
   updateRun: vi.fn().mockResolvedValue(undefined),
   insertResults: vi.fn().mockResolvedValue(undefined),
+  // Phase 2: needed by retry logic
+  insertRun: vi.fn().mockResolvedValue('retry-run-id'),
+  getRunById: vi.fn().mockResolvedValue({
+    id: 'run-id',
+    attempt_number: 1,
+    max_attempts: 1,  // Default: no retry (maxAttempts=1 stops retry loop)
+    created_by: null,
+    tags: [],
+    ci_context: null,
+    template_id: null,
+  }),
+}));
+
+vi.mock('../../src/lib/phase2-db.js', () => ({
+  getCredentialById: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock('../../src/lib/crypto.js', () => ({
+  decryptCredential: vi.fn().mockResolvedValue({ username: 'u', password: 'p' }),
+  validateCredentialPayload: vi.fn().mockReturnValue({ username: 'u', password: 'p' }),
 }));
 
 vi.mock('../../src/lib/browser-agent.js', () => ({

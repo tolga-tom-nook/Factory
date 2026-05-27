@@ -70,6 +70,15 @@ export interface Env {
    */
   SENTRY_DSN?: string;
 
+  /**
+   * AES-256-GCM encryption key for credential payloads.
+   * Must be exactly 64 hex characters (32 bytes).
+   * Phase 2: required for credential create/decrypt endpoints.
+   * Optional — endpoints that need it emit a 422 if absent.
+   * wrangler secret QA_TOOLS_ENCRYPT_KEY.
+   */
+  QA_TOOLS_ENCRYPT_KEY?: string;
+
   /** Runtime environment label: development | staging | production. */
   ENVIRONMENT: string;
 }

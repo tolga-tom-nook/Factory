@@ -15,6 +15,11 @@ name: Deploy QA Tools Worker
 #   4. Add secrets to GCP Secret Manager (factory-495015):
 #      QA_TOOLS_JWT_SECRET, BROWSER_AGENT_SA_KEY, BROWSER_AGENT_URL,
 #      BROWSER_AGENT_AUDIENCE, GITHUB_QA_TOKEN, SLACK_QA_WEBHOOK_URL
+#   5. Phase 2: Add QA_TOOLS_ENCRYPT_KEY to GCP Secret Manager:
+#      printf '%s' "<64-char-hex-key>" | gcloud secrets create QA_TOOLS_ENCRYPT_KEY \
+#        --project=factory-495015 --data-file=- --replication-policy=automatic
+#      (Key must be 64 hex chars = 32 bytes for AES-256-GCM)
+#      Apply migration: psql "$NEON_CONN" -f migrations/002_phase2.sql
 #
 # See: docs/architecture/QA_TOOLS_ARCHITECTURE.md §9.2
 
@@ -74,6 +79,8 @@ jobs:
           fetch_to_env BROWSER_AGENT_AUDIENCE BROWSER_AGENT_AUDIENCE
           fetch_to_env GITHUB_QA_TOKEN       GITHUB_QA_TOKEN       FACTORY_GH_PAT
           fetch_to_env SLACK_QA_WEBHOOK_URL  SLACK_WEBHOOK_OPS
+          # Phase 2: credential encryption key (64-char hex, AES-256-GCM)
+          fetch_to_env QA_TOOLS_ENCRYPT_KEY  QA_TOOLS_ENCRYPT_KEY
         env:
           GCP_PROJECT_ID: factory-495015
 
@@ -123,6 +130,10 @@ jobs:
           fi
           if [ -n "${SENTRY_DSN:-}" ]; then
             printf '%s' "${SENTRY_DSN}" | npx wrangler secret put SENTRY_DSN --env production
+          fi
+          # Phase 2: encryption key (optional here so old deploys still work if secret not yet in GCP)
+          if [ -n "${QA_TOOLS_ENCRYPT_KEY:-}" ]; then
+            printf '%s' "${QA_TOOLS_ENCRYPT_KEY}" | npx wrangler secret put QA_TOOLS_ENCRYPT_KEY --env production
           fi
 
           # Deploy
