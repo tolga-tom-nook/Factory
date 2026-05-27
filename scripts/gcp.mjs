@@ -125,7 +125,8 @@ async function setSecret(token, name, value) {
       body: JSON.stringify({ replication: { automatic: {} } }),
     });
   } catch (err) {
-    if (!err.message.includes('409') && !err.message.includes('ALREADY_EXISTS')) throw err;
+    // 409 = already exists, 403 = no create permission (secret exists, agent is accessor-only)
+    if (!err.message.includes('409') && !err.message.includes('ALREADY_EXISTS') && !err.message.includes('403')) throw err;
   }
 
   // Add a new version.
