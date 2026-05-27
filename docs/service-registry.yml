@@ -767,7 +767,7 @@ workers:
     custom_domain_status: not-yet-attached
     health_endpoint: /health
     telemetry_required: false
-    deployment_status: deployed                # Phase 1 live 2026-05-27; health verified at /health
+    deployment_status: phase-1-live            # Phase 1 live 2026-05-27; health verified at /health
     required_secrets:
       - QA_TOOLS_JWT_SECRET
       - BROWSER_AGENT_SA_KEY
@@ -776,9 +776,9 @@ workers:
     required_vars:
       - ENVIRONMENT
     required_bindings:
-      - DB (Hyperdrive — provision with: wrangler hyperdrive create qa-tools-hyperdrive --connection-string "$NEON_CONNECTION_STRING")
-      - QA_TOOLS_R2 (R2 bucket — wrangler r2 bucket create qa-tools)
-      - RATE_LIMIT_KV (KV namespace — wrangler kv namespace create QA_RATE_LIMIT_KV)
+      - DB (Hyperdrive ed95104a65c541c8b98f842e01f5894a — qa-tools-hyperdrive -> THE_FACTORY Neon)
+      - QA_TOOLS_R2 (R2 bucket qa-tools)
+      - RATE_LIMIT_KV (KV cbec8a8aa8554005bb763267bd5498b1 — QA_RATE_LIMIT_KV)
     notes: >
       QA Tools Platform API — accessibility audits, screenshot capture, performance testing.
       Wraps the browser-agent Cloud Run service (/visual-review with runAxe=true for Phase 1).
@@ -786,6 +786,7 @@ workers:
       Neon migrations: apps/qa-tools-worker/migrations/001_phase1.sql
       Phase 1 (MVP): POST /runs, GET /runs/:id/status, GET /runs/:id/results, GET /apps/:appId/health
       Consumers: qa-tools-ui (Phase 1 frontend)
+      LIVE: Deployed 2026-05-27, health check passing at https://qa-tools-worker.adrper79.workers.dev/health
     consumers: []
 
   # ─── PLANNED (not yet built) ─────────────────────────────────────────────────

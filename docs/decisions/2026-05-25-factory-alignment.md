@@ -134,6 +134,8 @@ Ordered by ROI × strategic-alignment.
 6. **Migration drift guard** — `_migration-drift-guard.yml` per app (gap register G-5). Catches the HD#65-class incident where prod schema lags repo migrations.
 7. **Template library expansion** — author 6-8 starter templates from closed PR history (gap register G-3). Required before SUP-4 EXEC leg can ride live work.
 
+**Reconciled 2026-05-27.** Some Tier 1 foundation work already exists in Factory and should not be rebuilt: `@latimer-woods-tech/llm-meter@0.2.2`, `@latimer-woods-tech/llm@0.3.3`, `_migration-drift-guard.yml`, `_app-reliability-gate.yml`, and the seeded template library under `docs/supervisor/plans/`. The remaining work is adoption and proof: per-app `capabilities.yml`, per-app caller workflows, budget/gate rows visible in Admin Command Center, and blessed templates from real successful runs.
+
 ### Tier 2 — Hardening (next month)
 
 8. **`@lwt/llm@0.3.0`** — AI Gateway mandatory, Grok drop confirmed, Gemini long-context fallback wired (gap register G-6).
