@@ -102,7 +102,6 @@ export function LoginPage() {
         google.accounts.id.initialize({
           client_id: googleClientId,
           callback: handleGoogleCallback,
-          hosted_domain: 'apunlimited.com',
         });
 
         google.accounts.id.renderButton(googleButtonRef.current, {
