@@ -211,7 +211,6 @@ auth.post('/google', async (c) => {
 auth.get('/config', (c) => {
   return c.json({
     googleClientId: c.env.GOOGLE_CLIENT_ID || null,
-    hostedDomain: 'apunlimited.com',
   });
 });
 
