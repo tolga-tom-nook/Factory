@@ -136,7 +136,7 @@ jobs:
             'check_frequency': $frequency,
             'request_timeout': 15,
             'expected_status_codes': [$expected_status],
-            'request_method': '$method',
+            'http_method': '$method'.lower(),
             'regions': ['us', 'eu', 'as'],
             'paused': False,
           }
