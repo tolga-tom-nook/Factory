@@ -29,6 +29,8 @@ export const trainingSchema = z.object({
   logoUrl: z.string(),
   /** Ordered list of training steps (max 8 for readability). */
   steps: z.array(z.string()).max(8),
+  /** Target duration in seconds. Media Room validates content fit before dispatch. */
+  durationSeconds: z.number().min(15).max(1800),
 });
 
 export type TrainingVideoProps = z.infer<typeof trainingSchema>;
@@ -245,12 +247,12 @@ const TitleCard: React.FC<{ topic: string; fps: number; frame: number }> = ({
 // ---------------------------------------------------------------------------
 
 /**
- * 30-second training video composition.
+ * Training video composition.
  *
  * Structure:
  * - Left sidebar: brand colour gradient with ordered step navigation
  * - Right content: active step description animates in on each step change
- * - Each step displays for 2 seconds (60 frames at 30fps)
+ * - Each step displays for an even slice of the approved render duration
  * - Narration audio plays across the full duration
  */
 export const TrainingVideo: React.FC<TrainingVideoProps> = ({

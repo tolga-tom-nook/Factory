@@ -135,6 +135,10 @@ export interface RenderJob {
   appId: string;
   /** Category of video being produced. */
   type: RenderJobType;
+  /** Optional Media Room source brief key for deterministic render inputs. */
+  briefKey?: string;
+  /** Optional Remotion composition id resolved by Media Room or Schedule Worker. */
+  compositionId?: string;
   /** Short topic label driving the script. */
   topic: string;
   /** Full narration script as plain text. */

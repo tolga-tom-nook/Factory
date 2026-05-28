@@ -28,6 +28,10 @@ export const marketingSchema = z.object({
   brandAccent: z.string(),
   /** Logo image URL — displayed in the top-left corner. */
   logoUrl: z.string(),
+  /** Target duration in seconds. Media Room validates content fit before dispatch. */
+  durationSeconds: z.number().min(15).max(1800),
+  /** Optional scene beats for longer landing videos. */
+  visualBeats: z.array(z.string()).max(8).default([]),
 });
 
 export type MarketingVideoProps = z.infer<typeof marketingSchema>;
@@ -81,7 +85,7 @@ const Headline: React.FC<{ text: string; frame: number; fps: number }> = ({
   );
 };
 
-/** Subtitle / script text that fades in after the headline. */
+/** Subtitle / scene beat text that fades in after the headline. */
 const Subtitle: React.FC<{ text: string; frame: number; fps: number }> = ({
   text,
   frame,
@@ -118,12 +122,13 @@ const Subtitle: React.FC<{ text: string; frame: number; fps: number }> = ({
 };
 
 /** Animated CTA badge that bounces in near the end. */
-const CtaBadge: React.FC<{ frame: number; fps: number; accent: string }> = ({
+const CtaBadge: React.FC<{ frame: number; fps: number; durationInFrames: number; accent: string }> = ({
   frame,
   fps,
+  durationInFrames,
   accent,
 }) => {
-  const startFrame = fps * 10;
+  const startFrame = Math.max(fps * 10, durationInFrames - fps * 5);
   const scale = spring({
     frame: Math.max(0, frame - startFrame),
     fps,
@@ -189,34 +194,38 @@ const Logo: React.FC<{ logoUrl: string; frame: number; fps: number }> = ({
 // ---------------------------------------------------------------------------
 
 /**
- * 15-second marketing video composition.
+ * Marketing video composition.
  *
  * Structure:
  * - 0s–0.5s  Fade in background + logo
  * - 0.5s–2s  Headline slides in
  * - 1s–3s    Script subtitle fades in
- * - 10s–15s  CTA badge springs in
+ * - Final 5s   CTA badge springs in
  *
  * Narration audio (ElevenLabs MP3) plays across the full duration.
  */
 export const MarketingVideo: React.FC<MarketingVideoProps> = ({
   topic,
   script,
+  visualBeats,
   narrationUrl,
   brandColor,
   brandAccent,
   logoUrl,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
+  const beats = visualBeats.length > 0 ? visualBeats : [script];
+  const beatFrame = Math.max(1, Math.floor(durationInFrames / beats.length));
+  const activeBeat = beats[Math.min(Math.floor(frame / beatFrame), beats.length - 1)] ?? script;
 
   return (
     <AbsoluteFill style={{ background: '#000000' }}>
       <Background color={brandColor} accent={brandAccent} />
       <Logo logoUrl={logoUrl} frame={frame} fps={fps} />
       <Headline text={topic} frame={frame} fps={fps} />
-      <Subtitle text={script} frame={frame} fps={fps} />
-      <CtaBadge frame={frame} fps={fps} accent={brandAccent} />
+      <Subtitle text={activeBeat} frame={frame} fps={fps} />
+      <CtaBadge frame={frame} fps={fps} durationInFrames={durationInFrames} accent={brandAccent} />
       {narrationUrl && <Audio src={narrationUrl} />}
     </AbsoluteFill>
   );

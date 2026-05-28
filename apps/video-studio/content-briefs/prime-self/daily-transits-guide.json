@@ -18,6 +18,22 @@
   ],
   "toneNotes": "Clear and calming. Keep the user out of superstition and over-analysis. Emphasize experimentation, not dependency.",
   "script": "Every day, the planets move.\n\nThey travel the same wheel of 64 gates your natal chart was drawn from \u2014 the same I Ching hexagram map that encoded your design at birth. When a transiting planet activates a gate, it brings that gate theme into the collective field.\n\nThis is what Daily Transits show you.\n\nNot a prediction. A description of the energetic weather \u2014 the themes that are active today for everyone, and the places where today field touches your own chart specifically.\n\nThe Sun moves through a gate approximately every six days. Saturn takes two and a half years to travel the full wheel. Each planet brings its own quality to the gates it activates \u2014 the Sun brings conscious awareness, Saturn brings form and discipline, Jupiter brings expansion, the Moon cycles through the wheel every month.\n\nYou do not have to track all of this.\n\nThe practice is simpler: open your transits each morning. Notice what themes are active. Notice where they touch your own defined centers and channels. Choose one gesture for the day that honors what you are seeing \u2014 a conversation, a boundary, a creative act, rest.\n\nTransits are a lens, not a law. They sharpen perception. They do not determine outcome.\n\nWhat is the field showing you today?",
+  "renderPlan": {
+    "durationSeconds": 90,
+    "steps": [
+      "Open Daily Transits",
+      "Read the active themes",
+      "Separate weather from identity",
+      "Notice natal chart contacts",
+      "Choose one grounded response"
+    ],
+    "visualBeats": [
+      "Show the Today page Transits tab with active gate cards",
+      "Highlight collective weather versus natal contact language",
+      "Show one card becoming a daily reflection prompt",
+      "End on a simple action: conversation, boundary, work block, or rest"
+    ]
+  },
   "brandColor": "#8B5CF6",
   "brandAccent": "#10B981",
   "status": "published",

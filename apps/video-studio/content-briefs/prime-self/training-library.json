@@ -2,9 +2,17 @@
   "appId": "prime_self",
   "library": "feature-guidance",
   "version": 1,
-  "updatedAt": "2026-05-20",
-  "description": "Seed catalog for Prime Self's feature guidance and practitioner training library.",
+  "updatedAt": "2026-05-28",
+  "description": "Seed catalog for Prime Self's landing, feature guidance, and practitioner training videos.",
   "modules": [
+    {
+      "briefKey": "homepage-welcome",
+      "composition": "MarketingVideo",
+      "audience": "visitor",
+      "area": "landing",
+      "status": "ready",
+      "topic": "See Your Pattern Clearly"
+    },
     {
       "briefKey": "platform-overview",
       "composition": "MarketingVideo",
@@ -50,7 +58,7 @@
       "composition": "TrainingVideo",
       "audience": "returning_user",
       "area": "transits",
-      "status": "planned",
+      "status": "ready",
       "topic": "Using Daily Transits Without Overcomplicating Your Day"
     },
     {

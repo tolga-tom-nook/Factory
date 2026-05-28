@@ -17,6 +17,8 @@ const sampleJob = {
   id: 'job-001',
   appId: 'selfprime',
   type: 'marketing',
+  briefKey: undefined,
+  compositionId: undefined,
   topic: 'SelfPrime walkthrough',
   script: '',
   status: 'pending',
@@ -72,6 +74,41 @@ describe('video-cron', () => {
     await expect(res.json()).resolves.toEqual({ data: { dispatched: 1, failed: 0 } });
     expect(fetchMock.mock.calls[0]?.[0]).toBe('https://schedule-worker.adrper79.workers.dev/jobs/pending?limit=10&appId=selfprime');
     expect(fetchMock.mock.calls[2]?.[0]).toBe('https://api.github.com/repos/Latimer-Woods-Tech/factory/actions/workflows/render-video.yml/dispatches');
+  });
+
+  it('passes Media Room brief metadata into the render workflow', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(Response.json({
+        data: [{
+          ...sampleJob,
+          type: 'training',
+          briefKey: 'daily-transits-guide',
+          compositionId: 'TrainingVideo',
+          topic: 'Using Daily Transits Without Overcomplicating Your Day',
+        }],
+      }))
+      .mockResolvedValueOnce(Response.json({ data: { ...sampleJob, status: 'rendering' } }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }));
+
+    const res = await worker.fetch(
+      new Request('https://video-cron.example/trigger', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${env.WORKER_API_TOKEN}` },
+      }),
+      env,
+      {} as ExecutionContext,
+    );
+
+    expect(res.status).toBe(200);
+    const dispatchInit = fetchMock.mock.calls[2]?.[1];
+    const body = JSON.parse(String(dispatchInit?.body));
+    expect(body.inputs).toMatchObject({
+      job_id: 'job-001',
+      composition_id: 'TrainingVideo',
+      app_id: 'selfprime',
+      topic: 'Using Daily Transits Without Overcomplicating Your Day',
+      brief_key: 'daily-transits-guide',
+    });
   });
 
   it('marks jobs failed when GitHub dispatch fails', async () => {

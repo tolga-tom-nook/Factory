@@ -76,6 +76,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/render-video.yml'
+      - 'apps/media-room/**'
       - 'apps/video-studio/**'
       - 'apps/video-cron/**'
   # Also run on push to non-main branches so dry-run executes from the PR
@@ -87,6 +88,7 @@ on:
       - main
     paths:
       - '.github/workflows/render-video.yml'
+      - 'apps/media-room/**'
       - 'apps/video-studio/**'
       - 'apps/video-cron/**'
 
@@ -163,6 +165,17 @@ jobs:
           set -euo pipefail
           test -f apps/video-studio/src/render.ts
           test -f apps/video-studio/src/Root.tsx
+
+      - name: Validate Media Room Prime Self tutorial readiness
+        run: |
+          set -euo pipefail
+          node apps/media-room/src/cli.js validate-briefs \
+            --brief-dir apps/video-studio/content-briefs/prime-self \
+            --brief-key homepage-welcome \
+            --brief-key daily-transits-guide \
+            --brief-key blueprint-reading-guide \
+            --brief-key energy-type-overview \
+            --strict
 
       - name: Install jq
         run: |
@@ -275,7 +288,7 @@ jobs:
   render:
     if: github.event_name == 'workflow_dispatch' && inputs.dry_run != 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     name: Render and publish video
     environment: production
     permissions:
@@ -425,6 +438,9 @@ jobs:
           key_points='[]'
           forbidden_claims='[]'
           screenshot_urls='[]'
+          steps='[]'
+          visual_beats='[]'
+          duration_seconds=''
 
           if [ -n "$INPUT_BRIEF_KEY" ]; then
             brief_json="$brief_dir/$INPUT_BRIEF_KEY.json"
@@ -442,6 +458,9 @@ jobs:
             key_points="$(jq -c '.keyPoints // []' "$brief_json")"
             forbidden_claims="$(jq -c '.forbiddenClaims // []' "$brief_json")"
             screenshot_urls="$(jq -c '.screenshotUrls // []' "$brief_json")"
+            steps="$(jq -c '.renderPlan.steps // .steps // []' "$brief_json")"
+            visual_beats="$(jq -c '.renderPlan.visualBeats // .visualBeats // []' "$brief_json")"
+            duration_seconds="$(jq -r '.renderPlan.durationSeconds // .durationSeconds // .duration_seconds // empty' "$brief_json")"
           fi
 
           if [ -z "$topic" ]; then
@@ -461,6 +480,9 @@ jobs:
             echo "key_points=$key_points"
             echo "forbidden_claims=$forbidden_claims"
             echo "screenshot_urls=$screenshot_urls"
+            echo "steps=$steps"
+            echo "visual_beats=$visual_beats"
+            echo "duration_seconds=$duration_seconds"
           } >> "$GITHUB_OUTPUT"
 
       # -----------------------------------------------------------------------
@@ -478,6 +500,7 @@ jobs:
           BRIEF_FORBIDDEN_CLAIMS: ${{ steps.brief.outputs.forbidden_claims }}
           BRIEF_TONE_NOTES: ${{ steps.brief.outputs.tone_notes }}
           STATIC_SCRIPT_OVERRIDE: ${{ steps.brief.outputs.script_override }}
+          BRIEF_STEPS: ${{ steps.brief.outputs.steps }}
         run: |
           set -euo pipefail
           BRIEF_DIR="apps/video-studio/content-briefs/${APP_ID//_/-}"
@@ -514,6 +537,9 @@ jobs:
               echo "EOF"
               echo "narration<<EOF"
               echo "$STATIC_SCRIPT_OVERRIDE"
+              echo "EOF"
+              echo "steps<<EOF"
+              echo "$BRIEF_STEPS"
               echo "EOF"
             } >> "$GITHUB_OUTPUT"
             exit 0
@@ -582,7 +608,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Render MP4
         id: render
-        timeout-minutes: 15
+        timeout-minutes: 75
         env:
           COMPOSITION_ID: ${{ inputs.composition_id }}
           APP_ID: ${{ inputs.app_id }}
@@ -593,6 +619,9 @@ jobs:
           NARRATION_URL: ${{ steps.narration_upload.outputs.narration_url }}
           SCRIPT_TEXT: ${{ steps.script.outputs.narration }}
           SCREENSHOT_URLS_JSON: ${{ steps.brief.outputs.screenshot_urls }}
+          STEPS_JSON: ${{ steps.script.outputs.steps || steps.brief.outputs.steps }}
+          VISUAL_BEATS_JSON: ${{ steps.brief.outputs.visual_beats }}
+          DURATION_SECONDS: ${{ steps.brief.outputs.duration_seconds }}
         run: |
           set -euo pipefail
           # Build props JSON with jq so multi-line scripts survive cleanly.
@@ -606,8 +635,15 @@ jobs:
             --arg brandAccent  "$BRAND_ACCENT" \
             --arg logoUrl      "$LOGO_URL" \
             --argjson screenshotUrls "$SCREENSHOT_URLS_JSON" \
+            --argjson steps "$STEPS_JSON" \
+            --argjson visualBeats "$VISUAL_BEATS_JSON" \
+            --arg durationSeconds "$DURATION_SECONDS" \
             'if $composition == "WalkthroughVideo"
              then {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl,screenshotUrls:$screenshotUrls}
+             elif $composition == "TrainingVideo"
+             then {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl,steps:$steps,durationSeconds:($durationSeconds | if . == "" then 30 else tonumber end)}
+             elif $composition == "MarketingVideo"
+             then {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl,visualBeats:$visualBeats,durationSeconds:($durationSeconds | if . == "" then 15 else tonumber end)}
              else {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl}
              end')
           cd apps/video-studio

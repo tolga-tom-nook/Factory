@@ -32,6 +32,8 @@ function makeRow(overrides: Partial<Record<string, unknown>> = {}): Record<strin
     id: 'row-uuid-001',
     app_id: 'prime_self',
     type: 'marketing',
+    brief_key: null,
+    composition_id: null,
     topic: 'Q4 launch',
     script: 'Raise your standard.',
     narration_url: null,
@@ -99,6 +101,8 @@ describe('VIDEO_CALENDAR_DDL', () => {
     expect(VIDEO_CALENDAR_DDL).toContain('performance_score');
     expect(VIDEO_CALENDAR_DDL).toContain('stream_uid');
     expect(VIDEO_CALENDAR_DDL).toContain('idempotency_key');
+    expect(VIDEO_CALENDAR_DDL).toContain('brief_key');
+    expect(VIDEO_CALENDAR_DDL).toContain('composition_id');
     expect(VIDEO_CALENDAR_DDL).toContain('video_calendar_app_idempotency_idx');
   });
 });
@@ -166,6 +170,22 @@ describe('scheduleVideo', () => {
     expect(row.idempotencyKey).toBe('selfprime:video:001');
     const firstCall = firstSqlCall(db);
     expect(firstCall.values).toContain('selfprime:video:001');
+  });
+
+  it('stores Media Room brief metadata when provided', async () => {
+    const db = makeDb([[makeRow({ brief_key: 'daily-transits-guide', composition_id: 'TrainingVideo' })]]);
+    const row = await scheduleVideo(db as unknown as Parameters<typeof scheduleVideo>[0], {
+      ...brief,
+      type: 'training',
+      briefKey: 'daily-transits-guide',
+      compositionId: 'TrainingVideo',
+    });
+
+    expect(row.briefKey).toBe('daily-transits-guide');
+    expect(row.compositionId).toBe('TrainingVideo');
+    const firstCall = firstSqlCall(db);
+    expect(firstCall.values).toContain('daily-transits-guide');
+    expect(firstCall.values).toContain('TrainingVideo');
   });
 
   it('throws ValidationError when idempotencyKey is blank', async () => {
@@ -368,6 +388,8 @@ describe('toRenderJob', () => {
     id: 'row-uuid-001',
     appId: 'prime_self',
     type: 'marketing',
+    briefKey: 'daily-transits-guide',
+    compositionId: 'TrainingVideo',
     topic: 'Q4 launch',
     script: 'Raise your standard.',
     narrationUrl: 'https://r2.example.com/narration.mp3',
@@ -387,6 +409,8 @@ describe('toRenderJob', () => {
     const job = toRenderJob(row);
     expect(job.id).toBe('row-uuid-001');
     expect(job.appId).toBe('prime_self');
+    expect(job.briefKey).toBe('daily-transits-guide');
+    expect(job.compositionId).toBe('TrainingVideo');
     expect(job.script).toBe('Raise your standard.');
     expect(job.narrationUrl).toBe('https://r2.example.com/narration.mp3');
     expect(job.streamUid).toBe('uid-abc');

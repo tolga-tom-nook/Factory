@@ -310,6 +310,8 @@ app.post('/jobs/from-brief', async (c) => {
   const job = await scheduleVideo(db, {
     appId: scopedAppId,
     type: renderType,
+    briefKey: briefKeyValue,
+    compositionId: module.composition,
     topic: module.topic,
     triggerSource: source,
     scheduledAt: scheduledAtDate,

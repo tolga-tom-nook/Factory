@@ -21,6 +21,9 @@ export const RemotionRoot: React.FC = () => {
         id="MarketingVideo"
         component={MarketingVideo}
         durationInFrames={450}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: Math.max(450, Math.ceil((props.durationSeconds || 15) * VIDEO_FPS)),
+        })}
         fps={VIDEO_FPS}
         width={VIDEO_WIDTH}
         height={VIDEO_HEIGHT}
@@ -33,6 +36,8 @@ export const RemotionRoot: React.FC = () => {
           brandColor: '#0066FF',
           brandAccent: '#FF6600',
           logoUrl: '',
+          durationSeconds: 15,
+          visualBeats: [],
         }}
       />
 
@@ -40,6 +45,9 @@ export const RemotionRoot: React.FC = () => {
         id="TrainingVideo"
         component={TrainingVideo}
         durationInFrames={900}
+        calculateMetadata={({ props }) => ({
+          durationInFrames: Math.max(450, Math.ceil((props.durationSeconds || 30) * VIDEO_FPS)),
+        })}
         fps={VIDEO_FPS}
         width={VIDEO_WIDTH}
         height={VIDEO_HEIGHT}
@@ -53,6 +61,7 @@ export const RemotionRoot: React.FC = () => {
           brandAccent: '#FF6600',
           logoUrl: '',
           steps: ['Wake at 5am', 'Cold shower', 'Review goals', 'Execute the plan'],
+          durationSeconds: 30,
         }}
       />
 

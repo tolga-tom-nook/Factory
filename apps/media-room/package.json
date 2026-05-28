@@ -1,0 +1,13 @@
+{
+  "name": "@factory/media-room",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Production control plane for Factory generated media readiness, QA, and dispatch.",
+  "scripts": {
+    "test": "node --test \"src/**/*.test.js\"",
+    "validate:prime-self": "node src/cli.js validate-briefs --brief-dir ../video-studio/content-briefs/prime-self",
+    "validate:prime-self-embedded": "node src/cli.js validate-briefs --brief-dir ../video-studio/content-briefs/prime-self --brief-key homepage-welcome --brief-key daily-transits-guide --brief-key blueprint-reading-guide --brief-key energy-type-overview --strict",
+    "validate:prime-self-tutorials": "npm run validate:prime-self-embedded"
+  }
+}

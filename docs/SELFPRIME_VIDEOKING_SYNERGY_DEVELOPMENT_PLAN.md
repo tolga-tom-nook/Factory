@@ -2,7 +2,7 @@
 
 **Date:** 2026-04-28  
 **Owner:** Factory Platform + SelfPrime Product + VideoKing Product  
-**Status:** Planning baseline — implementation requires service health reconciliation first  
+**Status:** Planning baseline — superseded for Media Room control-plane scope on 2026-05-28
 **Related systems:** SelfPrime (`selfprime.net` / `api.selfprime.net`), Factory video automation, VideoKing, Factory Admin
 
 ---
@@ -19,10 +19,12 @@ SelfPrime and VideoKing have strong product and infrastructure synergies, but th
    - Practitioner onboarding, chart-specific video generation, practitioner video library UX, landing-page embeds, client deliverables, and tier gating belong in the SelfPrime application environment.
 3. **VideoKing remains a standalone product environment.**
    - VideoKing should remain its own app with its own users, creator marketplace, moderation, payouts, and operational lifecycle.
-4. **No new environment is required for Phase 1.**
-   - Phase 1 should use existing Factory video automation plus SelfPrime integration.
-5. **Create a dedicated environment only if the synergy becomes a cross-app product.**
-   - If “Practitioner Video Studio” becomes a shared commercial product used by multiple Factory apps, promote it to a dedicated Factory service/app with app-level tenancy, not a hidden feature inside SelfPrime or VideoKing.
+4. **Media Room is now the production control plane for generated media.**
+   - The earlier “no new environment for Phase 1” assumption was speed-biased. The Prime Self tutorial quality gap is the right forcing function to promote Media Room into a real Factory control plane.
+5. **Video Studio remains the renderer.**
+   - Media Room owns brief readiness, timing fit, visual plans, approval, dispatch, and QA. `apps/video-studio` and `render-video.yml` continue to own Remotion, ffmpeg, R2, and Stream execution.
+
+See `docs/MEDIA_ROOM_PRODUCTION_CONTROL_PLANE.md` for the active implementation plan.
 
 ### Short answer: where do the synergies go?
 

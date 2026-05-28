@@ -38,6 +38,8 @@ const sampleJob = {
   id: 'job-001',
   appId: 'selfprime',
   type: 'marketing',
+  briefKey: null,
+  compositionId: null,
   topic: 'SelfPrime walkthrough',
   script: null,
   narrationUrl: null,
@@ -111,6 +113,52 @@ describe('schedule-worker', () => {
     expect(mocks.scheduleVideo).toHaveBeenCalledWith(mocks.db, expect.objectContaining({
       appId: 'selfprime',
       idempotencyKey: 'selfprime:walkthrough:001',
+    }));
+  });
+
+  it('creates jobs from training-library briefs with Media Room metadata', async () => {
+    const res = await app.request('/jobs/from-brief', {
+      method: 'POST',
+      headers: { ...auth(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        appId: 'prime_self',
+        briefKey: 'daily-transits-guide',
+        triggerSource: 'manual',
+        idempotencyKey: 'prime_self:daily-transits-guide',
+      }),
+    }, env);
+
+    expect(res.status).toBe(201);
+    expect(mocks.scheduleVideo).toHaveBeenCalledWith(mocks.db, expect.objectContaining({
+      appId: 'prime_self',
+      type: 'training',
+      briefKey: 'daily-transits-guide',
+      compositionId: 'TrainingVideo',
+      topic: 'Using Daily Transits Without Overcomplicating Your Day',
+      idempotencyKey: 'prime_self:daily-transits-guide',
+    }));
+  });
+
+  it('creates landing-page jobs from the Prime Self Media Room catalog', async () => {
+    const res = await app.request('/jobs/from-brief', {
+      method: 'POST',
+      headers: { ...auth(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        appId: 'prime_self',
+        briefKey: 'homepage-welcome',
+        triggerSource: 'manual',
+        idempotencyKey: 'prime_self:homepage-welcome',
+      }),
+    }, env);
+
+    expect(res.status).toBe(201);
+    expect(mocks.scheduleVideo).toHaveBeenCalledWith(mocks.db, expect.objectContaining({
+      appId: 'prime_self',
+      type: 'marketing',
+      briefKey: 'homepage-welcome',
+      compositionId: 'MarketingVideo',
+      topic: 'See Your Pattern Clearly',
+      idempotencyKey: 'prime_self:homepage-welcome',
     }));
   });
 

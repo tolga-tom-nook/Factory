@@ -21,7 +21,7 @@ The video pipeline is operational. First live video: <https://capricast.com/watc
 
 | Brief Key | Title | Length | Forge | Synopsis |
 |---|---|---|---|---|
-| `homepage-welcome` | See Your Pattern Clearly | 60s | (default) | The first-time visitor hook — what Prime Self gives you and why starting now is easy. |
+| `homepage-welcome` | See Your Pattern Clearly | 75s | (default) | The first-time visitor hook — what Prime Self gives you and why starting now is easy. |
 
 ---
 
@@ -85,7 +85,7 @@ Surfaced the moment the viewer's type is identified.
 
 | Brief Key | Title | Length | Forge | Synopsis |
 |---|---|---|---|---|
-| `daily-transits-guide` | Using Daily Transits Without Overcomplicating Your Day | 30s | (default) | The shipped temporal anchor — transits as weather, light-touch reflection. |
+| `daily-transits-guide` | Using Daily Transits Without Overcomplicating Your Day | 90s | (default) | The shipped temporal anchor — transits as weather, light-touch reflection. |
 | `temporal-eclipse-season` | Eclipse Season Through Your Chart | 75s | phoenix | What eclipses do collectively, and how to read them through your own gates. |
 | `temporal-quarter-of-civilization` | The Four Quarters of the Wheel | 90s | chronos | Initiation, Civilization, Duality, Mutation — and how your incarnation cross maps to one. |
 

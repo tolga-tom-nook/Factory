@@ -72,6 +72,10 @@ export interface VideoCalendarRow {
   appId: string;
   /** Type of video to produce. */
   type: RenderJobType;
+  /** Optional Media Room source brief key for deterministic render inputs. */
+  briefKey: string | null;
+  /** Optional Remotion composition id for workflow dispatch. */
+  compositionId: string | null;
   /** Short descriptive topic for the script generator. */
   topic: string;
   /** Full narration script (populated after LLM generation). */
@@ -111,6 +115,10 @@ export interface ProductionBrief {
   appId: string;
   /** Category of video to produce. */
   type: RenderJobType;
+  /** Optional Media Room source brief key for deterministic render inputs. */
+  briefKey?: string;
+  /** Optional Remotion composition id for workflow dispatch. */
+  compositionId?: string;
   /** Short descriptive topic for the script generator. */
   topic: string;
   /** When this video should go live (defaults to now). */
@@ -141,6 +149,8 @@ export const VIDEO_CALENDAR_MIGRATION_STATEMENTS = [
   id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   app_id           TEXT NOT NULL,
   type             TEXT NOT NULL CHECK (type IN ('marketing', 'training', 'walkthrough')),
+  brief_key        TEXT,
+  composition_id   TEXT,
   topic            TEXT NOT NULL,
   script           TEXT,
   narration_url    TEXT,
@@ -157,8 +167,11 @@ export const VIDEO_CALENDAR_MIGRATION_STATEMENTS = [
   updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );`,
   'ALTER TABLE video_calendar ADD COLUMN IF NOT EXISTS idempotency_key TEXT;',
+  'ALTER TABLE video_calendar ADD COLUMN IF NOT EXISTS brief_key TEXT;',
+  'ALTER TABLE video_calendar ADD COLUMN IF NOT EXISTS composition_id TEXT;',
   'CREATE INDEX IF NOT EXISTS video_calendar_status_idx ON video_calendar (status);',
   'CREATE INDEX IF NOT EXISTS video_calendar_app_id_idx ON video_calendar (app_id);',
+  'CREATE INDEX IF NOT EXISTS video_calendar_brief_key_idx ON video_calendar (app_id, brief_key);',
   'CREATE INDEX IF NOT EXISTS video_calendar_scheduled_at_idx ON video_calendar (scheduled_at);',
   `CREATE UNIQUE INDEX IF NOT EXISTS video_calendar_app_idempotency_idx
   ON video_calendar (app_id, idempotency_key)
@@ -177,6 +190,8 @@ function toRow(raw: Record<string, unknown>): VideoCalendarRow {
     id: raw['id'] as string,
     appId: raw['app_id'] as string,
     type: raw['type'] as RenderJobType,
+    briefKey: (raw['brief_key'] as string | null) ?? null,
+    compositionId: (raw['composition_id'] as string | null) ?? null,
     topic: raw['topic'] as string,
     script: (raw['script'] as string | null) ?? null,
     narrationUrl: (raw['narration_url'] as string | null) ?? null,
@@ -229,13 +244,20 @@ export async function scheduleVideo(
   const scheduledAt = brief.scheduledAt ?? new Date();
   const performanceScore = brief.performanceScore ?? 0;
   const idempotencyKey = brief.idempotencyKey?.trim() || null;
+  const briefKey = brief.briefKey?.trim() || null;
+  const compositionId = brief.compositionId?.trim() || null;
 
   const rows = await db.execute(
     sql`
-      INSERT INTO video_calendar (app_id, type, topic, scheduled_at, performance_score, trigger_source, idempotency_key)
+      INSERT INTO video_calendar (
+        app_id, type, brief_key, composition_id, topic, scheduled_at,
+        performance_score, trigger_source, idempotency_key
+      )
       VALUES (
         ${brief.appId},
         ${brief.type},
+        ${briefKey},
+        ${compositionId},
         ${brief.topic},
         ${scheduledAt.toISOString()},
         ${performanceScore},
@@ -245,7 +267,7 @@ export async function scheduleVideo(
       ON CONFLICT (app_id, idempotency_key) WHERE idempotency_key IS NOT NULL
       DO UPDATE SET updated_at = video_calendar.updated_at
       RETURNING
-        id, app_id, type, topic, script, narration_url, video_url, stream_uid,
+        id, app_id, type, brief_key, composition_id, topic, script, narration_url, video_url, stream_uid,
         scheduled_at, status, performance_score, trigger_source, idempotency_key, error,
         created_at, updated_at
     `,
@@ -275,7 +297,7 @@ export async function getVideoJob(
   const rows = await db.execute(
     sql`
       SELECT
-        id, app_id, type, topic, script, narration_url, video_url, stream_uid,
+        id, app_id, type, brief_key, composition_id, topic, script, narration_url, video_url, stream_uid,
         scheduled_at, status, performance_score, trigger_source, idempotency_key, error,
         created_at, updated_at
       FROM video_calendar
@@ -316,7 +338,7 @@ export async function getPendingJobs(
   const rows = await db.execute(
     sql`
       SELECT
-        id, app_id, type, topic, script, narration_url, video_url, stream_uid,
+        id, app_id, type, brief_key, composition_id, topic, script, narration_url, video_url, stream_uid,
         scheduled_at, status, performance_score, trigger_source, idempotency_key, error,
         created_at, updated_at
       FROM video_calendar
@@ -372,7 +394,7 @@ export async function updateJobStatus(
       WHERE id = ${id}
         ${scopeFilter}
       RETURNING
-        id, app_id, type, topic, script, narration_url, video_url, stream_uid,
+        id, app_id, type, brief_key, composition_id, topic, script, narration_url, video_url, stream_uid,
         scheduled_at, status, performance_score, trigger_source, idempotency_key, error,
         created_at, updated_at
     `,
@@ -487,6 +509,8 @@ export function toRenderJob(row: VideoCalendarRow): RenderJob {
     id: row.id,
     appId: row.appId,
     type: row.type,
+    briefKey: row.briefKey ?? undefined,
+    compositionId: row.compositionId ?? undefined,
     topic: row.topic,
     script: row.script ?? '',
     narrationUrl: row.narrationUrl ?? undefined,

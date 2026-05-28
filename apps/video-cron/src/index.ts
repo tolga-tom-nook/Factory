@@ -106,6 +106,13 @@ async function markFailed(env: Env, jobId: string, reason: string): Promise<void
  */
 async function dispatchRenderWorkflow(env: Env, job: RenderJob): Promise<void> {
   const url = `https://api.github.com/repos/${env.GITHUB_REPO}/actions/workflows/render-video.yml/dispatches`;
+  const compositionId = job.compositionId || (
+    job.type === 'marketing'
+      ? env.DEFAULT_COMPOSITION_ID
+      : job.type === 'training'
+        ? 'TrainingVideo'
+        : 'WalkthroughVideo'
+  );
 
   const res = await fetchWithTimeout(url, {
     method: 'POST',
@@ -119,13 +126,10 @@ async function dispatchRenderWorkflow(env: Env, job: RenderJob): Promise<void> {
       ref: 'main',
       inputs: {
         job_id: job.id,
-        composition_id: job.type === 'marketing'
-          ? env.DEFAULT_COMPOSITION_ID
-          : job.type === 'training'
-            ? 'TrainingVideo'
-            : 'WalkthroughVideo',
+        composition_id: compositionId,
         app_id: job.appId,
         topic: job.topic,
+        brief_key: job.briefKey || '',
         brand_color: '#6366f1',
         brand_accent: '#a5b4fc',
         logo_url: '',
