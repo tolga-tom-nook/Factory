@@ -1,0 +1,12 @@
+
+name: Sauna DB Query
+on: workflow_dispatch
+jobs:
+  query:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query DB
+        env:
+          DB_URL: ${{ secrets.FACTORY_CORE_DATABASE_URL }}
+        run: |
+          psql "$DB_URL" -c "SELECT * FROM capability_services;"
