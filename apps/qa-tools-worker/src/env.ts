@@ -31,6 +31,30 @@ export interface Env {
   QA_TOOLS_JWT_SECRET: string;
 
   /**
+   * Public Google OAuth client id used for the operator sign-in policy.
+   * Same credential source as Admin Studio (`ADMIN_STUDIO_GOOGLE_CLIENT_ID`).
+   */
+  GOOGLE_CLIENT_ID?: string;
+
+  /**
+   * JSON map of allowlisted operator emails to QA roles/app access.
+   * Same credential source as Admin Studio (`ADMIN_STUDIO_ALLOWED_USERS_JSON`).
+   */
+  QA_TOOLS_ALLOWED_USERS_JSON?: string;
+
+  /** Workspace domain required for Google sign-in. */
+  QA_TOOLS_GOOGLE_WORKSPACE_DOMAIN?: string;
+
+  /** Break-glass bootstrap operator email; sourced from FACTORY_USER. */
+  QA_TOOLS_ADMIN_EMAIL?: string;
+
+  /** SHA-256 hex digest of break-glass bootstrap password; sourced from FACTORY_PW. */
+  QA_TOOLS_ADMIN_PASSWORD_SHA256?: string;
+
+  /** Comma-separated browser origins allowed to call this API. */
+  ALLOWED_ORIGINS?: string;
+
+  /**
    * GCP service-account JSON (minified, single line) for OIDC token exchange
    * when calling the browser-agent Cloud Run service.
    * wrangler secret BROWSER_AGENT_SA_KEY.

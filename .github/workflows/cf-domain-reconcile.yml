@@ -10,6 +10,8 @@ name: CF Domain Reconcile (latimerwoods.dev rollout)
 #   3. Attach dev.latimerwoods.dev to latimerwoods-dev Pages project
 #   4. Detach studio.thefactory.dev from admin-studio-ui Pages project
 #   5. Attach assets.apunlimited.com to factory-digest-audio R2 bucket
+#   6. Attach qa.latimerwoods.dev to qa-tools-ui Pages project
+#   7. Attach branded staging Pages domains for Admin Studio + QA Tools
 #
 # NOT covered (out of scope for CF API):
 #   - Resend sender domain verification for apunlimited.com (Resend dashboard)
@@ -54,8 +56,13 @@ on:
         required: true
         default: true
         type: boolean
+      attach_staging_pages_domains:
+        description: "Attach staging.admin.latimerwoods.dev and staging.qa.latimerwoods.dev to Pages"
+        required: true
+        default: true
+        type: boolean
       ensure_pages_cnames:
-        description: "Ensure CNAME records exist for Pages custom domains (dev + qa)"
+        description: "Ensure CNAME records exist for Pages custom domains"
         required: true
         default: true
         type: boolean
@@ -267,6 +274,46 @@ jobs:
             exit 1
           fi
 
+      # ─── 6b. Attach branded staging Pages domains ───────────────────────────
+      - name: Attach branded staging Pages domains
+        if: ${{ inputs.attach_staging_pages_domains }}
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+
+          attach_pages_domain() {
+            local project="$1"
+            local host="$2"
+            local tmp="/tmp/pages-${project}-${host}.json"
+
+            RESPONSE=$(curl -s -o "$tmp" -w "%{http_code}" -X POST \
+              -H "Authorization: Bearer ${CF_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              "https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${project}/domains" \
+              -d "{\"name\":\"${host}\"}")
+            if [ "$RESPONSE" = "200" ] || [ "$RESPONSE" = "201" ]; then
+              echo "Attached ${host} to ${project}"
+            elif [ "$RESPONSE" = "409" ]; then
+              echo "${host} already attached to ${project} (409)"
+            elif [ "$RESPONSE" = "400" ]; then
+              CODE=$(node -e "const r=JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')); console.log(r.errors?.[0]?.code ?? '')" "$tmp")
+              if [ "$CODE" = "8000018" ]; then
+                echo "${host} already attached to ${project} (400/8000018)"
+              else
+                echo "::error::Unexpected 400 attaching ${host} to ${project} (code $CODE):"
+                cat "$tmp"
+                exit 1
+              fi
+            else
+              echo "::error::Unexpected response $RESPONSE attaching ${host} to ${project}:"
+              cat "$tmp"
+              exit 1
+            fi
+          }
+
+          attach_pages_domain "admin-studio-ui" "staging.admin.latimerwoods.dev"
+          attach_pages_domain "qa-tools-ui" "staging.qa.latimerwoods.dev"
+
       # ─── 7. Ensure CNAME records exist for Pages custom domains ───────────────
       # The Pages /projects/.../domains POST endpoint is supposed to auto-create
       # the CNAME record, but in practice it sometimes leaves the domain in a
@@ -276,17 +323,23 @@ jobs:
       # exists in the zone.
       - name: Ensure Pages CNAME records (dev + qa)
         if: ${{ inputs.ensure_pages_cnames }}
-        continue-on-error: true
         run: |
           set -euo pipefail
           ZONE="latimerwoods.dev"
 
           # Resolve zone id (also a token sanity check — requires zone:read).
-          ZONE_ID=$(curl -fsS -H "Authorization: Bearer ${CF_API_TOKEN}" \
-            "https://api.cloudflare.com/client/v4/zones?name=${ZONE}" \
-            | node -e "const r=JSON.parse(require('fs').readFileSync(0,'utf8')); console.log(r.result?.[0]?.id ?? '')")
+          curl -sS -o /tmp/zone.json -w "%{http_code}" -H "Authorization: Bearer ${CF_API_TOKEN}" \
+            "https://api.cloudflare.com/client/v4/zones?name=${ZONE}" > /tmp/zone.status
+          ZONE_STATUS=$(cat /tmp/zone.status)
+          if [ "$ZONE_STATUS" != "200" ]; then
+            echo "::error::Could not resolve zone id for ${ZONE}; CF_API_TOKEN needs zone:read. HTTP ${ZONE_STATUS}:"
+            cat /tmp/zone.json
+            exit 1
+          fi
+          ZONE_ID=$(node -e "const r=JSON.parse(require('fs').readFileSync('/tmp/zone.json','utf8')); console.log(r.result?.[0]?.id ?? '')")
           if [ -z "$ZONE_ID" ]; then
             echo "::error::Could not resolve zone id for ${ZONE} — token may lack zone:read."
+            cat /tmp/zone.json
             exit 1
           fi
           echo "Zone ${ZONE} = ${ZONE_ID}"
@@ -295,6 +348,8 @@ jobs:
           ROWS=(
             "dev:latimerwoods-dev.pages.dev"
             "qa:qa-tools-ui.pages.dev"
+            "staging.admin:staging.admin-studio-ui.pages.dev"
+            "staging.qa:staging.qa-tools-ui.pages.dev"
           )
 
           for row in "${ROWS[@]}"; do
@@ -302,9 +357,14 @@ jobs:
             TARGET="${row##*:}"
             FQDN="${SUB}.${ZONE}"
 
-            EXISTING=$(curl -fsS -H "Authorization: Bearer ${CF_API_TOKEN}" \
-              "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records?type=CNAME&name=${FQDN}" \
-              | node -e "const r=JSON.parse(require('fs').readFileSync(0,'utf8')); const m=r.result?.[0]; console.log(m?(m.id+' '+m.content):'')")
+            DNS_STATUS=$(curl -sS -o /tmp/dns-query.json -w "%{http_code}" -H "Authorization: Bearer ${CF_API_TOKEN}" \
+              "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records?type=CNAME&name=${FQDN}")
+            if [ "$DNS_STATUS" != "200" ]; then
+              echo "::error::Could not query CNAME ${FQDN}; CF_API_TOKEN needs DNS read/edit on ${ZONE}. HTTP ${DNS_STATUS}:"
+              cat /tmp/dns-query.json
+              exit 1
+            fi
+            EXISTING=$(node -e "const r=JSON.parse(require('fs').readFileSync('/tmp/dns-query.json','utf8')); const m=r.result?.[0]; console.log(m?(m.id+' '+m.content):'')")
 
             if [ -n "$EXISTING" ]; then
               EXISTING_TARGET=$(echo "$EXISTING" | cut -d' ' -f2)
@@ -345,7 +405,8 @@ jobs:
           echo "| Detach studio.thefactory.dev  | ${{ inputs.detach_studio_thefactory }} | Pages custom-domain DELETE |" >> $GITHUB_STEP_SUMMARY
           echo "| Attach assets.apunlimited.com | ${{ inputs.attach_assets_apunlimited }} | R2 custom-domain POST |" >> $GITHUB_STEP_SUMMARY
           echo "| Attach qa.latimerwoods.dev    | ${{ inputs.attach_qa_latimerwoods }} | Pages custom-domain POST |" >> $GITHUB_STEP_SUMMARY
-          echo "| Ensure Pages CNAME records   | ${{ inputs.ensure_pages_cnames }} | Zone DNS records POST (dev + qa) |" >> $GITHUB_STEP_SUMMARY
+          echo "| Attach branded staging Pages domains | ${{ inputs.attach_staging_pages_domains }} | Pages custom-domain POST |" >> $GITHUB_STEP_SUMMARY
+          echo "| Ensure Pages CNAME records   | ${{ inputs.ensure_pages_cnames }} | Zone DNS records POST (dev, qa, staging admin, staging qa) |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Remaining manual steps" >> $GITHUB_STEP_SUMMARY
           echo "- Verify \`apunlimited.com\` in Resend dashboard as a sender domain (for \`digest@apunlimited.com\`)" >> $GITHUB_STEP_SUMMARY

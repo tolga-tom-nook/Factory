@@ -6,6 +6,7 @@
  */
 
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import './globals.css';
 import { NavBar } from '@/components/nav';
 
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Script src="https://accounts.google.com/gsi/client" async defer />
         <NavBar />
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
           {children}

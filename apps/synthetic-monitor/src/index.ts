@@ -57,6 +57,7 @@ const SERVICE_BINDINGS_BY_HOST: Readonly<Record<string, ServiceBindingName>> = {
   'schedule-worker.adrper79.workers.dev': 'SCHEDULE_WORKER',
   'video-cron.adrper79.workers.dev': 'VIDEO_CRON',
   'admin-studio-staging.adrper79.workers.dev': 'ADMIN_STUDIO_STAGING',
+  'api.admin.latimerwoods.dev': 'ADMIN_STUDIO_STAGING',
   'prime-self.adrper79.workers.dev': 'PRIME_SELF',
 };
 

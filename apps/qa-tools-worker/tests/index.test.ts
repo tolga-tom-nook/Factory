@@ -5,7 +5,7 @@
  * Auth is tested with in-memory JWTs minted via the mintQaJwt helper.
  */
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import app from '../src/index.js';
 import { mintQaJwt } from '../src/middleware/auth.js';
 
@@ -21,6 +21,14 @@ function makeEnv(overrides: Partial<Record<string, unknown>> = {}): Record<strin
   return {
     ENVIRONMENT: 'development',
     QA_TOOLS_JWT_SECRET: TEST_JWT_SECRET,
+    GOOGLE_CLIENT_ID: 'google-client-id.test',
+    QA_TOOLS_ALLOWED_USERS_JSON: JSON.stringify({
+      'operator@latwoodtech.com': { role: 'qa_admin' },
+      'runner@latwoodtech.com': { role: 'qa_runner', app_ids: ['capricast'] },
+    }),
+    QA_TOOLS_GOOGLE_WORKSPACE_DOMAIN: 'latwoodtech.com',
+    QA_TOOLS_ADMIN_EMAIL: 'operator@latwoodtech.com',
+    QA_TOOLS_ADMIN_PASSWORD_SHA256: '',
     BROWSER_AGENT_URL: 'https://browser-agent.test',
     BROWSER_AGENT_AUDIENCE: 'https://browser-agent.test',
     BROWSER_AGENT_SA_KEY: JSON.stringify({ client_email: 'test@sa.test', private_key: '-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkq-----END PRIVATE KEY-----' }),
@@ -39,6 +47,82 @@ function makeEnv(overrides: Partial<Record<string, unknown>> = {}): Record<strin
     },
     ...overrides,
   };
+}
+
+async function sha256Hex(value: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+async function makeGoogleIdToken(overrides: {
+  aud: string;
+  email: string;
+  hd: string;
+  iss?: string;
+}): Promise<{ token: string; jwk: JsonWebKey & { kid: string } }> {
+  const keyPair = await crypto.subtle.generateKey(
+    {
+      name: 'RSASSA-PKCS1-v1_5',
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: 'SHA-256',
+    },
+    true,
+    ['sign', 'verify'],
+  );
+  const kid = crypto.randomUUID();
+  const jwk = await crypto.subtle.exportKey('jwk', keyPair.publicKey) as JsonWebKey & { kid: string };
+  jwk.kid = kid;
+  jwk.alg = 'RS256';
+  jwk.use = 'sig';
+
+  const header = { alg: 'RS256', typ: 'JWT', kid };
+  const payload = validGooglePayload(overrides);
+
+  const signingInput = `${base64UrlJson(header)}.${base64UrlJson(payload)}`;
+  const signature = await crypto.subtle.sign(
+    'RSASSA-PKCS1-v1_5',
+    keyPair.privateKey,
+    new TextEncoder().encode(signingInput),
+  );
+
+  return {
+    token: `${signingInput}.${base64UrlBytes(new Uint8Array(signature))}`,
+    jwk,
+  };
+}
+
+function base64UrlJson(value: unknown): string {
+  return base64UrlBytes(new TextEncoder().encode(JSON.stringify(value)));
+}
+
+function validGooglePayload(overrides: {
+  aud: string;
+  email: string;
+  hd: string;
+  iss?: string;
+}): Record<string, unknown> {
+  const now = Math.floor(Date.now() / 1000);
+  return {
+    iss: overrides.iss ?? 'https://accounts.google.com',
+    aud: overrides.aud,
+    exp: now + 3600,
+    iat: now - 10,
+    sub: 'google-subject',
+    email: overrides.email,
+    email_verified: true,
+    hd: overrides.hd,
+  };
+}
+
+function makeUnsignedGoogleToken(header: Record<string, unknown>, payload: Record<string, unknown>): string {
+  return `${base64UrlJson(header)}.${base64UrlJson(payload)}.${base64UrlBytes(new Uint8Array([1, 2, 3]))}`;
+}
+
+function base64UrlBytes(bytes: Uint8Array): string {
+  let bin = '';
+  for (const byte of bytes) bin += String.fromCharCode(byte);
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 /** Mints a valid qa_runner JWT for the given appIds. */
@@ -104,6 +188,199 @@ describe('GET /version', () => {
     expect(res.status).toBe(200);
     const body = await res.json() as Record<string, unknown>;
     expect(body['phase']).toBe('phase-1');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// /auth
+// ---------------------------------------------------------------------------
+
+describe('auth routes', () => {
+  it('returns public Google auth config', async () => {
+    const res = await req('GET', '/auth/config');
+    expect(res.status).toBe(200);
+    const body = await res.json() as Record<string, unknown>;
+    expect(body['googleClientId']).toBe('google-client-id.test');
+    expect(body['hostedDomain']).toBe('latwoodtech.com');
+  });
+
+  it('issues qa_admin JWT for valid break-glass credentials', async () => {
+    const env = makeEnv({ QA_TOOLS_ADMIN_PASSWORD_SHA256: await sha256Hex('correct-password') });
+    const res = await req('POST', '/auth/login', {
+      env,
+      body: { email: ' OPERATOR@latwoodtech.com ', password: 'correct-password' },
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json() as Record<string, unknown>;
+    expect(typeof body['token']).toBe('string');
+    const payload = JSON.parse(atob(String(body['token']).split('.')[1]!.replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+    expect(payload['role']).toBe('qa_admin');
+    expect(payload['email']).toBe('operator@latwoodtech.com');
+  });
+
+  it('rejects invalid break-glass credentials', async () => {
+    const env = makeEnv({ QA_TOOLS_ADMIN_PASSWORD_SHA256: await sha256Hex('correct-password') });
+    const res = await req('POST', '/auth/login', {
+      env,
+      body: { email: 'operator@latwoodtech.com', password: 'wrong-password' },
+    });
+    expect(res.status).toBe(401);
+  });
+
+  it('rejects missing break-glass credentials and missing bootstrap config', async () => {
+    const missingBody = await req('POST', '/auth/login', { body: {} });
+    expect(missingBody.status).toBe(400);
+
+    const missingConfig = await req('POST', '/auth/login', {
+      env: makeEnv({ QA_TOOLS_ADMIN_EMAIL: '', QA_TOOLS_ADMIN_PASSWORD_SHA256: '' }),
+      body: { email: 'operator@latwoodtech.com', password: 'correct-password' },
+    });
+    expect(missingConfig.status).toBe(503);
+  });
+
+  it('rejects missing and malformed Google credentials', async () => {
+    const missing = await req('POST', '/auth/google', { body: {} });
+    expect(missing.status).toBe(400);
+
+    const malformed = await req('POST', '/auth/google', { body: { credential: 'not-a-jwt' } });
+    expect(malformed.status).toBe(401);
+  });
+
+  it('rejects Google login when not configured', async () => {
+    const res = await req('POST', '/auth/google', {
+      env: makeEnv({ GOOGLE_CLIENT_ID: '' }),
+      body: { credential: 'header.payload.signature' },
+    });
+    expect(res.status).toBe(503);
+  });
+
+  it('rejects Google tokens when JWKS cannot be fetched', async () => {
+    const { token } = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: 'runner@latwoodtech.com',
+      hd: 'latwoodtech.com',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('nope', { status: 500 }));
+
+    const res = await req('POST', '/auth/google', { body: { credential: token } });
+    expect(res.status).toBe(401);
+
+    fetchSpy.mockRestore();
+  });
+
+  it('rejects Google tokens with unsupported headers or audience mismatch', async () => {
+    const unsupported = makeUnsignedGoogleToken(
+      { alg: 'HS256', kid: 'kid-1' },
+      validGooglePayload({ aud: 'google-client-id.test', email: 'runner@latwoodtech.com', hd: 'latwoodtech.com' }),
+    );
+    const unsupportedRes = await req('POST', '/auth/google', { body: { credential: unsupported } });
+    expect(unsupportedRes.status).toBe(401);
+
+    const missingKid = makeUnsignedGoogleToken(
+      { alg: 'RS256' },
+      validGooglePayload({ aud: 'google-client-id.test', email: 'runner@latwoodtech.com', hd: 'latwoodtech.com' }),
+    );
+    const missingKidRes = await req('POST', '/auth/google', { body: { credential: missingKid } });
+    expect(missingKidRes.status).toBe(401);
+
+    const { token, jwk } = await makeGoogleIdToken({
+      aud: 'wrong-client-id',
+      email: 'runner@latwoodtech.com',
+      hd: 'latwoodtech.com',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ keys: [jwk] }));
+    const mismatchRes = await req('POST', '/auth/google', { body: { credential: token } });
+    expect(mismatchRes.status).toBe(401);
+    fetchSpy.mockRestore();
+  });
+
+  it('rejects Google tokens with invalid issuer or missing email', async () => {
+    const badIssuer = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: 'runner@latwoodtech.com',
+      hd: 'latwoodtech.com',
+      iss: 'https://accounts.example.com',
+    });
+    const issuerFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ keys: [badIssuer.jwk] }));
+    const issuerRes = await req('POST', '/auth/google', { body: { credential: badIssuer.token } });
+    expect(issuerRes.status).toBe(401);
+    issuerFetch.mockRestore();
+
+    const noEmail = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: '',
+      hd: 'latwoodtech.com',
+    });
+    const emailFetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ keys: [noEmail.jwk] }));
+    const emailRes = await req('POST', '/auth/google', { body: { credential: noEmail.token } });
+    expect(emailRes.status).toBe(401);
+    emailFetch.mockRestore();
+  });
+
+  it('issues a scoped JWT for an allowlisted Google account', async () => {
+    const { token, jwk } = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: 'runner@latwoodtech.com',
+      hd: 'latwoodtech.com',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      Response.json({ keys: [jwk] }),
+    );
+
+    const res = await req('POST', '/auth/google', { body: { credential: token } });
+    expect(res.status).toBe(200);
+    const body = await res.json() as Record<string, unknown>;
+    const payload = JSON.parse(atob(String(body['token']).split('.')[1]!.replace(/-/g, '+').replace(/_/g, '/'))) as Record<string, unknown>;
+    expect(payload['role']).toBe('qa_runner');
+    expect(payload['email']).toBe('runner@latwoodtech.com');
+    expect(payload['app_ids']).toEqual(['capricast']);
+
+    fetchSpy.mockRestore();
+  });
+
+  it('rejects Google accounts outside the workspace domain', async () => {
+    const { token, jwk } = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: 'person@example.com',
+      hd: 'example.com',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ keys: [jwk] }));
+
+    const res = await req('POST', '/auth/google', { body: { credential: token } });
+    expect(res.status).toBe(403);
+
+    fetchSpy.mockRestore();
+  });
+
+  it('rejects Google accounts that are not allowlisted', async () => {
+    const { token, jwk } = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: 'not-allowed@latwoodtech.com',
+      hd: 'latwoodtech.com',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ keys: [jwk] }));
+
+    const res = await req('POST', '/auth/google', { body: { credential: token } });
+    expect(res.status).toBe(403);
+
+    fetchSpy.mockRestore();
+  });
+
+  it('treats malformed allowlist JSON as no allowlisted users', async () => {
+    const { token, jwk } = await makeGoogleIdToken({
+      aud: 'google-client-id.test',
+      email: 'runner@latwoodtech.com',
+      hd: 'latwoodtech.com',
+    });
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ keys: [jwk] }));
+
+    const res = await req('POST', '/auth/google', {
+      env: makeEnv({ QA_TOOLS_ALLOWED_USERS_JSON: '{' }),
+      body: { credential: token },
+    });
+    expect(res.status).toBe(403);
+
+    fetchSpy.mockRestore();
   });
 });
 

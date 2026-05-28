@@ -26,13 +26,11 @@ npm run build-storybook
 Deployed via Cloudflare Pages — `dist/` is uploaded by the GitHub Actions workflow at [`.github/workflows/deploy-admin-studio-ui.yml`](../../.github/workflows/deploy-admin-studio-ui.yml).
 
 ```
-staging:    https://staging.admin-studio-ui.pages.dev
-production: https://studio.thefactory.dev
-alternate:  https://apunlimited.com
+staging:    https://staging.admin.latimerwoods.dev
+production: https://apunlimited.com
 ```
 
-The staging Pages URL above is the currently verified live staging surface.
-The production custom domain remains the intended production target.
+The branded staging and production URLs above are the canonical operator surfaces.
 
 Storybook visual regression is enforced by Chromatic in
 `.github/workflows/factory-admin-ui-ci.yml` and Storybook static output is

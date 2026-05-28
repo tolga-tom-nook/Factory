@@ -14,7 +14,10 @@ name: Deploy QA Tools Worker
 #   3. wrangler r2 bucket create qa-tools
 #   4. Add secrets to GCP Secret Manager (factory-495015):
 #      QA_TOOLS_JWT_SECRET, BROWSER_AGENT_SA_KEY, BROWSER_AGENT_URL,
-#      BROWSER_AGENT_AUDIENCE, GITHUB_QA_TOKEN, SLACK_QA_WEBHOOK_URL
+#      BROWSER_AGENT_AUDIENCE, GITHUB_QA_TOKEN, SLACK_QA_WEBHOOK_URL.
+#      Operator auth intentionally reuses the Admin Studio credential policy:
+#      ADMIN_STUDIO_GOOGLE_CLIENT_ID, ADMIN_STUDIO_ALLOWED_USERS_JSON,
+#      FACTORY_USER, and FACTORY_PW.
 #
 # See: docs/architecture/QA_TOOLS_ARCHITECTURE.md §9.2
 
@@ -46,7 +49,11 @@ jobs:
     name: Deploy qa-tools-worker to Cloudflare
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    environment: production
+    # QA Tools must share the same operator credential policy as AP Unlimited /
+    # Admin Studio. The Google allowlist + break-glass secrets live on the
+    # admin-studio-production GitHub Environment; the Worker still deploys to
+    # the Cloudflare `production` env below.
+    environment: admin-studio-production
 
     steps:
       - name: Checkout
@@ -109,6 +116,10 @@ jobs:
           # Once GCP Secret Manager has QA_TOOLS_ENCRYPT_KEY, the GCP fetch step above
           # will overwrite this value (GCP is authoritative long-term).
           QA_TOOLS_ENCRYPT_KEY: ${{ secrets.QA_TOOLS_ENCRYPT_KEY }}
+          SECRET_FACTORY_USER: ${{ secrets.FACTORY_USER }}
+          SECRET_FACTORY_PW: ${{ secrets.FACTORY_PW }}
+          SECRET_GOOGLE_CLIENT_ID: ${{ secrets.ADMIN_STUDIO_GOOGLE_CLIENT_ID }}
+          SECRET_ALLOWED_USERS_JSON: ${{ secrets.ADMIN_STUDIO_ALLOWED_USERS_JSON }}
         run: |
           set -euo pipefail
 
@@ -117,6 +128,21 @@ jobs:
           printf '%s' "${BROWSER_AGENT_SA_KEY}"   | npx wrangler secret put BROWSER_AGENT_SA_KEY   --env production
           printf '%s' "${BROWSER_AGENT_URL}"      | npx wrangler secret put BROWSER_AGENT_URL      --env production
           printf '%s' "${BROWSER_AGENT_AUDIENCE}" | npx wrangler secret put BROWSER_AGENT_AUDIENCE --env production
+
+          if [ -z "${SECRET_FACTORY_USER}" ] || [ -z "${SECRET_FACTORY_PW}" ]; then
+            echo "::error::FACTORY_USER and FACTORY_PW are required for QA Tools break-glass auth"
+            exit 1
+          fi
+          if [ -z "${SECRET_GOOGLE_CLIENT_ID}" ] || [ -z "${SECRET_ALLOWED_USERS_JSON}" ]; then
+            echo "::error::ADMIN_STUDIO_GOOGLE_CLIENT_ID and ADMIN_STUDIO_ALLOWED_USERS_JSON are required for QA Tools Google auth"
+            exit 1
+          fi
+
+          password_hash=$(printf '%s' "${SECRET_FACTORY_PW}" | sha256sum | cut -d' ' -f1)
+          printf '%s' "${SECRET_FACTORY_USER}"      | npx wrangler secret put QA_TOOLS_ADMIN_EMAIL --env production
+          printf '%s' "${password_hash}"             | npx wrangler secret put QA_TOOLS_ADMIN_PASSWORD_SHA256 --env production
+          printf '%s' "${SECRET_GOOGLE_CLIENT_ID}"   | npx wrangler secret put GOOGLE_CLIENT_ID --env production
+          printf '%s' "${SECRET_ALLOWED_USERS_JSON}" | npx wrangler secret put QA_TOOLS_ALLOWED_USERS_JSON --env production
 
           # Optional secrets (fail gracefully if not set)
           if [ -n "${GITHUB_QA_TOKEN:-}" ]; then

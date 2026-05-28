@@ -207,7 +207,7 @@ workers:
     repo: Latimer-Woods-Tech/factory
     url: https://api.admin.latimerwoods.dev                # canonical staging domain — latimerwoods.dev is the dev surface
     custom_domain: api.admin.latimerwoods.dev
-    custom_domain_status: pending_attach                   # attaches on next admin-studio staging deploy
+    custom_domain_status: attached                         # verified 2026-05-28 via /health
     workers_dev_url: https://admin-studio-staging.adrper79.workers.dev  # CF fallback; never hardcode in user-facing code
     health_endpoint: /health
     verification_targets:
@@ -780,7 +780,7 @@ workers:
     url: https://api.qa.latimerwoods.dev
     workers_dev_url: https://qa-tools-worker.adrper79.workers.dev
     custom_domain: api.qa.latimerwoods.dev
-    custom_domain_status: pending_attach                   # attaches on next qa-tools-worker deploy (2026-05-27)
+    custom_domain_status: attached                         # verified 2026-05-28 via /health
     health_endpoint: /health
     verification_targets:
       default: https://api.qa.latimerwoods.dev/health
@@ -788,11 +788,17 @@ workers:
     deployment_status: phase-1-live            # Phase 1 live 2026-05-27; health verified at /health
     required_secrets:
       - QA_TOOLS_JWT_SECRET
+      - GOOGLE_CLIENT_ID
+      - QA_TOOLS_ALLOWED_USERS_JSON
+      - QA_TOOLS_ADMIN_EMAIL
+      - QA_TOOLS_ADMIN_PASSWORD_SHA256
       - BROWSER_AGENT_SA_KEY
       - BROWSER_AGENT_URL
       - BROWSER_AGENT_AUDIENCE
     required_vars:
       - ENVIRONMENT
+      - QA_TOOLS_GOOGLE_WORKSPACE_DOMAIN
+      - ALLOWED_ORIGINS
     required_bindings:
       - DB (Hyperdrive ed95104a65c541c8b98f842e01f5894a — qa-tools-hyperdrive -> THE_FACTORY Neon)
       - QA_TOOLS_R2 (R2 bucket qa-tools)
@@ -800,11 +806,14 @@ workers:
     notes: >
       QA Tools Platform API — accessibility audits, screenshot capture, performance testing.
       Wraps the browser-agent Cloud Run service (/visual-review with runAxe=true for Phase 1).
+      Operator auth follows the same policy as AP Unlimited/Admin Studio:
+      allowlisted latwoodtech.com Google sign-in plus FACTORY_USER/FACTORY_PW
+      break-glass fallback.
       Architecture: docs/architecture/QA_TOOLS_ARCHITECTURE.md
       Neon migrations: apps/qa-tools-worker/migrations/001_phase1.sql
       Phase 1 (MVP): POST /runs, GET /runs/:id/status, GET /runs/:id/results, GET /apps/:appId/health
       Consumers: qa-tools-ui (Phase 1 frontend)
-      LIVE: Deployed 2026-05-27; custom domain api.qa.latimerwoods.dev wired 2026-05-27 (pending attach on next deploy)
+      LIVE: Deployed 2026-05-27; custom domain api.qa.latimerwoods.dev health verified 2026-05-28.
     consumers: []
 
   # ─── PLANNED (not yet built) ─────────────────────────────────────────────────
@@ -905,7 +914,8 @@ pages:
     custom_domain: apunlimited.com
     # studio.thefactory.dev RETIRED + DETACHED 2026-05-27 via cf-domain-reconcile run #26545752158.
     # curl studio.thefactory.dev now returns NXDOMAIN. apunlimited.com is the sole canonical operator URL.
-    staging_url: https://staging.admin-studio-ui.pages.dev
+    staging_url: https://staging.admin.latimerwoods.dev
+    staging_custom_domain_status: pending_attach
     root_file: apps/admin-studio-ui/index.html
     deploy_dir: apps/admin-studio-ui/dist
     worker_dependencies:
@@ -958,6 +968,8 @@ pages:
     project_name: qa-tools-ui                            # CF Pages project (wrangler pages project create qa-tools-ui)
     custom_domain: qa.latimerwoods.dev
     custom_domain_status: pending_attach                 # attaches via cf-domain-reconcile op attach_qa_latimerwoods
+    staging_url: https://staging.qa.latimerwoods.dev
+    staging_custom_domain_status: pending_attach
     deployment_status: phase-1-live
     root_file: apps/qa-tools-ui/src/app/page.tsx
     deploy_dir: apps/qa-tools-ui/out
@@ -969,7 +981,8 @@ pages:
     notes: >
       QA Tools Platform dashboard (Next.js 15 static export).
       Internal engineering tool — accessible to qa-runner/viewer/admin roles only.
-      No public custom domain in Phase 1; provisioned on default pages.dev URL.
+      Uses branded latimerwoods.dev domains only; default pages.dev URLs are
+      deployment implementation details, not user-facing entry points.
       Architecture: docs/architecture/QA_TOOLS_ARCHITECTURE.md
 
   - id: latimerwoods-dev

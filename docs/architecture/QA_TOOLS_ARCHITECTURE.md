@@ -1241,14 +1241,18 @@ pixelmatch config:
 
 | Environment | Domain | Frontend | Worker | Browser Agent | Database |
 |---|---|---|---|---|---|
-| **Production** | `qa-tools.lwt.internal` | CF Pages (main) | `qa-tools.adrper79.workers.dev` | Cloud Run prod | Neon prod |
-| **Staging** | `qa-tools-staging.lwt.internal` | CF Pages (branch) | Dev worker | Cloud Run staging | Neon staging |
+| **Production** | `https://qa.latimerwoods.dev` | CF Pages (main) | `https://api.qa.latimerwoods.dev` | Cloud Run prod | Neon prod |
+| **Staging** | `https://staging.qa.latimerwoods.dev` | CF Pages (branch) | `https://api.qa.latimerwoods.dev` | Cloud Run staging | Neon staging |
 
 ### 9.2 Secrets Management (GCP Secret Manager via WIF)
 
 ```
 QA_TOOLS_ENCRYPTION_KEY      pgcrypto AES key   rotate: quarterly (Jan/Apr/Jul/Oct 1)
 QA_TOOLS_JWT_SECRET          API JWT signing    rotate: semi-annually
+GOOGLE_CLIENT_ID             Google Sign-In     shared policy with Admin Studio
+QA_TOOLS_ALLOWED_USERS_JSON  Operator allowlist shared policy with Admin Studio
+QA_TOOLS_ADMIN_EMAIL         Break-glass user   shared policy with Admin Studio
+QA_TOOLS_ADMIN_PASSWORD_SHA256 Break-glass hash  shared policy with Admin Studio
 QA_TOOLS_CI_SECRET           CI service token   rotate: annually
 BROWSER_AGENT_URL            Cloud Run URL      static until service renamed
 BROWSER_AGENT_AUDIENCE       Cloud Run OIDC     static

@@ -1,7 +1,7 @@
 /**
  * Client-side JWT management for QA Tools UI.
  *
- * The JWT is issued by POST /auth/token on the qa-tools-worker and stored
+ * The JWT is issued by the qa-tools-worker auth routes and stored
  * in sessionStorage so it persists across page navigations within a tab
  * but is cleared when the tab is closed.
  *

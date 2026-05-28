@@ -30,10 +30,11 @@ When you need to understand the current system, use these in order:
 1. `CLAUDE.md`
 2. `WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md`
 3. `docs/service-registry.yml`
-4. `docs/admin-studio/00-MASTER-PLAN.md`
-5. `docs/admin-studio/02-OPERATOR-QUICK-REF.md`
-6. `apps/admin-studio/README.md`
-7. `apps/admin-studio-ui/README.md`
+4. `docs/ACCESS.md`
+5. `docs/admin-studio/00-MASTER-PLAN.md`
+6. `docs/admin-studio/02-OPERATOR-QUICK-REF.md`
+7. `apps/admin-studio/README.md`
+8. `apps/admin-studio-ui/README.md`
 
 Use the service registry for naming, URLs, dependencies, and verification state. Use the dashboard for open work and current execution reality. Use the admin-studio docs for operator behavior and safety rules.
 
@@ -105,32 +106,48 @@ The next step is not “start using GitHub”; it is “deepen and harden the in
 
 ---
 
-## 4. Where The Admin Page Is
+## 4. Where The Operator Surfaces Are
 
-### UI
+Use `docs/ACCESS.md` as the canonical human-facing access map. It records the live URL, staging URL, login policy, code path, and first diagnostic action for each surface.
 
-Admin Studio UI is the Cloudflare Pages frontend in `apps/admin-studio-ui`.
+### Admin Studio / AP Unlimited
 
-Current documented URLs:
+Admin Studio UI is the Cloudflare Pages frontend in `apps/admin-studio-ui`. The paired API Worker is in `apps/admin-studio`.
 
-- **Staging UI:** `https://staging.admin-studio-ui.pages.dev`
-- **Production target:** `https://studio.thefactory.dev`
+Current operator URLs:
+
+- **Production UI:** `https://apunlimited.com`
+- **Staging UI:** `https://staging.admin.latimerwoods.dev`
+- **Production API:** `https://api.apunlimited.com`
+- **Staging API:** `https://api.admin.latimerwoods.dev`
+
+Login policy:
+
+- Google Sign-In with an allowlisted `latwoodtech.com` account.
+- Break-glass email/password login using the same credential policy.
 
 The UI routing is simple:
 
 - unauthenticated users go to `/login`
 - authenticated users go to the dashboard shell
 
-### API Worker
+### QA Tools
 
-The Admin Studio API Worker is in `apps/admin-studio`.
+QA Tools UI is the Cloudflare Pages frontend in `apps/qa-tools-ui`. The paired API Worker is in `apps/qa-tools-worker`.
 
-Current documented URLs:
+Current operator URLs:
 
-- **Staging API:** `https://admin-studio-staging.adrper79.workers.dev`
-- **Production API:** `https://admin-studio-production.adrper79.workers.dev`
+- **Production UI:** `https://qa.latimerwoods.dev`
+- **Staging UI:** `https://staging.qa.latimerwoods.dev`
+- **API:** `https://api.qa.latimerwoods.dev`
 
-Important: the production Worker URL is documented as configured, not yet trustworthy as a live-verified surface.
+Login policy:
+
+- Same as Admin Studio / AP Unlimited.
+- Google Sign-In with an allowlisted `latwoodtech.com` account.
+- Break-glass email/password login using the same credential policy.
+
+Important: user-facing access should use branded domains. Raw `pages.dev` and `workers.dev` URLs are deployment details, not operator entry points.
 
 ---
 
@@ -261,47 +278,49 @@ If you want Admin Studio to become the real owner console, the next GitHub featu
 
 ---
 
-## 7. How To Add `apunlimited.com` To The Admin Page
+## 7. How To Maintain `apunlimited.com` For The Admin Page
 
-Assumption: you want `apunlimited.com` to be an additional custom domain (or replacement production domain) for `admin-studio-ui`.
+`apunlimited.com` is the production Admin Studio UI domain. Treat it as the canonical operator entry point, not an alias.
 
 ### Current relevant surfaces
 
 - UI project: `apps/admin-studio-ui`
-- current production target domain: `studio.thefactory.dev`
+- current production UI domain: `apunlimited.com`
+- current production API domain: `https://api.apunlimited.com`
+- current staging UI domain: `https://staging.admin.latimerwoods.dev`
+- current staging API domain: `https://api.admin.latimerwoods.dev`
 - Worker CORS allow-list: `apps/admin-studio/wrangler.jsonc`
 - workflow verification target: `.github/workflows/deploy-admin-studio-ui.yml`
 - Pages registry entry: `docs/service-registry.yml`
 
 ### What must be done
 
-1. **Add the Pages custom domain in Cloudflare Pages**
+1. **Keep the Pages custom domain attached in Cloudflare Pages**
    - project: `admin-studio-ui`
    - domain: `apunlimited.com`
 
 2. **Update API CORS allow-lists**
-   - add `https://apunlimited.com` to production `ALLOWED_ORIGINS` in `apps/admin-studio/wrangler.jsonc`
-   - if you want both domains live, keep `https://studio.thefactory.dev` too
+   - production `ALLOWED_ORIGINS` must include `https://apunlimited.com`
+   - staging `ALLOWED_ORIGINS` must include `https://staging.admin.latimerwoods.dev`
 
-3. **Decide whether `apunlimited.com` is primary or alias**
-   - if primary: update verification URL in `.github/workflows/deploy-admin-studio-ui.yml`
-   - if alias only: keep workflow verifying `studio.thefactory.dev`, but document the alias
+3. **Keep verification on branded domains**
+   - UI deploy verification should use `https://apunlimited.com` for production and `https://staging.admin.latimerwoods.dev` for staging.
+   - API deploy verification should use `https://api.apunlimited.com` for production and `https://api.admin.latimerwoods.dev` for staging.
 
-4. **Update the service registry**
-   - update the `pages.admin-studio-ui.custom_domain` field in `docs/service-registry.yml` if this is the new primary domain
-   - if you intend multiple public domains, the registry structure should be extended to support aliases rather than silently losing one
-
-5. **Update operator docs**
+4. **Update operator docs**
+   - `docs/ACCESS.md`
+   - `docs/service-registry.yml`
    - `apps/admin-studio-ui/README.md`
    - `docs/admin-studio/02-OPERATOR-QUICK-REF.md`
 
-6. **Verify directly**
+5. **Verify directly**
    - `curl https://apunlimited.com/` must return `200`
    - the response body should contain `Factory Admin Studio`
+   - `curl https://api.apunlimited.com/health` must return `200`
 
 ### Important caution
 
-Do not update the docs to claim `apunlimited.com` is live until the endpoint is actually serving and the Worker allows the origin.
+Do not point operators at `pages.dev` or `workers.dev` URLs. They are deployment fallbacks and implementation details.
 
 ---
 
@@ -416,7 +435,7 @@ Admin Studio should reduce friction, not lower standards.
 
 If the goal is to make Factory materially easier to own and operate, the next highest-value moves are:
 
-1. Make Admin Studio production truly live-verified.
+1. Keep `docs/ACCESS.md` and `docs/service-registry.yml` aligned whenever a URL or credential policy changes.
 2. Extend Admin Studio from single-repo GitHub support to multi-repo support.
 3. Add GitHub workflow log/retry/check-run visibility inside the UI.
 4. Expand `docs/service-registry.yml` and `app-registry.ts` to support domain aliases explicitly.

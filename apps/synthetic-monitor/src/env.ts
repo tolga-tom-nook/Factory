@@ -1,3 +1,5 @@
+import type { BrowserWorker } from '@cloudflare/puppeteer';
+
 /**
  * Cloudflare Worker bindings for the synthetic monitor.
  *
@@ -6,7 +8,7 @@
  */
 export interface Env {
   /** Browser Rendering binding */
-  BROWSER: any;
+  BROWSER?: BrowserWorker | null;
   /** R2 Bucket for audit logs */
   AUDIT_LOGS: R2Bucket;
   /** Slack webhook for ops alerts */

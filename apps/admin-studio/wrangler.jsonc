@@ -9,7 +9,7 @@
   "vars": {
     "STUDIO_ENV": "staging",
     "STUDIO_GOOGLE_WORKSPACE_DOMAIN": "latwoodtech.com",
-    "ALLOWED_ORIGINS": "https://apunlimited.com,https://staging.admin-studio-ui.pages.dev"
+    "ALLOWED_ORIGINS": "https://apunlimited.com,https://staging.admin.latimerwoods.dev"
   },
   "env": {
     "staging": {
@@ -20,7 +20,7 @@
       "vars": {
         "STUDIO_ENV": "staging",
         "STUDIO_GOOGLE_WORKSPACE_DOMAIN": "latwoodtech.com",
-        "ALLOWED_ORIGINS": "https://staging.admin-studio-ui.pages.dev,https://api.admin.latimerwoods.dev,http://localhost:5173",
+        "ALLOWED_ORIGINS": "https://staging.admin.latimerwoods.dev,https://api.admin.latimerwoods.dev,http://localhost:5173",
         // Digest non-secret vars
         "DIGEST_TO_EMAIL": "adrper79@gmail.com",
         "ELEVENLABS_VOICE_DEFAULT": "21m00Tcm4TlvDq8ikWAM",

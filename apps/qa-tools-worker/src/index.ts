@@ -26,8 +26,36 @@ import { AuthError, ValidationError, NotFoundError, InternalError } from '@latim
 import type { Env } from './env.js';
 import { runsRouter } from './routes/runs.js';
 import { appsRouter } from './routes/apps.js';
+import { authRouter } from './routes/auth.js';
 
 const app = new Hono<{ Bindings: Env }>();
+
+const DEFAULT_ALLOWED_ORIGINS = [
+  'https://qa.latimerwoods.dev',
+  'https://staging.qa.latimerwoods.dev',
+  'http://localhost:3000',
+];
+
+app.use('*', async (c, next) => {
+  const origin = c.req.header('Origin');
+  const allowedOrigins = (c.env.ALLOWED_ORIGINS || DEFAULT_ALLOWED_ORIGINS.join(','))
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  if (origin && allowedOrigins.includes(origin)) {
+    c.header('Access-Control-Allow-Origin', origin);
+    c.header('Vary', 'Origin');
+    c.header('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+    c.header('Access-Control-Allow-Methods', 'GET, POST, PATCH, OPTIONS');
+  }
+
+  if (c.req.method === 'OPTIONS') {
+    return c.body(null, 204);
+  }
+
+  await next();
+});
 
 // ---------------------------------------------------------------------------
 // Health + version endpoints (no auth)
@@ -55,6 +83,7 @@ app.get('/version', (c) =>
 // Route mounting
 // ---------------------------------------------------------------------------
 
+app.route('/auth', authRouter);
 app.route('/runs', runsRouter);
 app.route('/apps', appsRouter);
 

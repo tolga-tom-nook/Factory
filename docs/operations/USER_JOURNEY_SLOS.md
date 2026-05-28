@@ -22,7 +22,7 @@ Error budget: **0.1%** (~43.8 min/month). Budget exhaustion triggers P2 incident
 | J01 | Render ingest | `slo.journey.render-ingest` | `schedule-worker.adrper79.workers.dev/health` | 99.9% | < 500 ms |
 | J02 | Video dispatch | `slo.journey.video-dispatch` | `video-cron.adrper79.workers.dev/health` | 99.9% | < 500 ms |
 | J03 | Auth API | `slo.journey.auth-api` | `prime-self.adrper79.workers.dev/health` | 99.9% | < 300 ms |
-| J04 | Operator plane | `slo.journey.operator-plane` | `admin-studio-staging.adrper79.workers.dev/health` | 99.9% | < 500 ms |
+| J04 | Operator plane | `slo.journey.operator-plane` | `api.admin.latimerwoods.dev/health` | 99.9% | < 500 ms |
 | J05 | Checkout start | _Pending_ — requires `/v1/checkout` endpoint on schedule-worker | — | 99.9% | < 800 ms |
 | J06 | First render complete | _Pending_ — requires job status webhook callback URL | — | 99% | < 300 s end-to-end |
 | J07 | Booking confirmation | _Pending_ — requires `/v1/bookings` on Xico City (W360-014) | — | 99.9% | < 600 ms |
@@ -39,7 +39,7 @@ All probes run on a 5-minute cron via `apps/synthetic-monitor`.
 ```
 schedule-worker.health     → https://schedule-worker.adrper79.workers.dev/health (200, contains "ok")
 video-cron.health          → https://video-cron.adrper79.workers.dev/health (200, contains "ok")
-admin-studio.staging.health → https://admin-studio-staging.adrper79.workers.dev/health (200, contains "ok")
+admin-studio.staging.health → https://api.admin.latimerwoods.dev/health (200, contains "ok")
 prime-self.api             → https://prime-self.adrper79.workers.dev/health (200)
 ```
 
@@ -47,7 +47,7 @@ prime-self.api             → https://prime-self.adrper79.workers.dev/health (2
 ```
 schedule-worker.manifest   → https://schedule-worker.adrper79.workers.dev/manifest (200, contains "manifestVersion")
 video-cron.manifest        → https://video-cron.adrper79.workers.dev/manifest (200, contains "manifestVersion")
-admin-studio.manifest      → https://admin-studio-staging.adrper79.workers.dev/manifest (200, contains "manifestVersion")
+admin-studio.manifest      → https://api.admin.latimerwoods.dev/manifest (200, contains "manifestVersion")
 ```
 
 ### Journey SLO proxies (added 2026-04-29 — W360-022)
@@ -64,7 +64,7 @@ slo.journey.webhook        → schedule-worker /stripe/health (J08 ingress probe
 Direct external verification:
 - https://schedule-worker.adrper79.workers.dev/health        → 200
 - https://video-cron.adrper79.workers.dev/health             → 200
-- https://admin-studio-staging.adrper79.workers.dev/health   → 200
+- https://api.admin.latimerwoods.dev/health                  → 200
 - https://schedule-worker.adrper79.workers.dev/stripe/health → 200
 
 Synthetic monitor execution context:

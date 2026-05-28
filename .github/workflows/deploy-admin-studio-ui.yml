@@ -81,7 +81,7 @@ jobs:
           if [ "$is_prod" = "true" ] || [ "$target_env" = "production" ]; then
             url="https://apunlimited.com"
           else
-            url="https://staging.admin-studio-ui.pages.dev"
+            url="https://staging.admin.latimerwoods.dev"
           fi
           node scripts/verify-http-endpoint.mjs \
             --url "$url" \

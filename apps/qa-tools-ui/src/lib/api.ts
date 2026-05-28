@@ -25,8 +25,38 @@ import type {
 function workerBase(): string {
   return (
     process.env['NEXT_PUBLIC_WORKER_URL'] ??
-    'https://qa-tools.adrper79.workers.dev'
+    'https://api.qa.latimerwoods.dev'
   );
+}
+
+/** Public auth configuration used by the login page. */
+export async function getAuthConfig(): Promise<{ googleClientId: string | null; hostedDomain: string | null }> {
+  const res = await fetch(`${workerBase()}/auth/config`);
+  if (!res.ok) throw new ApiError(res.status, await res.text().catch(() => String(res.status)));
+  return res.json() as Promise<{ googleClientId: string | null; hostedDomain: string | null }>;
+}
+
+/** Exchange a Google ID token for a QA Tools session JWT. */
+export async function loginWithGoogle(credential: string): Promise<{ token: string; expiresAt: number }> {
+  return authFetch('/auth/google', { credential });
+}
+
+/** Break-glass bootstrap login, matching the Admin Studio fallback policy. */
+export async function loginWithPassword(email: string, password: string): Promise<{ token: string; expiresAt: number }> {
+  return authFetch('/auth/login', { email, password });
+}
+
+async function authFetch<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${workerBase()}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => String(res.status));
+    throw new ApiError(res.status, text);
+  }
+  return res.json() as Promise<T>;
 }
 
 /** Generic fetch wrapper: adds auth header and throws on non-2xx. */

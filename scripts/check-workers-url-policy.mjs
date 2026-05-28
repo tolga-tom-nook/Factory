@@ -14,6 +14,10 @@
  *    docs/service-registry.yml. Use the `custom_domain` field, never
  *    `workers_dev_url`.
  *
+ * 3. DECOMMISSIONED OPERATOR URL CHECK
+ *    Known retired or implementation-only operator URLs must not appear outside
+ *    explicit infrastructure reconciliation code.
+ *
  * Exit 1 on any violation.
  */
 
@@ -22,6 +26,45 @@ import path from 'node:path';
 
 const ACCOUNT_SUBDOMAIN = 'adrper79';
 const URL_REGEX = /https?:\/\/[^\s'"`)>,]+/g;
+const DECOMMISSIONED_URLS = [
+  {
+    text: 'https://staging.admin-studio-ui.pages.dev',
+    replacement: 'https://staging.admin.latimerwoods.dev',
+  },
+  {
+    text: 'https://staging.qa-tools-ui.pages.dev',
+    replacement: 'https://staging.qa.latimerwoods.dev',
+  },
+  {
+    text: 'https://factory-core-api.latwoodtech.work',
+    replacement: 'https://core.latwoodtech.work',
+  },
+  {
+    text: 'https://qa-tools.adrper79.workers.dev',
+    replacement: 'https://api.qa.latimerwoods.dev',
+  },
+];
+const DECOMMISSIONED_URL_ALLOWED_FILES = new Set([
+  '.github/workflows/cf-domain-reconcile.yml',
+  'scripts/check-workers-url-policy.mjs',
+]);
+const DECOMMISSIONED_SCAN_EXTS = new Set([
+  '',
+  '.cjs',
+  '.css',
+  '.html',
+  '.js',
+  '.json',
+  '.jsonc',
+  '.jsx',
+  '.md',
+  '.mjs',
+  '.ts',
+  '.tsx',
+  '.toml',
+  '.yml',
+  '.yaml',
+]);
 
 // ---------------------------------------------------------------------------
 // Part 1 — Canonical format check (FRH-03)
@@ -181,6 +224,62 @@ for (const root of SCAN_ROOTS) {
 }
 
 // ---------------------------------------------------------------------------
+// Part 3 — Known decommissioned / implementation-only operator URLs.
+// ---------------------------------------------------------------------------
+const DECOMMISSIONED_SCAN_ROOTS = [
+  'README.md',
+  'docs',
+  'apps',
+  'scripts',
+  '.github/workflows',
+];
+
+function scanFileForDecommissionedUrls(relativePath) {
+  const normalized = relativePath.replace(/\\/g, '/');
+  if (DECOMMISSIONED_URL_ALLOWED_FILES.has(normalized)) return;
+  if (normalized.includes('/coverage/') || normalized.includes('/dist/')) return;
+  if (!DECOMMISSIONED_SCAN_EXTS.has(path.extname(normalized).toLowerCase())) return;
+
+  let content;
+  try {
+    content = readFileSync(path.resolve(relativePath), 'utf8');
+  } catch {
+    return;
+  }
+  const lines = content.split(/\r?\n/);
+  lines.forEach((line, index) => {
+    for (const entry of DECOMMISSIONED_URLS) {
+      if (!line.includes(entry.text)) continue;
+      violations.push({
+        check: 'decommissioned-operator-url',
+        file: normalized,
+        line: index + 1,
+        url: entry.text,
+        hint: `Use ${entry.replacement}`,
+      });
+    }
+  });
+}
+
+for (const root of DECOMMISSIONED_SCAN_ROOTS) {
+  const absoluteRoot = path.resolve(root);
+  let stat;
+  try {
+    stat = statSync(absoluteRoot);
+  } catch {
+    continue;
+  }
+  if (stat.isDirectory()) {
+    walkDir(absoluteRoot, (absolutePath) => {
+      const relativePath = path.relative(process.cwd(), absolutePath);
+      scanFileForDecommissionedUrls(relativePath);
+    });
+  } else {
+    scanFileForDecommissionedUrls(root);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Report
 // ---------------------------------------------------------------------------
 if (violations.length === 0) {
@@ -190,6 +289,7 @@ if (violations.length === 0) {
 
 const canonical = violations.filter((v) => v.check === 'canonical-format');
 const userFacing = violations.filter((v) => v.check === 'user-facing-no-workers-dev');
+const decommissioned = violations.filter((v) => v.check === 'decommissioned-operator-url');
 
 if (canonical.length > 0) {
   console.error('\n[canonical-format] Non-canonical workers.dev URLs in docs/templates:');
@@ -203,6 +303,14 @@ if (canonical.length > 0) {
 if (userFacing.length > 0) {
   console.error('\n[user-facing-no-workers-dev] Bare workers.dev URLs in user-facing files:');
   for (const v of userFacing) {
+    console.error(`  ${v.file}:${v.line}  ${v.url}`);
+    console.error(`    → ${v.hint}`);
+  }
+}
+
+if (decommissioned.length > 0) {
+  console.error('\n[decommissioned-operator-url] Retired or implementation-only operator URLs found:');
+  for (const v of decommissioned) {
     console.error(`  ${v.file}:${v.line}  ${v.url}`);
     console.error(`    → ${v.hint}`);
   }

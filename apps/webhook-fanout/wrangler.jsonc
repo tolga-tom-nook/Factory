@@ -33,7 +33,7 @@
     "ENVIRONMENT": "development",
     "RESEND_FROM": "Factory <noreply@latwoodtech.com>",
     "CONTACT_NOTIFY_EMAIL": "aperry@latwoodtech.com",
-    "FACTORY_CORE_API_URL": "https://factory-core-api.latwoodtech.work"
+    "FACTORY_CORE_API_URL": "https://core.latwoodtech.work"
   },
 
   "d1_databases": [
@@ -73,7 +73,7 @@
         "ENVIRONMENT": "production",
         "RESEND_FROM": "Factory <noreply@latwoodtech.com>",
         "CONTACT_NOTIFY_EMAIL": "aperry@latwoodtech.com",
-        "FACTORY_CORE_API_URL": "https://factory-core-api.latwoodtech.work"
+        "FACTORY_CORE_API_URL": "https://core.latwoodtech.work"
       },
       "d1_databases": [
         {

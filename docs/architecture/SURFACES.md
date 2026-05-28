@@ -17,9 +17,10 @@ companion-to: docs/architecture/ADMIN_TECHNICAL_GUIDE.md, docs/architecture/FACT
 ### 1. Admin surface
 Internal operator-facing UI + admin routes across apps.
 - **Canonical doc:** [`ADMIN_TECHNICAL_GUIDE.md`](ADMIN_TECHNICAL_GUIDE.md) §1.8 (per-app `/admin/*` route standards) + §2.5 (read-layer Admin UI)
-- **Code:** `apps/factory-admin-studio`, `apps/factory-admin-studio-ui`, per-app `workers/src/handlers/admin.ts`
+- **Code:** `apps/admin-studio`, `apps/admin-studio-ui`, per-app `workers/src/handlers/admin.ts`
 - **State:** `factory_audit_log` (Neon factory-core), per-app admin DBs
-- **Entry point:** `https://admin.<app>.lwt.internal/` (planned per app)
+- **Entry point:** `https://apunlimited.com` (production), `https://staging.admin.latimerwoods.dev` (staging)
+- **Auth:** Latwood Tech Google Workspace allowlist, with break-glass credentials managed through the same policy.
 
 ### 2. Operator surface
 Where Adrian + future operators interact with the system day-to-day.
@@ -87,9 +88,10 @@ Billing, email, telephony, voice, SMS.
 ### 11. Observability surface
 Errors, performance, product analytics, gate states.
 - **Canonical doc:** [`ADMIN_TECHNICAL_GUIDE.md`](ADMIN_TECHNICAL_GUIDE.md) §2.2 (factory_gates), [`FACTORY_V1.md`](FACTORY_V1.md) §4.4, [`docs/runbooks/slo.md`](../runbooks/slo.md)
-- **Tools:** Sentry (`latwood-tech` org), PostHog, BetterStack, Pushover, `factory_gates`, `factory_events`
+- **Tools:** Sentry (`latwood-tech` org), PostHog, BetterStack, Pushover, QA Tools, `factory_gates`, `factory_events`
 - **State:** Sentry projects per worker, PostHog projects per app, `factory_audit_log`
-- **Entry point:** [Sentry org](https://latwood-tech.sentry.io)
+- **Entry point:** `https://qa.latimerwoods.dev` for QA run review, [Sentry org](https://latwood-tech.sentry.io) for error triage.
+- **Auth:** QA Tools uses the same Latwood Tech Google Workspace allowlist and break-glass credential policy as AP Unlimited/Admin Studio.
 
 ### 12. AI / model surface
 LLM providers, routing, metering.
@@ -132,6 +134,7 @@ Which app gets attention this week and why. The executive layer.
 1. Identify which surface(s) your task touches
 2. Follow the canonical-doc link
 3. Confirm acceptance criteria + invariants apply
+4. Use [`docs/ACCESS.md`](../ACCESS.md) for the live URL, auth policy, and first action.
 
 **For a contractor or new collaborator:**
 1. Start with [`CLAUDE.md`](../../CLAUDE.md) + [`docs/supervisor/FRIDGE.md`](../supervisor/FRIDGE.md)
