@@ -273,7 +273,7 @@ test('capabilities flow: configure → resolve → preview → handoff → proof
   await page.getByRole('button', { name: /Sign in to staging/i }).click();
   await expect(page).toHaveURL(/\/overview$/);
 
-  await page.locator('main').getByRole('link', { name: 'Capabilities' }).click();
+  await page.getByRole('link', { name: 'Capabilities' }).click();
   await expect(page.getByRole('heading', { name: 'Capability Design Studio' })).toBeVisible();
   await expect(page.getByText('Staging-first only')).toBeVisible();
 
