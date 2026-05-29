@@ -273,7 +273,7 @@ test('capabilities flow: configure → resolve → preview → handoff → proof
   await page.getByRole('button', { name: /Sign in to staging/i }).click();
   await expect(page).toHaveURL(/\/overview$/);
 
-  await page.getByRole('link', { name: 'Capabilities' }).click();
+  await page.locator('main').getByRole('link', { name: 'Capabilities' }).click();
   await expect(page.getByRole('heading', { name: 'Capability Design Studio' })).toBeVisible();
   await expect(page.getByText('Staging-first only')).toBeVisible();
 
@@ -288,14 +288,17 @@ test('capabilities flow: configure → resolve → preview → handoff → proof
   // ── Preview ────────────────────────────────────────────────────────────
   await page.getByRole('button', { name: /^Preview Plan$/ }).click();
   await expect(page.getByRole('heading', { name: 'Plan Preview' })).toBeVisible();
-  await expect(page.getByText('/api/imports')).toBeVisible();
+  const expectedSurfacesCard = page.locator('h3', { name: 'Expected Surfaces' }).locator('..');
+  await expect(expectedSurfacesCard.getByText('/api/imports')).toBeVisible();
 
   // ── Confirm handoff → Generate ─────────────────────────────────────────
   const handoffConfirm = page.getByLabel(/I reviewed the preview/);
   await handoffConfirm.check();
   await page.getByRole('button', { name: /Generate Scaffold Handoff/ }).click();
   await expect(page.getByRole('heading', { name: 'Scaffold Handoff Package' })).toBeVisible();
-  await expect(page.getByText(handoffHash)).toBeVisible();
+  await expect(
+    page.locator('dt', { hasText: 'Content hash' }).locator('..').getByText(handoffHash),
+  ).toBeVisible();
 
   // Copy + download buttons should be present.
   await expect(page.getByRole('button', { name: /Copy JSON/ })).toBeVisible();
@@ -315,6 +318,6 @@ test('capabilities flow: configure → resolve → preview → handoff → proof
   await page.getByRole('button', { name: /Confirm — submit request/ }).click();
 
   // Success surface.
-  await expect(page.getByText('Staging provision request recorded.')).toBeVisible();
+  await expect(page.locator('main').getByText('Staging provision request recorded.')).toBeVisible();
   await expect(page.getByText(provisionRequestId)).toBeVisible();
 });

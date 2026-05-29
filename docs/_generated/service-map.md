@@ -7,7 +7,7 @@ doc_type: diagram
 fidelity: generated
 title: "Factory Service Map"
 generator: npm run docs:diagrams
-last_generated: 2026-05-28
+last_generated: 2026-05-29
 source:
   - docs/service-registry.yml
 ---
