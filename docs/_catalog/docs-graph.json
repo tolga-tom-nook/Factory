@@ -5353,7 +5353,7 @@
       "verified_by": [],
       "content_hash": "sha256:f13192b144da6c7be56ffd5d667f50d186e857fc9e48e1f00d55fc3b7ae7eb6b",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/packages/**"
       },
@@ -6785,7 +6785,7 @@
       "verified_by": [],
       "content_hash": "sha256:01e3fc6d42dbf185ba8f47658619759f7d810a5a2f1bb1be87b0caa7a7149577",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/runbooks/**"
       },
@@ -6848,7 +6848,7 @@
       "verified_by": [],
       "content_hash": "sha256:eb2dbc66a944bf9793dffa9f2c6ec939234a4e08ee02ccf03e91197e946133d3",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/runbooks/**"
       },
@@ -6890,7 +6890,7 @@
       "verified_by": [],
       "content_hash": "sha256:c23b06f384239b13f8736c7fbc395cbbe56a1a6765c21bab612b50dcb595624d",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/runbooks/**"
       },
@@ -6974,7 +6974,7 @@
       "verified_by": [],
       "content_hash": "sha256:e773b1dc9091965d32b350b6d973746390582d364a6d8f3d5e5e01f7549e6017",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/runbooks/**"
       },
@@ -8090,7 +8090,7 @@
       "verified_by": [],
       "content_hash": "sha256:4278188f864afb20c4abf675e33c4679886a117df23c4dad22839a47f90e2fc6",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/templates/**"
       },
@@ -8111,7 +8111,7 @@
       "verified_by": [],
       "content_hash": "sha256:9affa1a0c24e46bd6eda184f19396590e3048c6d5a902fe0fdadc1906e078c47",
       "source": {
-        "frontmatter": false,
+        "frontmatter": true,
         "canonical_allowlist": false,
         "override": "docs/templates/**"
       },
