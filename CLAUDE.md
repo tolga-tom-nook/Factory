@@ -51,6 +51,8 @@ Pattern: `Agent({ subagent_type: "general-purpose", isolation: "worktree", descr
 
 This rule exists because of repeated, expensive failures: see `docs/runbooks/git-hooks.md` for the local safety net that catches the wrong-branch commit class of errors, and enable it per-clone with `git config core.hooksPath .githooks`.
 
+For human-started local threads, use the same pattern: create a fresh worktree and branch with [`docs/runbooks/thread-worktrees.md`](./docs/runbooks/thread-worktrees.md) instead of reusing a dirty branch.
+
 ## Worker Rename Protocol (STOP — read this before changing any wrangler.jsonc `name`)
 Never rename a worker without completing this checklist in order:
 1. Open `docs/service-registry.yml` and find the worker's `consumers` list
