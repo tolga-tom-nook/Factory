@@ -1,6 +1,6 @@
 # Revenue + Reliability Digest — Stage 2
 
-*Generated: 2026-05-27T11:00:59.423411+00:00*
+*Generated: 2026-05-28T11:02:00.932906+00:00*
 
 ## The 5 Stage 2 questions
 
@@ -21,5 +21,5 @@
 ## Reliability
 
 - User-facing error events (24h): 0
-- Total error events (24h): 0
+- Total error events (24h): 989
 - Funnel conversion (latest): 0.00%

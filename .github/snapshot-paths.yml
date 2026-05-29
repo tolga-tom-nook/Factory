@@ -44,6 +44,12 @@ paths:
   # KPI tracking
   - docs/kpis/**
 
+  # Generated docs artifacts created by docs health / snapshot PRs
+  - docs/_catalog/docs-graph.json
+  - docs/_generated/docs-trust-map.md
+  - docs/_generated/service-map.md
+  - docs/_generated/workflow-map.md
+
 # Branch prefixes — PR must originate from a branch whose name starts with
 # one of these. Independent guard layered on top of the path check to defend
 # against an attacker who learns the path list but can't predict the bot's
