@@ -66,7 +66,7 @@ These are the small, well-defined gaps that, once closed, make the marketing tru
   `render-video.yml` (already renders `EnergyBlueprintVideo`) → `publish-to-capricast.mjs` (built)
   → surface the video back on the user's blueprint page. The engine and publish steps exist; the
   **per-user trigger + real-data feed + return-to-user surface** do not.
-  → **Full difficulty assessment + phased plan: [`architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md`](architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md)** (verdict: medium–high; ~3–4 wk MVP since ~70% of the machinery exists).
+  → **Final-state design + production-final build slices: [`architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md`](architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md)** (complete system designed up front, built in additive slices — no MVP/version churn; ~5–7 wk; render logic reused, the work is correct orchestration + a dedicated render service + clean domain boundaries + identity).
 - **I2 — API productization (fixes S2).** The API is live on Agency. Decide packaging (surface as
   shipped on the Studio card; consider an API/developer add-on or tier to capture the API buyer who
   doesn't need 5 practitioner seats — competitor humandesignhub.app markets exactly this).
