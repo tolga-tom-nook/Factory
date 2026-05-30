@@ -5,9 +5,14 @@
 > Energy Blueprint video, generated from a user's real reading, surfaced on their blueprint
 > page (and, via [I3], shareable through Capricast + Discord).
 >
-> **Difficulty verdict: Medium–High.** This is *integration*, not greenfield — the expensive
-> parts already exist. Realistic MVP: **~2–4 focused weeks**, gated to paid tiers, with social
-> attribution (I3) and a dedicated render service (scaling) as follow-on milestones.
+> **Difficulty verdict: Medium–High.** This is *integration*, not greenfield — the expensive parts
+> already exist — but (per review) the MVP is more **contract + orchestration + privacy/cost control**
+> than "just wiring." Realistic MVP: **~3–4 focused weeks** once Phase 0 locks the job/callback
+> schema, the entitlement-enforcement boundary, Stream-only hosting, and selfprime-authored narration.
+> Social attribution (I3) and a dedicated render service (scaling) are follow-on milestones.
+>
+> *Revision history: v2 (2026-05-30) tightened Phase 0 contracts and added the public-visibility
+> privacy guard after review.*
 
 ---
 
@@ -65,31 +70,76 @@ one. The reading never blocks on the render (fully async). Trigger is **idempote
 
 ---
 
-## Decisions required before build (Phase 0)
+## Decisions — LOCKED for MVP (Phase 0)
 
-1. **Who gets a video?** Recommend: **Practitioner/Individual tiers** + an **on-demand "Generate my film" button** (not auto on every free reading). Add a `blueprintVideo` feature to `getTierConfig` + a monthly cap via the existing quota system.
-2. **Hosting target for MVP:** selfprime's own Cloudflare Stream account (simplest, fewest deps) **or** Capricast via the existing import (couples to I3 earlier). Recommend **Stream-direct for MVP**, migrate to Capricast attribution in I3.
-3. **Narration source:** condense the user's real synthesis (recommended — authentic) vs. a fresh topic-style script. Condensing is the honest, on-brand choice.
-4. **Notification channel:** email (Resend) + in-app. Both already exist.
+> Tightened after review. The MVP is **contract + orchestration + privacy/cost controls**, not "just
+> wiring" — so these are locked up front to prevent sprawl.
+
+1. **Who gets a video — PAID + ON-DEMAND only.** Individual/Practitioner tiers, triggered by an explicit "Generate my film" action (never auto on free/anonymous readings). New `blueprintVideo` feature in `getTierConfig` (default off) + a `blueprint_video_generation` quota via the existing atomic `enforceUsageQuota` machinery.
+2. **Hosting — STREAM-ONLY for MVP.** Render → selfprime's own Cloudflare Stream, surfaced privately on the blueprint page. **Capricast publishing is SKIPPED for personal jobs** (see privacy note below). Per-user Capricast attribution/social is deferred to **I3**.
+3. **Narration — SELFPRIME-AUTHORED.** selfprime condenses the user's real synthesis into the final narration text and passes it in the job. **Personal jobs skip Factory `generate-script.mjs` entirely** — no Factory-side LLM call. This puts the no-"AI"-wording governance where the content already lives and removes a moving part.
+4. **Notification — email (Resend) + in-app.** Both exist.
+
+> ⚠️ **Privacy (review finding):** the Capricast import path hardcodes `visibility: "public"`
+> (`capricast .../routes/admin.ts`). A per-user reading auto-published public is a privacy breach.
+> The render workflow's "Publish to Capricast" step is currently **unconditional** — personal jobs
+> MUST skip it (or, in I3, publish only with explicit consent + private/unlisted visibility).
+
+## Contracts to lock in Phase 0
+
+**Personal render job** (extends the schedule-worker `POST /jobs` schema, which today carries only
+`appId`/`type`/`topic`/scheduling/score/idempotency). Add a new render type — the shared
+`RenderJobType` union (`packages/video`) is currently `marketing | training | walkthrough` and must
+gain `personal_blueprint`:
+
+```jsonc
+{
+  "appId": "prime_self",
+  "type": "personal_blueprint",
+  "idempotencyKey": "<profileId>",          // one in-flight render per profile version
+  "userId": "<uuid>",
+  "profileId": "<uuid>",
+  "callbackUrl": "https://api.selfprime.net/api/internal/blueprint-video/callback",
+  "props": {                                  // → EnergyBlueprintVideo (no Factory LLM)
+    "hdType": "projector",
+    "forgeTheme": "lux",
+    "definedCenters": ["G","Ajna","Throat"],
+    "scenes": [ /* from chartToScenes() */ ],
+    "narration": "<final selfprime-authored text>",
+    "brandColor": "#c9a84c", "logoUrl": "..."
+  }
+}
+```
+
+**Enforcement point (cost gating, review finding):** Factory scheduling does **not** check
+entitlement and `video-cron` dispatches any pending job for an app. So the trust boundary is:
+(a) selfprime enforces tier + quota **before** enqueue, and (b) schedule-worker **rejects personal
+jobs unless they carry a valid signed entitlement proof from a trusted internal caller** (shared
+HMAC, see below). Never accept an unauthenticated `personal_blueprint` job.
+
+**Callback/auth contract:** the existing completion is a *bearer-token PATCH to schedule-worker*
+`{status, streamUid, videoUrl}` — that is **not** a signed selfprime callback. Define:
+- Topology: workflow → schedule-worker (existing PATCH) → **signed** schedule-worker → selfprime callback (keeps the GitHub App token out of selfprime's trust domain).
+- Auth: HMAC-SHA256 over the raw body with a shared secret (GCP Secret Manager); `X-Signature` + `X-Timestamp` headers; **±5-min replay window**; reject stale/duplicate by `idempotencyKey`.
+- Final statuses: `ready | failed` (with `failureReason`); selfprime stores `blueprint_video_url`, `blueprint_video_status`, `blueprint_video_profile_id`.
 
 ---
 
 ## Phased plan
 
-### Phase 0 — Spec & decisions (0.5 wk)
-- Ratify the four decisions above; write the data contract (job payload + callback schema) as the single source of truth. Add `blueprintVideo` feature flag to `getTierConfig` (default off).
+### Phase 0 — Lock contracts & decisions (0.5 wk)
+- Ratify the locked decisions above. Land the three contracts as the source of truth: (1) the `personal_blueprint` job payload + extend `RenderJobType` in `packages/video`; (2) the entitlement/enforcement boundary (selfprime quota + schedule-worker rejects unsigned personal jobs); (3) the signed callback schema (HMAC, replay window, statuses). Add `blueprintVideo` feature to `getTierConfig` (default off) and the `blueprint_video_generation` quota.
 
 ### Phase 1 — Render fidelity (Factory) (1 wk)
 - **G3:** `chartToScenes(profile)` mapper in `video-studio` (type→`hdType`/`forgeTheme`, defined centers→`definedCenters`/`showBodyGraph` scenes, signature gates→concept scenes). Snapshot-test the props.
-- **G4:** `generate-script.mjs --from-reading` mode — condense provided synthesis into ~200 words, **no "AI" references**; fall back to topic mode for content videos.
-- **G2:** extend `render-video.yml` props assembly so `EnergyBlueprintVideo` receives the full per-user props (read from the job payload via `job_id`, not just workflow inputs).
+- **G4:** personal jobs **bypass `generate-script.mjs`** — narration text comes pre-authored from selfprime in the job payload (no-"AI" governance at source). Topic/LLM mode stays only for content videos.
+- **G2:** extend `render-video.yml` props assembly so `EnergyBlueprintVideo` receives the full per-user props (`hdType`/`definedCenters`/`scenes`/`narration`) from the job payload via `job_id`; **skip the Capricast publish step for `personal_blueprint`** (privacy).
 - *Verify:* `dry_run` render of a fixture profile produces a chart-accurate MP4.
 
 ### Phase 2 — Trigger & orchestration (selfprime + Factory) (1 wk)
-- **G6:** entitlement + quota gate; on-demand endpoint `POST /api/profile/:id/video` (+ optional auto-enqueue for paid).
-- **G1/G7:** selfprime enqueues an HMAC-signed job to schedule-worker with the per-user payload + `callbackUrl` + `idempotencyKey=profileId`.
-- Extend schedule-worker job type `blueprint_video`; `video-cron` dispatches with per-user props.
-- *Verify:* end-to-end `curl` from enqueue → workflow run → Stream asset.
+- **G6 (enforcement):** on-demand endpoint `POST /api/profile/:id/video` enforces tier + `blueprint_video_generation` quota on selfprime **before** enqueue; schedule-worker accepts `personal_blueprint` **only** with a valid signed entitlement proof from the trusted internal caller (no open enqueue).
+- **G1/G7:** selfprime enqueues the HMAC-signed `personal_blueprint` job (payload per the Phase 0 contract) with `idempotencyKey=profileId`; `video-cron` dispatches with per-user props.
+- *Verify:* end-to-end `curl` from enqueue → workflow run → Stream asset; confirm an unsigned/over-quota enqueue is rejected.
 
 ### Phase 3 — Return-to-user (selfprime) (0.5–1 wk)
 - **G5:** signed callback endpoint stores `blueprint_video_url` + `status` on the profile; migration for the new columns.
