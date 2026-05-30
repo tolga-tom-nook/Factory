@@ -51,7 +51,7 @@ once the moment a small number of integration seams are wired.
 | `apps/video-studio` `EnergyBlueprintVideo` composition | **Built, per-user-capable** | Schema accepts `hdType`, `definedCenters`, `showBodyGraph`, personalized `script`, `narrationUrl`, forge theme, brand color/logo. |
 | Render pipeline (`video-cron` → `render-video.yml`) | **Built, content-driven** | Dispatches by `{composition, app_id, topic}` from a content calendar seeded by `content-briefs/prime-self/*.json` — **not** by individual user readings. No `user_id`/chart payload. |
 | `publish-to-capricast.mjs` | **Built** | Pipeline already renders and publishes to Capricast. |
-| Discord bot | **Lives in HumanDesign**, not Factory | No Discord app in Factory (`apps/`); no Discord↔Capricast↔selfprime wiring anywhere. |
+| Discord bot (`prime-self-discord`) | **Lives in HumanDesign**, deployed | A working **acquisition funnel**, not a social layer: `/primself` → calls the live selfprime API (`/api/chart/calculate`) → Quick Start embed → UTM-tagged 14-day-trial upsell; 3 lookups/day; a 4h cron DMs new guild members a welcome. **No** HD-type roles/channels, **no** Discord↔selfprime identity link, **no** Capricast tie-in, **no** community feed. No Discord app in Factory. |
 | `apps/marketing-supervisor` | **Not built** | Spec'd (`MARKETING_SUPERVISOR.md`) but no app directory exists. |
 | Packages `social` (290 ln), `content` (297), `creator` (66), `entitlements` (53) | Real, not stubs | Candidate building blocks for a cross-product social/identity layer. |
 
@@ -70,9 +70,13 @@ These are the small, well-defined gaps that, once closed, make the marketing tru
   shipped on the Studio card; consider an API/developer add-on or tier to capture the API buyer who
   doesn't need 5 practitioner seats — competitor humandesignhub.app markets exactly this).
 - **I3 — Social layer (the "D" vision).** selfprime/Capricast/Discord are three separate systems.
-  A "social layer" requires shared identity/entitlement (`packages/entitlements`, `packages/social`)
-  + surfacing selfprime per-user videos (I1) as Capricast channel content + a Discord community
-  bridge. Entirely unbuilt glue; depends on I1.
+  The Discord bot is a working **acquisition funnel** (`/primself` → API → trial upsell + welcome-DM
+  cron) but has no community/identity features. A "social layer" requires net-new glue on top of it:
+  (a) Discord↔selfprime **identity linking** + HD-type **roles/channels** (segment community by energy
+  type), (b) surfacing selfprime per-user videos (I1) as **Capricast** channel content, (c) a
+  **Capricast↔Discord** bridge (new video → announcement; community → channels), using
+  `packages/entitlements` + `packages/social` for shared identity. Entirely unbuilt; depends on I1.
+  The "75% done" is the three platforms + the funnel; the missing 25% is this glue.
 - **I4 — Capricast creator payouts (fixes C1).** Complete C-9 (creator onboarding + Stripe Connect
   transfer routing) before "monetize" is fully honest.
 
@@ -86,5 +90,7 @@ These are the small, well-defined gaps that, once closed, make the marketing tru
 
 ## Honest-marketing quick wins (no integration required)
 
-- Flip pricing.html L276 from "On the roadmap" → "Included" for white-label/API/webhooks (S2).
-- Qualify or soften the selfprime "personal short film" copy until I1 ships (S1).
+✅ **Shipped in HumanDesign PR #328** (2026-05-30):
+- S2 — pricing.html "On the roadmap" → included Studio features (white-label/API/webhooks).
+- S1 — removed the per-user "personal short film" promise from feature lists, FAQs, JSON-LD, and
+  `llms.txt`; kept the true "cinematic synthesis reading" framing. Reinstate when I1 ships.
