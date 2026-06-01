@@ -30,9 +30,9 @@
 | warning | platform | ADMIN_AGENT_DEPLOYMENT_CHECKLIST.md | 43 | References missing npm script "deploy:staging". |
 | warning | platform | ADMIN_AGENT_DEPLOYMENT_CHECKLIST.md | 156 | References missing npm script "deploy:production". |
 | warning | platform | ADMIN_AGENT_DEPLOYMENT_CHECKLIST.md | 182 | References missing npm script "deploy:production". |
-| warning | platform | CLAUDE.md | 155 | References missing npm script "typecheck". |
-| warning | platform | CLAUDE.md | 225 | References missing npm script "dev". |
-| warning | platform | CLAUDE.md | 258 | References missing npm script "phase-7:scaffold". |
+| warning | platform | CLAUDE.md | 156 | References missing npm script "typecheck". |
+| warning | platform | CLAUDE.md | 226 | References missing npm script "dev". |
+| warning | platform | CLAUDE.md | 259 | References missing npm script "phase-7:scaffold". |
 | warning | platform | docs/ACCESS.md | 37 | References missing workflow .github/workflows/deploy-admin-studio-worker.yml. |
 | warning | platform | docs/ACCESS.md | 41 | References missing workflow .github/workflows/deploy-developer-index.yml. |
 | warning | platform | docs/ACCESS.md | 42 | References missing workflow .github/workflows/deploy-status-page.yml. |

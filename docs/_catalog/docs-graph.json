@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 426,
+    "total_docs": 437,
     "canonical": 17,
-    "active": 361,
+    "active": 372,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -276,6 +276,27 @@
       "errors": []
     },
     {
+      "path": "apps/video-render-service/README.md",
+      "title": "video-render-service",
+      "status": "active",
+      "owner": "video-render-service",
+      "doc_type": "guide",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:d6ab2734979139aebaf913a380e758ff8c3c26229cbc52e57b9b93b5fc1dbeb4",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "apps/*/README.md"
+      },
+      "errors": []
+    },
+    {
       "path": "apps/video-studio/README.md",
       "title": "Video Studio",
       "status": "active",
@@ -332,7 +353,7 @@
         "manual-review"
       ],
       "verified_by": [],
-      "content_hash": "sha256:23a6c35dac437fc19fa8001268ea9ff0a90394d2e3995c05792177e5774a9a95",
+      "content_hash": "sha256:fa35a0b3202374cbd874a81a1c08c8c592da78620b0b6a3b2de1b09edfb08450",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": true,
@@ -353,7 +374,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:38ef60708a9e96c8e741c2d2336fdc5c5c00ae3674da0b6025654fbe87fa7e02",
+      "content_hash": "sha256:ec675548e75c598d5dc6ce5d513dd4bb0770813e3e399a37e99fe79a3aca4f5a",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -374,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:d343ec88d2781e6c6d709b129d6378ac1e59e2adfc19bb8f3e54806264d27778",
+      "content_hash": "sha256:bfea4ac64d3ce719d3d6e22838be47d6496c4959ef018c871573bf2fe9d2bdb5",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -395,7 +416,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:192c2f0a7c86d9b04f2452370cdcceea0b0d44d8299d27a84e602ecba434218f",
+      "content_hash": "sha256:4889acda7a1f0ba2b806cc472d644e90db2b9c60c05ccaba76ee1732c9dbdd30",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -929,6 +950,27 @@
       "errors": []
     },
     {
+      "path": "docs/aggregator-http-mocking-design.md",
+      "title": "Aggregator Phase 2: HTTP Mocking Design — G2 Phase 2",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:8123a72ab1bb3d6d32b14e83c0f816e894cedb7fc16e211f9d22fe3a428b89e8",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
       "path": "docs/aggregator-README.md",
       "title": "Completion Tracker — Operator Doc",
       "status": "active",
@@ -1117,6 +1159,48 @@
       "source": {
         "frontmatter": false,
         "canonical_allowlist": true,
+        "override": "docs/architecture/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md",
+      "title": "I1 — Energy Blueprint Video Engine: Final-State Design",
+      "status": "active",
+      "owner": "architecture",
+      "doc_type": "architecture",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:98bc2dc30395a56118201e4c86dd1dad031438ad71cbb238120b94e5db56b972",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/architecture/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/architecture/I1_PERSUASION_POLICY.md",
+      "title": "I1 — Narration Persuasion Policy (DRAFT — for red-line)",
+      "status": "active",
+      "owner": "architecture",
+      "doc_type": "architecture",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:77f6dadedca52e2ec789f77062bc2afb9f9a58de16a0afdc2b1058defdc39435",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
         "override": "docs/architecture/**"
       },
       "errors": []
@@ -2679,6 +2763,27 @@
       "errors": []
     },
     {
+      "path": "docs/council/inquiries/001-capability-factory-backcasting.md",
+      "title": "C-001 — Capability Factory Backcasting and Thin-Slice Plan",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:f36810b9fa1df2c1a4ad8c90149cd6dc243cb3180aadbc37cb59248e10f6bca4",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
       "path": "docs/council/inquiries/002-capability-design-studio-golden-design.md",
       "title": "C-002 — Capability Design Studio Golden Design",
       "status": "active",
@@ -2692,6 +2797,48 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:11ce34d622c7be5d5f96b180c9fd5b8f1040ec74ecf88581fe0569d7a9cd625f",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/council/README.md",
+      "title": "Council Space",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "index",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:bc435c735fed1c9641d56d10a67585cd73bb3effd85ea8ca2c91166a5c046cbb",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/council/TEMPLATE.md",
+      "title": "Council Inquiry Template",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:68e3275875042e803ed0e56c16476b72f6317e5ffa4c5aed9e9681f58ef6f5f9",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -3287,6 +3434,48 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:e83bcd6596f15e68a554448f48ce9e66fdfff01cb114e3773bd3e511ffc74b4e",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/G2_PHASE_2_EXECUTION_PLAN.md",
+      "title": "G2 Phase 2 Execution Plan — Aggregator HTTP Mocking Tests",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "plan",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:e5dcc6abf3880c20727c8ed48d1e598c55463ca64f9ce76f7655bea424f2bcb3",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/G2_PHASE_2_SUMMARY.md",
+      "title": "G2 Phase 2 Planning: Executive Summary",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:eb3a9101ca3a2619e4280ca345c2222e47c749bd41cddc3b881dd987c2f45022",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -5864,6 +6053,27 @@
       "errors": []
     },
     {
+      "path": "docs/PORTFOLIO_CAPABILITY_RECONCILIATION.md",
+      "title": "Portfolio Capability ↔ Marketing Reconciliation",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:c6c4b11c50ccce257bd1cf53b07e5e1b99934959d1714133afbc9da6af8c3c8f",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
       "path": "docs/postmortems/2026-05-02-csp-hash.md",
       "title": "2026-05-02: CSP stale hash blocked FOUC script",
       "status": "active",
@@ -6044,7 +6254,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:b9f2c240101ba0581ca4bc5601cd22d057f8514d0feed8f7a42c549a39bd9750",
+      "content_hash": "sha256:da395dcc83dd504da9ea1cd1c2181f6d054aaf06eda472814cd7ad6b9ac48f41",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -6405,7 +6615,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:4eb9c5b77b07493b62a449452952004ad800ecda332e3e65d0dc7c1f6cbc1a1b",
+      "content_hash": "sha256:3640eb98a942d85884c59d8474d3bfda5fc358e74241d2f3e11a3596e79a184b",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7434,7 +7644,28 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:bcbba96b6e5092ee4eb039c36e26c060ba4c7ec1b4f2bfd08c3fe39a99a33c56",
+      "content_hash": "sha256:fa7115c1bdcbdf937f139b1b3bf0273a3cd1821e8e03c32935dbd3cc71413f41",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/SELFPRIME_GTM_ROADMAP.md",
+      "title": "selfprime — GTM, Packaging & Dormant-Asset Roadmap",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:e93a7952d5c3320d06c955ac2463af5e6b85ec5d915756749ed69773b61f2774",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7836,7 +8067,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:ad50852d738d73c98c2c3be8b2729066e2c09b9cf9bd93dc76aee364d90e08b9",
+      "content_hash": "sha256:0090ce08eb2b198c1caf0b95e0e0790fb08c9af3d60075de407dbb87a1962da8",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,

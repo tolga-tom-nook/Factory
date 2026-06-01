@@ -4,21 +4,21 @@
   "generated_at": "source-derived",
   "ok": false,
   "counts": {
-    "broken": 394,
+    "broken": 391,
     "canonical": 0,
-    "active": 278,
+    "active": 275,
     "archive": 116,
     "generated": 0
   },
   "by_owner": {
-    "platform": 277,
+    "platform": 274,
     "admin-studio": 4,
     "architecture": 3,
     "capricast": 31,
     "marketing": 79
   },
   "by_status": {
-    "active": 278,
+    "active": 275,
     "archive": 116
   },
   "broken": [
@@ -2427,35 +2427,8 @@
     },
     {
       "file": "docs/council/DECISIONS.md",
-      "line": 11,
-      "target": "./inquiries/001-capability-factory-backcasting.md",
-      "reason": "file not found",
-      "owner": "platform",
-      "status": "active",
-      "fidelity": "unverified"
-    },
-    {
-      "file": "docs/council/DECISIONS.md",
       "line": 31,
       "target": "./inquiries/...",
-      "reason": "file not found",
-      "owner": "platform",
-      "status": "active",
-      "fidelity": "unverified"
-    },
-    {
-      "file": "docs/council/INDEX.md",
-      "line": 26,
-      "target": "./inquiries/001-capability-factory-backcasting.md",
-      "reason": "file not found",
-      "owner": "platform",
-      "status": "active",
-      "fidelity": "unverified"
-    },
-    {
-      "file": "docs/council/inquiries/002-capability-design-studio-golden-design.md",
-      "line": 12,
-      "target": "./001-capability-factory-backcasting.md",
       "reason": "file not found",
       "owner": "platform",
       "status": "active",

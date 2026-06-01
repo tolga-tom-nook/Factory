@@ -7,7 +7,7 @@ doc_type: diagram
 fidelity: generated
 title: "Factory Workflow Map"
 generator: npm run docs:diagrams
-last_generated: 2026-05-30
+last_generated: 2026-06-01
 source:
   - .github/workflows/*.yml
   - .github/workflows/REGISTRY.md
@@ -40,6 +40,7 @@ flowchart TB
   Reusable --> _migration_drift_guard_yml["_migration-drift-guard.yml"]
   Reusable --> _neon_pr_lifecycle_yml["_neon-pr-lifecycle.yml"]
   Reusable --> _post_deploy_verify_yml["_post-deploy-verify.yml"]
+  Other --> admin_studio_ui_ci_yml["admin-studio-ui-ci.yml"]
   Other --> adr_need_check_yml["adr-need-check.yml"]
   Other --> align_legacy_repos_yml["align-legacy-repos.yml"]
   Other --> apply_sec_hardening_yml["apply-sec-hardening.yml"]
@@ -61,6 +62,7 @@ flowchart TB
   Other --> copilot_auto_approve_yml["copilot-auto-approve.yml"]
   Other --> copilot_pr_poller_yml["copilot-pr-poller.yml"]
   Other --> cost_observability_yml["cost-observability.yml"]
+  Other --> council_deliberate_yml["council-deliberate.yml"]
   Other --> credential_scrub_yml["credential-scrub.yml"]
   Other --> dead_mans_switch_yml["dead-mans-switch.yml"]
   Other --> dependabot_security_auto_merge_yml["dependabot-security-auto-merge.yml"]
@@ -90,7 +92,6 @@ flowchart TB
   Quality --> docs_health_yml["docs-health.yml"]
   Other --> factory_admin_ui_ci_yml["factory-admin-ui-ci.yml"]
   Other --> factory_status_dashboard_yml["factory-status-dashboard.yml"]
-  Quality --> fix_docs_health_yml["fix-docs-health.yml"]
   Reporting --> flaky_check_report_yml["flaky-check-report.yml"]
   Other --> fridge_semantic_check_yml["fridge-semantic-check.yml"]
   Other --> generate_app_lockfiles_yml["generate-app-lockfiles.yml"]

@@ -21,7 +21,7 @@
 |---|---|---|---|---|
 | [apps/admin-studio-ui/README.md](../apps/admin-studio-ui/README.md) | active | unverified | unknown | Factory Admin Studio — UI |
 
-## architecture (21)
+## architecture (23)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -42,6 +42,8 @@
 | [docs/architecture/ADMIN_TECHNICAL_GUIDE.md](architecture/ADMIN_TECHNICAL_GUIDE.md) | active | unverified | unknown | Factory Admin Technical Guide |
 | [docs/architecture/CAPABILITY_FACTORY_REGISTRY.md](architecture/CAPABILITY_FACTORY_REGISTRY.md) | active | unverified | unknown | Capability Factory Registry |
 | [docs/architecture/FACTORY_V1.md](architecture/FACTORY_V1.md) | canonical | owner-reviewed | unknown | The Factory — Architecture & Playbook, v1 |
+| [docs/architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md](architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md) | active | unverified | unknown | I1 — Energy Blueprint Video Engine: Final-State Design |
+| [docs/architecture/I1_PERSUASION_POLICY.md](architecture/I1_PERSUASION_POLICY.md) | active | unverified | unknown | I1 — Narration Persuasion Policy (DRAFT — for red-line) |
 | [docs/architecture/PATTERNS.md](architecture/PATTERNS.md) | active | unverified | unknown | Factory Operational Patterns |
 | [docs/architecture/QA_TOOLS_ARCHITECTURE.md](architecture/QA_TOOLS_ARCHITECTURE.md) | active | unverified | unknown | QA Tools Platform — Mature Design (v2.0) |
 | [docs/architecture/SURFACES.md](architecture/SURFACES.md) | active | unverified | unknown | Factory Surfaces — Navigation Index |
@@ -139,7 +141,7 @@
 | [docs/marketing/ROADMAP.md](marketing/ROADMAP.md) | active | unverified | unknown | Marketing Maturation Roadmap |
 | [docs/marketing/VOICES.md](marketing/VOICES.md) | active | unverified | unknown | Voices |
 
-## platform (328)
+## platform (336)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -158,6 +160,7 @@
 | [docs/ADMIN_STUDIO_SETUP.md](ADMIN_STUDIO_SETUP.md) | active | unverified | unknown | Admin Studio AI Agent — Setup & Deployment Guide |
 | [docs/ADMIN_UI_AGENT_PLAN.md](ADMIN_UI_AGENT_PLAN.md) | active | unverified | unknown | Admin UI Agent: Full Capability Plan |
 | [docs/AGENTS.md](AGENTS.md) | active | unverified | unknown | Agent Configuration & Context Loading |
+| [docs/aggregator-http-mocking-design.md](aggregator-http-mocking-design.md) | active | unverified | unknown | Aggregator Phase 2: HTTP Mocking Design — G2 Phase 2 |
 | [docs/aggregator-README.md](aggregator-README.md) | active | unverified | unknown | Completion Tracker — Operator Doc |
 | [docs/APP_PLANNING_PATTERN.md](APP_PLANNING_PATTERN.md) | active | unverified | unknown | Factory App World-Class Planning Pattern |
 | [docs/APP_README_TEMPLATE.md](APP_README_TEMPLATE.md) | active | unverified | unknown | App Onboarding & README Template |
@@ -208,7 +211,10 @@
 | [docs/cost/summary.md](cost/summary.md) | active | unverified | unknown | Cost Digest — Rolling 30 days |
 | [docs/council/DECISIONS.md](council/DECISIONS.md) | active | unverified | unknown | Council Decisions |
 | [docs/council/INDEX.md](council/INDEX.md) | active | unverified | unknown | Council Inquiry Index |
+| [docs/council/inquiries/001-capability-factory-backcasting.md](council/inquiries/001-capability-factory-backcasting.md) | active | unverified | unknown | C-001 — Capability Factory Backcasting and Thin-Slice Plan |
 | [docs/council/inquiries/002-capability-design-studio-golden-design.md](council/inquiries/002-capability-design-studio-golden-design.md) | active | unverified | unknown | C-002 — Capability Design Studio Golden Design |
+| [docs/council/README.md](council/README.md) | active | unverified | unknown | Council Space |
+| [docs/council/TEMPLATE.md](council/TEMPLATE.md) | active | unverified | unknown | Council Inquiry Template |
 | [docs/CREATOR_ONBOARDING_UX_JOURNEY.md](CREATOR_ONBOARDING_UX_JOURNEY.md) | active | unverified | unknown | Creator Onboarding UX: Complete Journey |
 | [docs/customer-gate/M1_M2_CATALOG_2026-05-17.md](customer-gate/M1_M2_CATALOG_2026-05-17.md) | active | unverified | unknown | Customer Gate Catalog — 2026-05-17 |
 | [docs/decisions/2026-05-15-operations-checkpoint.md](decisions/2026-05-15-operations-checkpoint.md) | active | unverified | unknown | 2026-05-15 — Operations checkpoint |
@@ -237,6 +243,8 @@
 | [docs/FACTORY_ADMIN_TELEMETRY_CONTRACT.md](FACTORY_ADMIN_TELEMETRY_CONTRACT.md) | active | unverified | unknown | Factory Admin Integration — Telemetry Contract & API Design |
 | [docs/FACTORY_FINISH_PLAN.md](FACTORY_FINISH_PLAN.md) | active | unverified | unknown | Factory Finish — Scope A |
 | [docs/FACTORY_FRONTEND_STANDARDS.md](FACTORY_FRONTEND_STANDARDS.md) | active | unverified | unknown | Factory Front-End Quality Standards |
+| [docs/G2_PHASE_2_EXECUTION_PLAN.md](G2_PHASE_2_EXECUTION_PLAN.md) | active | unverified | unknown | G2 Phase 2 Execution Plan — Aggregator HTTP Mocking Tests |
+| [docs/G2_PHASE_2_SUMMARY.md](G2_PHASE_2_SUMMARY.md) | active | unverified | unknown | G2 Phase 2 Planning: Executive Summary |
 | [docs/GAP_REGISTER.md](GAP_REGISTER.md) | active | unverified | unknown | Platform Gap Register |
 | [docs/IMPLEMENTATION_COMPLETE_SUMMARY.md](IMPLEMENTATION_COMPLETE_SUMMARY.md) | active | unverified | unknown | Implementation Complete Summary |
 | [docs/IMPLEMENTATION_LAUNCH_CHECKLIST.md](IMPLEMENTATION_LAUNCH_CHECKLIST.md) | active | unverified | unknown | Implementation Launch Checklist |
@@ -326,6 +334,7 @@
 | [docs/PII_INVENTORY.md](PII_INVENTORY.md) | active | unverified | unknown | PII Inventory — Factory / Admin Studio |
 | [docs/PLATFORM_STANDARDS.md](PLATFORM_STANDARDS.md) | active | unverified | unknown | Platform Standards — Latimer-Woods-Tech |
 | [docs/policies/humandesign-language-guidance.mdx](policies/humandesign-language-guidance.mdx) | active | unverified | unknown | HumanDesign Language Guidance |
+| [docs/PORTFOLIO_CAPABILITY_RECONCILIATION.md](PORTFOLIO_CAPABILITY_RECONCILIATION.md) | active | unverified | unknown | Portfolio Capability ↔ Marketing Reconciliation |
 | [docs/postmortems/2026-05-02-csp-hash.md](postmortems/2026-05-02-csp-hash.md) | active | unverified | unknown | 2026-05-02: CSP stale hash blocked FOUC script |
 | [docs/postmortems/2026-05-02-csp-stale-hash.md](postmortems/2026-05-02-csp-stale-hash.md) | active | unverified | unknown | 2026-05-02: CSP stale hash blocked FOUC script |
 | [docs/postmortems/2026-05-02-dependabot-lockfile-desync.md](postmortems/2026-05-02-dependabot-lockfile-desync.md) | active | unverified | unknown | 2026-05-02: Dependabot batch broke admin-studio deploy pipeline |
@@ -399,6 +408,7 @@
 | [docs/SAMPLE_WORKFLOW_PAYOUT_OPS.md](SAMPLE_WORKFLOW_PAYOUT_OPS.md) | active | unverified | unknown | Sample Workflow Execution: Payout Operations |
 | [docs/sauna-brain.md](sauna-brain.md) | active | unverified | unknown | Sauna Brain — Factory Operating Snapshot |
 | [docs/scorecard/summary.md](scorecard/summary.md) | active | unverified | unknown | Launch Readiness Scorecard |
+| [docs/SELFPRIME_GTM_ROADMAP.md](SELFPRIME_GTM_ROADMAP.md) | active | unverified | unknown | selfprime — GTM, Packaging & Dormant-Asset Roadmap |
 | [docs/SELFPRIME_VIDEOKING_SYNERGY_DEVELOPMENT_PLAN.md](SELFPRIME_VIDEOKING_SYNERGY_DEVELOPMENT_PLAN.md) | active | unverified | unknown | SelfPrime × VideoKing Synergy Development Plan |
 | [docs/service-registry.yml](service-registry.yml) | canonical | owner-reviewed | unknown | Service Registry |
 | [docs/sessions/2026-04-30-org-migration.md](sessions/2026-04-30-org-migration.md) | active | unverified | unknown | Latimer-Woods-Tech Org Migration — Complete |
@@ -497,6 +507,12 @@
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
 | [apps/supervisor/README.md](../apps/supervisor/README.md) | active | unverified | unknown | factory-supervisor |
+
+## video-render-service (1)
+
+| Path | Status | Fidelity | Last Updated | Title |
+|---|---|---|---|---|
+| [apps/video-render-service/README.md](../apps/video-render-service/README.md) | active | unverified | unknown | video-render-service |
 
 ## video-studio (1)
 
