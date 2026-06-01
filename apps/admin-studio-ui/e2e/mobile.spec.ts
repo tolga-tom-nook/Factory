@@ -132,7 +132,7 @@ test('mobile smoke flow: login → overview → ai → code → audit', async ({
   await page.getByRole('button', { name: /Sign in to staging/i }).click();
 
   await expect(page).toHaveURL(/\/overview$/);
-  await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Overview' }).first()).toBeVisible();
 
   await page.getByRole('link', { name: 'AI Chat' }).click();
   await expect(page.getByRole('button', { name: 'Send' })).toBeVisible();
