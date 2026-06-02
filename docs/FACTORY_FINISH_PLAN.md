@@ -186,7 +186,7 @@ Once ratified, scope changes require unanimous Lead approval. Same rule as xico-
 
 ---
 
-**Status:** 📋 Awaiting ratification — drafted May 14, 2026  
+**Status:** ✅ Scope A complete (verified 2026-06-01) — Stage 1 closed; the 4 scaffold packages (`realtime`, `validation`, `testing`, `deploy`) bumped to 1.0; STACK auto-update, `platform_conformance.py`, and `cost_digest.py` shipped. Gaps G2/G3/G8/G10 are `closed` in `GAP_REGISTER.md`. Factory is now operating at Stage 2 (see `docs/STATE.md`). Remaining open loose end: G38 (GCP billing BigQuery export still a placeholder).  
 **Sprint 1 Starts:** May 15, 2026  
 **Stage 1 Exit Target:** May 21, 2026  
 **Scope A Complete:** May 28, 2026  

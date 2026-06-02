@@ -3,7 +3,15 @@
 **Date:** 2026-05-27  
 **Objective:** Enable the admin-studio AI agent to replace Sauna (Claude Code session) by giving it full access to the repo, GCP secrets, and external MCPs.
 
-**Status:** In Progress
+**Status:** ✅ Shipped — all 4 phases live in `main` (verified 2026-06-01; status was stale).
+
+> **Verification (2026-06-01):**
+> - **Phase 1** — `FACTORY_OWNER = 'Latimer-Woods-Tech'` in `apps/admin-studio/src/lib/github-api.ts`.
+> - **Phase 2** — agentic tool-use loop live in `apps/admin-studio/src/routes/ai.ts` (`AGENT_TOOLS`, `tool_use` handling); multi-repo tools added via #1231.
+> - **Phase 3** — `apps/admin-studio/src/lib/gcp-secrets.ts` exists; `GCP_SA_KEY` wired via the deploy workflow (#1239 / #1240).
+> - **Phase 4** — smoke green; command-center returns live data (#1231).
+>
+> The unchecked `[ ]` boxes below are historical and are left as the original plan record.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 date: 2026-05-25
-status: draft-for-review
+status: in-execution  # core read-layer infra shipped — apps/factory-core-api, apps/supervisor-mirror, apps/webhook-fanout exist in main (verified 2026-06-01). Per-criterion §2.3/§3.3 acceptance audit still pending; do not assume all boxes pass.
 authoritative-for: build sequence + acceptance criteria for Admin Technical Guide
 companion-to: docs/architecture/ADMIN_TECHNICAL_GUIDE.md, docs/decisions/2026-05-25-factory-alignment.md
 review-target: full read-through + maturity/cohesion review before execution begins
