@@ -55,6 +55,7 @@ import privacy from './routes/privacy.js';
 import { flagship } from './routes/flagship.js';
 import blocking from './routes/blocking.js';
 import commandCenter from './routes/command-center.js';
+import training from './routes/training.js';
 
 const app = new Hono<AppEnv>();
 
@@ -174,6 +175,9 @@ app.use('/privacy/*', envContextMiddleware());
 app.use('/api/flags/*', envContextMiddleware(), auditMiddleware());
 app.use('/v1/blocking/*', envContextMiddleware());
 app.use('/v1/command-center/*', envContextMiddleware());
+// Training Library proxy → schedule-worker. GET is a read; /jobs dispatch is audited.
+app.use('/training-library', envContextMiddleware());
+app.use('/jobs/*', envContextMiddleware(), auditMiddleware());
 
 app.route('/me', me);
 app.route('/tests', tests);
@@ -198,6 +202,8 @@ app.route('/privacy', privacy);
 app.route('/api/flags', flagship);
 app.route('/v1/blocking', blocking);
 app.route('/v1/command-center', commandCenter);
+// Mounted at root: defines GET /training-library and POST /jobs/from-brief.
+app.route('/', training);
 
 // ── Error handler ─────────────────────────────────────────────────────────────────────────────────────
 app.onError((err, c) => {

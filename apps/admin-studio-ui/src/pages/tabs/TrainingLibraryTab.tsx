@@ -40,18 +40,19 @@ export function TrainingLibraryTab() {
     setError(null);
     setLoading(true);
     try {
-      const result = await apiFetch<TrainingLibraryResponse>(`/training-library?appId=${appId}`);
-      setLibrary(result);
+      // schedule-worker (proxied via admin-studio) wraps the manifest as { data: … }.
+      const result = await apiFetch<{ data: TrainingLibraryResponse }>(`/training-library?appId=${appId}`);
+      setLibrary(result.data);
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [appId]);
 
   useEffect(() => {
     void loadLibrary();
-  }, [loadLibrary, appId]);
+  }, [loadLibrary]);
 
   async function scheduleModule(briefKey: string) {
     setError(null);
@@ -60,7 +61,7 @@ export function TrainingLibraryTab() {
     try {
       await apiFetch('/jobs/from-brief', {
         method: 'POST',
-        body: JSON.stringify({ appId: 'prime_self', briefKey, triggerSource: 'manual' }),
+        body: JSON.stringify({ appId, briefKey, triggerSource: 'manual' }),
       });
       setSuccess(`Scheduled render for ${briefKey}`);
     } catch (err) {
