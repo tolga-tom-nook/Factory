@@ -212,7 +212,6 @@ jobs:
           studio_admin_email="${STUDIO_ADMIN_EMAIL:-${FALLBACK_STUDIO_ADMIN_EMAIL}}"
           studio_admin_password="${STUDIO_ADMIN_PASSWORD:-${FALLBACK_STUDIO_ADMIN_PASSWORD}}"
           anthropic_api_key="${ANTHROPIC_API_KEY:-${FALLBACK_ANTHROPIC_API_KEY}}"
-          github_token="${STUDIO_GITHUB_TOKEN:-${FALLBACK_GITHUB_TOKEN}}"
 
           password_hash=$(printf '%s' "$studio_admin_password" | sha256sum | cut -d' ' -f1)
 
@@ -222,6 +221,7 @@ jobs:
           put_required_secret ANTHROPIC_API_KEY "$anthropic_api_key"
           put_required_secret FACTORY_APP_ID "${{ secrets.FACTORY_APP_ID }}"
           put_required_secret FACTORY_APP_PRIVATE_KEY "${{ secrets.FACTORY_APP_PRIVATE_KEY }}"
+          put_required_secret FACTORY_APP_INSTALLATION_ID "${{ secrets.FACTORY_APP_INSTALLATION_ID }}"
 
           put_optional_secret DEEPSEEK_API_KEY "${DEEPSEEK_API_KEY:-}"
           put_optional_secret XAI_API_KEY "${XAI_API_KEY:-}"
