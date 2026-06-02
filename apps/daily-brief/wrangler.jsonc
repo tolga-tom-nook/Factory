@@ -40,11 +40,6 @@
     "VERTEX_LOCATION": "us-central1"
   },
 
-  "flagship": { "binding": "FLAGS" },
-  "d1_databases": [
-    { "binding": "FLAG_TELEMETRY", "database_id": "f03af37d-11d9-4428-b0db-b3cdca8fe7c4", "database_name": "flag-meter" }
-  ],
-
   "env": {
     "production": {
       "workers_dev": false,

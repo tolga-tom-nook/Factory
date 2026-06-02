@@ -45,9 +45,6 @@ export interface Env {
   // Manual trigger auth
   TRIGGER_TOKEN?: string;
 
-  // Flagship feature flags
-  FLAGS?: Fetcher;
-  FLAG_TELEMETRY?: D1Database;
 }
 
 // Cron strings exactly as declared in wrangler.jsonc.
