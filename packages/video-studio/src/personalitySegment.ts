@@ -9,6 +9,10 @@ import type {
 } from '@latimer-woods-tech/video';
 import { personalityToBodyScenes } from './sourceScenes.js';
 
+/**
+ * Source data for the `'personality'` segment: a headline + detail (and optional
+ * narration/colour) that selfprime authors from psychometric data (D6).
+ */
 export interface PersonalitySegmentData {
   headline: string;
   detail: string;
@@ -22,6 +26,11 @@ function isPersonalitySourceData(value: unknown): value is PersonalitySegmentDat
   return typeof v['headline'] === 'string' && typeof v['detail'] === 'string';
 }
 
+/**
+ * {@link SegmentRenderer} for the `'personality'` source. Rejects unless `source`
+ * is `'personality'` and `ctx.sourceData` is a valid {@link PersonalitySegmentData};
+ * otherwise returns render props + narration. Cacheable — stable across renders (D3).
+ */
 export const renderPersonalitySegment: SegmentRenderer = (
   source: VideoSource,
   ctx: SegmentContext,

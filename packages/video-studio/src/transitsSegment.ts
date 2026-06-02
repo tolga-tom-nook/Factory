@@ -9,6 +9,10 @@ import type {
 } from '@latimer-woods-tech/video';
 import { transitsToBodyScenes } from './sourceScenes.js';
 
+/**
+ * Source data for the `'transits'` segment: a headline + detail (and optional
+ * narration/colour) that selfprime resolves from the user's real transit data (D6).
+ */
 export interface TransitsSegmentData {
   headline: string;
   detail: string;
@@ -22,6 +26,11 @@ function isTransitsSourceData(value: unknown): value is TransitsSegmentData {
   return typeof v['headline'] === 'string' && typeof v['detail'] === 'string';
 }
 
+/**
+ * {@link SegmentRenderer} for the `'transits'` source. Rejects unless `source`
+ * is `'transits'` and `ctx.sourceData` is a valid {@link TransitsSegmentData};
+ * otherwise returns render props + narration. Never cacheable — fresh per render (D3).
+ */
 export const renderTransitsSegment: SegmentRenderer = (
   source: VideoSource,
   ctx: SegmentContext,

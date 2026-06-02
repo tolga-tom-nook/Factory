@@ -9,6 +9,10 @@ import type {
 } from '@latimer-woods-tech/video';
 import { dreamJournalToBodyScenes } from './sourceScenes.js';
 
+/**
+ * Source data for the `'dreamJournal'` segment: a headline + detail (and optional
+ * narration/colour) that selfprime resolves from the user's real journal entries (D6).
+ */
 export interface DreamJournalSegmentData {
   headline: string;
   detail: string;
@@ -22,6 +26,11 @@ function isDreamJournalSourceData(value: unknown): value is DreamJournalSegmentD
   return typeof v['headline'] === 'string' && typeof v['detail'] === 'string';
 }
 
+/**
+ * {@link SegmentRenderer} for the `'dreamJournal'` source. Rejects unless `source`
+ * is `'dreamJournal'` and `ctx.sourceData` is a valid {@link DreamJournalSegmentData};
+ * otherwise returns render props + narration. Never cacheable — fresh per render (D3).
+ */
 export const renderDreamJournalSegment: SegmentRenderer = (
   source: VideoSource,
   ctx: SegmentContext,

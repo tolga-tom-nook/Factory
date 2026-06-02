@@ -9,6 +9,10 @@ import type {
 } from '@latimer-woods-tech/video';
 import { milestonesToBodyScenes } from './sourceScenes.js';
 
+/**
+ * Source data for the `'milestones'` segment: a headline + list of items (and optional
+ * narration/colour) that selfprime draws from the achievements table (D6).
+ */
 export interface MilestonesSegmentData {
   headline: string;
   items: string[];
@@ -22,6 +26,11 @@ function isMilestonesSourceData(value: unknown): value is MilestonesSegmentData 
   return typeof v['headline'] === 'string' && Array.isArray(v['items']);
 }
 
+/**
+ * {@link SegmentRenderer} for the `'milestones'` source. Rejects unless `source`
+ * is `'milestones'` and `ctx.sourceData` is a valid {@link MilestonesSegmentData};
+ * otherwise returns render props + narration. Never cacheable — fresh per render (D3).
+ */
 export const renderMilestonesSegment: SegmentRenderer = (
   source: VideoSource,
   ctx: SegmentContext,

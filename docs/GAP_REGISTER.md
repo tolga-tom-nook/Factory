@@ -44,8 +44,8 @@ Source synthesis: `documents/factory/2026-05-11_HOLISTIC_GAP_REVIEW.md` (Sauna-s
 | G15 | Monday review is a placeholder (no agenda template) | **closed** | @adrper79-dot | stage-0 follow-up | `docs/MONDAY_REVIEW_TEMPLATE.md` created: 5 sections (digest review, milestone exit check, drift triage, customer signal review, next-week kickoff), 30-min agenda. Branch `claude/dazzling-brahmagupta-RcOz7`. |
 | G16 | No customer feedback loop in the system | open | @sauna | stage-2 | Email forwarding into triage workflow; cancellation reasons from Stripe; NPS micro-survey; aggregated into daily digest |
 | G17 | No competitive intel watch | open | @sauna | continuous | Quarterly: sub-agent watches competitor changelogs / X feeds / G2 reviews |
-| G18 | No domain/IP/legal tracker | open | @adrper79-dot | stage-5 | `documents/factory/LEGAL_OPS.md` — domains + renewal dates, trademark status, ToS/PP version per product, tax registration per state |
-| G19 | No bus-factor doc for solo operator | open | @adrper79-dot | continuous | Platform tour doc, recovery procedures per critical system, designated trusted contact, annual fire drill |
+| G18 | No domain/IP/legal tracker | **in-progress** | @adrper79-dot | stage-5 | Skeleton shipped 2026-06-01: [`docs/LEGAL_OPS.md`](./LEGAL_OPS.md) — domains (pre-filled from service-registry), trademark/IP, ToS/PP per product, entity/tax, sub-processor list. Structure done; operator must fill the 🔲 facts (renewal dates, registrar, entity). (Placed in `docs/` not `documents/factory/` — that dir isn't in-repo.) |
+| G19 | No bus-factor doc for solo operator | **in-progress** | @adrper79-dot | continuous | Skeleton shipped 2026-06-01: [`docs/BUS_FACTOR.md`](./BUS_FACTOR.md) — platform tour, critical-systems map, recovery-runbook index, trusted contact, credential-recovery vault, annual fire drill. Structure + system map done; operator must fill the 🔲 facts (trusted contact, 2FA/recovery-kit locations). |
 | G20 | No backup/DR strategy per product | open | @adrper79-dot | stage-5 | `RECOVERY.md` required per product. RTO + RPO declared. Monthly restore drill |
 
 ## P3 — Hygiene / defer
