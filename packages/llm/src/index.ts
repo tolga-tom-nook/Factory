@@ -776,6 +776,27 @@ function plan(tier: LLMTier, opts: LLMOptions, tokenEstimate: number): RoutePlan
   }
 }
 
+/**
+ * Build the `cf-aig-metadata` header value for the Cloudflare AI Gateway.
+ *
+ * Carries caller attribution (project / workload / actor / runId) so a single
+ * shared gateway can be sliced per-app and per-feature in the AI Gateway
+ * dashboard and logs. This replaces the per-app-gateway convention: rather than
+ * one gateway per app (which has to be provisioned and silently 401s when it
+ * isn't), one gateway tags every request with who made it.
+ *
+ * Returns `undefined` when no attribution fields are set (header omitted).
+ * The CF AI Gateway accepts a JSON object of string/number/boolean values.
+ */
+function buildAigMetadata(opts: LLMOptions): string | undefined {
+  const meta: Record<string, string> = {};
+  if (opts.project) meta.project = opts.project;
+  if (opts.workload) meta.workload = opts.workload;
+  if (opts.actor) meta.actor = opts.actor;
+  if (opts.runId) meta.runId = opts.runId;
+  return Object.keys(meta).length > 0 ? JSON.stringify(meta) : undefined;
+}
+
 async function callOne(
   leg: { provider: LLMProvider; model: string },
   messages: LLMMessage[],
@@ -803,6 +824,9 @@ async function callOne(
       req = buildDeepSeekRequest(leg.model, messages, opts, env);
       break;
   }
+  // Attribution for the shared AI Gateway — one gateway, sliced per-app/feature.
+  const aigMetadata = buildAigMetadata(opts);
+  if (aigMetadata) req.headers['cf-aig-metadata'] = aigMetadata;
   const { json, gatewayRequestId, attempts } = await callWithBackoff(
     leg.provider,
     req,
@@ -1111,6 +1135,9 @@ export async function* completionStream(
   }
 
   const req = buildAnthropicRequest(streamLeg.model, messages, opts, env, true);
+  // Attribution for the shared AI Gateway (matches the non-streaming path).
+  const streamAigMetadata = buildAigMetadata(opts);
+  if (streamAigMetadata) req.headers['cf-aig-metadata'] = streamAigMetadata;
 
   let response: Response;
   try {

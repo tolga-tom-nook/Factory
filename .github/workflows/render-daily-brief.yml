@@ -62,7 +62,7 @@ jobs:
           source scripts/fetch_gcp_secrets.sh
           fetch_to_env CLOUDFLARE_API_TOKEN   CF_API_TOKEN CLOUDFLARE_API_TOKEN
           fetch_to_env CLOUDFLARE_ACCOUNT_ID  CF_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
-          fetch_to_env ANTHROPIC_API_KEY      ANTHROPIC_API_KEY
+          fetch_to_env ANTHROPIC_API_KEY      LATIMER_ANTHROPIC_API ANTHROPIC_API_KEY
           fetch_to_env GROQ_API_KEY           GROQ_API_KEY
           fetch_to_env GROK_API_KEY           GROK_API_KEY
           fetch_to_env ELEVENLABS_API_KEY     ELEVENLABS_API_KEY
@@ -111,6 +111,15 @@ jobs:
             echo "key=$(TZ=America/New_York date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Verify AI Gateway exists (preflight)
+        # Hard-fail before spending an LLM/TTS render if the gateway is a ghost.
+        # A missing gateway 401s every provider call → silent fallback brief.
+        env:
+          AI_GATEWAY_BASE_URL: "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self"
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
+
       - name: Run build script
         working-directory: apps/daily-brief
         env:
@@ -119,7 +128,14 @@ jobs:
           SLOT: ${{ inputs.slot }}
           DATE_KEY: ${{ steps.date.outputs.key }}
           # LLM chain
-          AI_GATEWAY_BASE_URL: "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/daily-brief"
+          # NOTE: the "daily-brief" AI Gateway was never created — that path
+          # returns 401 for every provider call, which is what produced the
+          # fallback-only briefs. Using the existing "prime-self" gateway
+          # (authentication disabled) as a stopgap. TODO: create a dedicated
+          # "daily-brief" gateway (CF dashboard → AI Gateway → Create) so brief
+          # LLM telemetry/cost is not mixed into the selfprime product, then
+          # repoint this URL.
+          AI_GATEWAY_BASE_URL: "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self"
           VERTEX_PROJECT: "factory-495015"
           VERTEX_LOCATION: "us-central1"
           ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
@@ -142,7 +158,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           R2_BUCKET_NAME: "daily-brief-audio"
-          PUBLIC_BASE_URL: "https://daily-brief.adrper79.workers.dev"
+          PUBLIC_BASE_URL: "https://dbrief.latwoodtech.work"
         run: |
           npx tsx scripts/build-brief.ts \
             --slot "$SLOT" \

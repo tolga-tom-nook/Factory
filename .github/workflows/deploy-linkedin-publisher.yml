@@ -60,9 +60,21 @@ jobs:
         run: |
           set -euo pipefail
           source scripts/fetch_gcp_secrets.sh
-          fetch_to_env ANTHROPIC_API_KEY ANTHROPIC_API_KEY
+          # LATIMER_ANTHROPIC_API is the canonical key; bare ANTHROPIC_API_KEY in
+          # GCP SM is a stale/invalid alias (caused silent LLM failure here).
+          fetch_to_env ANTHROPIC_API_KEY LATIMER_ANTHROPIC_API ANTHROPIC_API_KEY
           fetch_to_env PUSHOVER_TOKEN PUSHOVER_TOKEN
           fetch_to_env PUSHOVER_USER_KEY PUSHOVER_USER_KEY
+
+      - name: Verify AI Gateway exists (preflight)
+        # Hard-fail if the gateway is a ghost — a missing gateway 401s every LLM
+        # call and the worker silently degrades. linkedin-publisher previously
+        # pointed at a non-existent "linkedin-publisher" gateway.
+        env:
+          AI_GATEWAY_BASE_URL: "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self"
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+        run: node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
 
       - name: Deploy to Cloudflare Workers
         working-directory: apps/linkedin-publisher

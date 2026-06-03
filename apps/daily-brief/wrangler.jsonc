@@ -33,7 +33,7 @@
     "RESEND_FROM_ADDRESS": "brief@apunlimited.com",
     "RESEND_FROM_NAME": "Daily Brief",
     "PUBLIC_BASE_URL": "https://dbrief.latwoodtech.work",
-    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/daily-brief",
+    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
     "VERTEX_PROJECT": "factory-495015",
     "VERTEX_LOCATION": "us-central1"
   },
@@ -63,7 +63,7 @@
         "RESEND_FROM_ADDRESS": "brief@apunlimited.com",
         "RESEND_FROM_NAME": "Daily Brief",
         "PUBLIC_BASE_URL": "https://dbrief.latwoodtech.work",
-        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/daily-brief",
+        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
         "VERTEX_PROJECT": "factory-495015",
         "VERTEX_LOCATION": "us-central1"
       }

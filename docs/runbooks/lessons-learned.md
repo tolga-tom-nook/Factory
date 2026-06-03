@@ -1107,3 +1107,77 @@ caches differently per file subset, so it passes in small runs and fails in the 
 **Lesson:** for a `file:` dep you must commit the built artifact (force-add past `dist/`
 ignores with a `.gitignore` negation) or vendor the source + a build step. The real fix is
 publishing the package; vendoring a `dist/` is a stopgap that rots when the source changes.
+
+## AI Gateway ghosts + the daily-brief E2E chain (June 2026)
+
+The daily-brief email arrived every morning with a canned `fallback` ("Morgan's Take —
+You showed up. That counts.", "Data unavailable" time horizons). Tracing it took a long
+chain; the lessons below are the load-bearing ones. Full architecture in
+[`project_llm_gateway_ghost`](../../) (auto-memory) and the PR trail #1293–#1315.
+
+### A non-existent Cloudflare AI Gateway 401s every call → SILENT LLM fallback (the root cause)
+`@latimer-woods-tech/llm` routes **100%** of provider calls through a CF AI Gateway and has
+**no direct-to-provider path** (`AI_GATEWAY_BASE_URL` is required since v0.3.0; empty string
+→ `ValidationError`). The gateway is named per-app by convention (`.../{app}`), but
+**provisioning was never automated.** Only one gateway (`prime-self`) was ever created.
+
+Cloudflare returns **HTTP 401 for an unknown gateway name** — indistinguishable at a glance
+from a bad provider key. Every app pointing at its own-named ghost gateway (`daily-brief`,
+`linkedin-publisher`, `supervisor`) had its LLM die in <1 s, the package threw, the app
+caught it and returned a canned fallback. **No error surfaced.** The brief looked "built."
+
+**Lessons:**
+1. **A missing gateway fails silent and looks like a bad key.** Diagnose by hitting the
+   gateway **management API**, not the inference path: `GET
+   /accounts/{acct}/ai-gateway/gateways/{slug}` → **404 = ghost** (unambiguous, no provider
+   key needed). `scripts/verify-ai-gateway.mjs` does exactly this and is now a deploy
+   preflight on every LLM app — it turns the silent class into a loud pre-deploy red.
+2. **Grep for actual `complete(` / `completionStream(` call sites, not package imports,
+   before assuming an app is degrading.** `supervisor` *imports* the package only in a
+   comment + a generated capability catalog — it never calls the LLM, so its ghost gateway
+   was inert. We almost "fixed" a non-bug.
+3. **The chosen architecture is ONE shared gateway + per-request `cf-aig-metadata`
+   attribution** (`llm` v0.4.0), not per-app gateways. The package now tags every call with
+   `{project, workload, actor, runId}`, so a single gateway slices per-app *and* per-workload
+   in the dashboard — finer than per-app gateways, with zero provisioning surface. The
+   `AI_GATEWAY_URL` GCP SM secret is the single source of truth for the URL.
+
+### MYTH BUSTED: GCP SM `ANTHROPIC_API_KEY` is NOT dead
+Prior docs (including CLAUDE.md and the video-pipeline runbook) claimed the bare
+`ANTHROPIC_API_KEY` secret was "dead, aliasing live `LATIMER_ANTHROPIC_API`." **Live-tested
+2026-06-02: both keys return 200.** The "dead key" diagnosis was a misattribution of the
+gateway-401. The gateway ghost was the *sole* cause of the fallbacks; the key was never the
+problem. **Lesson:** when an LLM call fails through the gateway, test the key *directly*
+against `api.anthropic.com` before blaming it — a gateway-layer 401 and a provider-key 401
+look identical from inside the package.
+
+### Wrangler 4 footguns that each cost a deploy cycle
+The daily-brief worker took ~6 deploys to go live; each surfaced a distinct Wrangler-4
+behavior worth knowing:
+1. **`--env production` without `"name"` in the env block deploys a *shadow* worker** named
+   `{name}-production`, leaving the real worker untouched. `/health` stays 200 on the old
+   code while you think you shipped. Always set `"name"` inside `env.production`.
+2. **`r2_buckets`, `triggers`, and `vars` are NOT inherited into `env.*` blocks** — they
+   must be repeated inside `env.production` or the prod worker deploys without them (no
+   crons, no R2 binding).
+3. **`wrangler r2 object put` writes to the LOCAL miniflare store by default (4.97+).**
+   Without `--remote` the upload "succeeds" and logs success, but the object never reaches
+   real R2 and evaporates when the job ends. Always pass `--remote` in CI.
+4. A stray top-level `flagship` / `d1_databases` binding an app doesn't use can hard-fail
+   `wrangler` validation. Remove unused bindings.
+
+### A `fetch` handler's fire-and-forget async is killed after the Response returns
+A Worker `fetch` handler that kicks off background work (`doThing().catch(...)`) **without**
+`ctx.waitUntil()` has that work terminated by the runtime once the Response is sent. A quick
+single fetch may sneak through; a multi-step job (R2 reads + Resend send) gets cut off
+mid-flight — no email, no error. **Lesson:** any background work in `fetch` must be wrapped
+in `ctx.waitUntil(...)` (add `ctx: ExecutionContext` to the signature). This is the same
+guarantee the `scheduled` handler already had.
+
+### Reading a BOM/encoded GCP secret on Windows crashes gcloud silently under `2>$null`
+`gcloud secrets versions access` can crash with a `charmap`/`UnicodeEncodeError` on a value
+with a UTF-8 BOM; `2>$null` swallows the crash and you get an **empty string**, which then
+"fails auth" for confusing reasons (e.g. a 401 that's really "token was blank"). **Lesson:**
+on Windows set `[Console]::OutputEncoding = [Text.Encoding]::UTF8` and read via
+`(& gcloud ... | Out-String).Trim()`. Also: the daily-brief trigger token lives in GCP SM as
+**`DAILY_BRIEF_TRIGGER_TOKEN`** (the bare `TRIGGER_TOKEN` secret does not exist).

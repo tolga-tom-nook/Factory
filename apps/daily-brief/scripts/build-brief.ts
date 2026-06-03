@@ -72,7 +72,7 @@ function optional(name: string): string | undefined {
 }
 
 const llmEnv: LlmEnv = {
-  AI_GATEWAY_BASE_URL: required('AI_GATEWAY_BASE_URL'),
+  AI_GATEWAY_BASE_URL: optional('AI_GATEWAY_BASE_URL') ?? '',
   ANTHROPIC_API_KEY:   required('ANTHROPIC_API_KEY'),
   GROQ_API_KEY:        required('GROQ_API_KEY'),
   GROK_API_KEY:        optional('GROK_API_KEY'),

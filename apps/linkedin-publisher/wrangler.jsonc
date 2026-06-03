@@ -13,7 +13,7 @@
   "vars": {
     "ENVIRONMENT": "development",
     // AI Gateway endpoint for this worker
-    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/linkedin-publisher",
+    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
     "VERTEX_PROJECT": "factory-495015",
     "VERTEX_LOCATION": "us-central1"
   },
@@ -23,7 +23,7 @@
       "workers_dev": false,
       "vars": {
         "ENVIRONMENT": "production",
-        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/linkedin-publisher",
+        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
         "VERTEX_PROJECT": "factory-495015",
         "VERTEX_LOCATION": "us-central1"
       }

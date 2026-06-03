@@ -54,7 +54,7 @@ const CRON_BUILD_EVENING = '0 22 * * *';
 const CRON_SEND_EVENING  = '30 22 * * *';
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
 
     if (url.pathname === '/health') {
@@ -93,10 +93,31 @@ export default {
       if (slot !== 'morning' && slot !== 'evening') {
         return Response.json({ status: 'bad_request', message: 'slot must be morning or evening' }, { status: 400 });
       }
-      dispatchBriefBuild(slot, env).catch((e) =>
-        console.error('[daily-brief] trigger dispatch error:', e),
+      ctx.waitUntil(
+        dispatchBriefBuild(slot, env).catch((e) =>
+          console.error('[daily-brief] trigger dispatch error:', e),
+        ),
       );
       return Response.json({ status: 'dispatched', slot, message: 'Build triggered in GitHub Actions' });
+    }
+
+    // Manual send — POST /send?slot=morning|evening (bypasses cron for testing)
+    if (url.pathname === '/send' && request.method === 'POST') {
+      if (env.TRIGGER_TOKEN) {
+        if (request.headers.get('authorization') !== `Bearer ${env.TRIGGER_TOKEN}`) {
+          return Response.json({ status: 'unauthorized' }, { status: 401 });
+        }
+      }
+      const slot = (url.searchParams.get('slot') ?? 'morning') as BriefSlot;
+      if (slot !== 'morning' && slot !== 'evening') {
+        return Response.json({ status: 'bad_request', message: 'slot must be morning or evening' }, { status: 400 });
+      }
+      ctx.waitUntil(
+        sendBriefForSlot(slot, env).catch((e) =>
+          console.error('[daily-brief] send error:', e),
+        ),
+      );
+      return Response.json({ status: 'sending', slot });
     }
 
     return new Response('daily-brief worker', { status: 200 });

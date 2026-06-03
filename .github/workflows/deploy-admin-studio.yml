@@ -88,6 +88,15 @@ jobs:
           fetch_to_env STUDIO_GOOGLE_WORKSPACE_DOMAIN       STUDIO_GOOGLE_WORKSPACE_DOMAIN ADMIN_STUDIO_GOOGLE_WORKSPACE_DOMAIN
           fetch_to_env GCP_SA_KEY                           ADMIN_STUDIO_GCP_SA_KEY
 
+      - name: Verify AI Gateway exists (preflight)
+        # admin-studio routes LLM (AI strategies) through this gateway. A ghost
+        # gateway 401s every call → silent fallback; fail loud pre-deploy.
+        run: |
+          set -euo pipefail
+          export CLOUDFLARE_API_TOKEN="$CF_API_TOKEN"
+          export CLOUDFLARE_ACCOUNT_ID="$CF_ACCOUNT_ID"
+          node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
+
       - name: Resolve target environment
         id: target
         run: |
