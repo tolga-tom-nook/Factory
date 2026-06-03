@@ -1,0 +1,165 @@
+name: Render Daily Brief
+
+# Triggered by the daily-brief Worker cron at 6 AM / 6 PM ET via workflow_dispatch.
+# Also manually dispatchable for testing.
+on:
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: 'Brief slot'
+        required: true
+        type: choice
+        options: [morning, evening]
+        default: morning
+      date_key:
+        description: 'Date key (YYYY-MM-DD, defaults to today ET)'
+        required: false
+        type: string
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: read
+
+concurrency:
+  # One render per slot per day — cancel any stale re-runs.
+  group: render-daily-brief-${{ inputs.slot }}-${{ inputs.date_key || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    name: Build ${{ inputs.slot }} brief
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          credentials_json: ${{ secrets.VERTEX_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Fetch secrets from GCP Secret Manager
+        env:
+          # VERTEX_ACCESS_TOKEN / ELEVENLABS_VOICE_ID / GH_PAT are GitHub Actions
+          # secrets (not in GCP SM) — injected directly below, not via fetch_to_env.
+          VERTEX_ACCESS_TOKEN_GH: ${{ secrets.VERTEX_ACCESS_TOKEN }}
+          ELEVENLABS_VOICE_ID_GH: ${{ secrets.ELEVENLABS_VOICE_ID }}
+          GH_PAT: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          source scripts/fetch_gcp_secrets.sh
+          fetch_to_env CLOUDFLARE_API_TOKEN   CF_API_TOKEN CLOUDFLARE_API_TOKEN
+          fetch_to_env CLOUDFLARE_ACCOUNT_ID  CF_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
+          fetch_to_env ANTHROPIC_API_KEY      LATIMER_ANTHROPIC_API ANTHROPIC_API_KEY
+          fetch_to_env GROQ_API_KEY           GROQ_API_KEY
+          fetch_to_env GROK_API_KEY           GROK_API_KEY
+          fetch_to_env ELEVENLABS_API_KEY     ELEVENLABS_API_KEY
+          fetch_to_env STRIPE_SECRET_KEY      STRIPE_SECRET_KEY
+          fetch_to_env POSTHOG_API_KEY        POSTHOG_API_KEY POSTHOG_KEY POSTHOG_API
+          fetch_to_env POSTHOG_PROJECT_ID     POSTHOG_PROJECT_ID
+          fetch_to_env SENTRY_AUTH_TOKEN      SENTRY_AUTH_TOKEN FACTORY_SENTRY_API sentry-auth-token
+          fetch_to_env SENTRY_ORG            SENTRY_ORG sentry-org
+          # Bridge GitHub Actions secrets into GITHUB_ENV for downstream steps.
+          echo "VERTEX_ACCESS_TOKEN=${VERTEX_ACCESS_TOKEN_GH}" >> "$GITHUB_ENV"
+          echo "ELEVENLABS_VOICE_ID=${ELEVENLABS_VOICE_ID_GH}" >> "$GITHUB_ENV"
+          echo "GITHUB_TOKEN=${GH_PAT}" >> "$GITHUB_ENV"
+
+      - name: Build local package dependencies
+        run: |
+          set -euo pipefail
+          for package in errors monitoring logger llm telephony; do
+            echo "=== ${package} ==="
+            cd "packages/${package}"
+            npm ci --ignore-scripts
+            npm run build
+            cd ../..
+          done
+
+      - name: Install daily-brief dependencies
+        run: npm install --ignore-scripts
+        working-directory: apps/daily-brief
+
+      - name: Overlay locally-built packages
+        run: |
+          for pkg in errors monitoring logger llm telephony; do
+            if [ -d "packages/${pkg}/dist" ] && [ -d "apps/daily-brief/node_modules/@latimer-woods-tech/${pkg}" ]; then
+              cp -r "packages/${pkg}/dist/." "apps/daily-brief/node_modules/@latimer-woods-tech/${pkg}/dist/"
+            fi
+          done
+
+      - name: Resolve date key
+        id: date
+        env:
+          INPUT_DATE_KEY: ${{ inputs.date_key }}
+        run: |
+          if [ -n "$INPUT_DATE_KEY" ]; then
+            echo "key=$INPUT_DATE_KEY" >> "$GITHUB_OUTPUT"
+          else
+            # Default to today in ET (UTC-4 / UTC-5 depending on DST).
+            echo "key=$(TZ=America/New_York date +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Verify AI Gateway exists (preflight)
+        # Hard-fail before spending an LLM/TTS render if the gateway is a ghost.
+        # A missing gateway 401s every provider call → silent fallback brief.
+        env:
+          AI_GATEWAY_BASE_URL: "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self"
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
+
+      - name: Run build script
+        working-directory: apps/daily-brief
+        env:
+          # Bind workflow inputs to env vars — never interpolate ${{ inputs.* }} directly
+          # into shell commands (script injection risk).
+          SLOT: ${{ inputs.slot }}
+          DATE_KEY: ${{ steps.date.outputs.key }}
+          # LLM chain
+          # NOTE: the "daily-brief" AI Gateway was never created — that path
+          # returns 401 for every provider call, which is what produced the
+          # fallback-only briefs. Using the existing "prime-self" gateway
+          # (authentication disabled) as a stopgap. TODO: create a dedicated
+          # "daily-brief" gateway (CF dashboard → AI Gateway → Create) so brief
+          # LLM telemetry/cost is not mixed into the selfprime product, then
+          # repoint this URL.
+          AI_GATEWAY_BASE_URL: "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self"
+          VERTEX_PROJECT: "factory-495015"
+          VERTEX_LOCATION: "us-central1"
+          ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+          GROQ_API_KEY: ${{ env.GROQ_API_KEY }}
+          GROK_API_KEY: ${{ env.GROK_API_KEY }}
+          VERTEX_ACCESS_TOKEN: ${{ env.VERTEX_ACCESS_TOKEN }}
+          # TTS
+          ELEVENLABS_API_KEY: ${{ env.ELEVENLABS_API_KEY }}
+          ELEVENLABS_VOICE_ID: ${{ env.ELEVENLABS_VOICE_ID }}
+          # GitHub activity section
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          GITHUB_ORG: "Latimer-Woods-Tech"
+          # Optional integrations
+          STRIPE_SECRET_KEY: ${{ env.STRIPE_SECRET_KEY }}
+          POSTHOG_API_KEY: ${{ env.POSTHOG_API_KEY }}
+          POSTHOG_PROJECT_ID: ${{ env.POSTHOG_PROJECT_ID }}
+          SENTRY_AUTH_TOKEN: ${{ env.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ env.SENTRY_ORG }}
+          # R2 target
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          R2_BUCKET_NAME: "daily-brief-audio"
+          PUBLIC_BASE_URL: "https://dbrief.latwoodtech.work"
+        run: |
+          npx tsx scripts/build-brief.ts \
+            --slot "$SLOT" \
+            --date "$DATE_KEY"

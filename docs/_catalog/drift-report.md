@@ -30,9 +30,9 @@
 | warning | platform | ADMIN_AGENT_DEPLOYMENT_CHECKLIST.md | 43 | References missing npm script "deploy:staging". |
 | warning | platform | ADMIN_AGENT_DEPLOYMENT_CHECKLIST.md | 156 | References missing npm script "deploy:production". |
 | warning | platform | ADMIN_AGENT_DEPLOYMENT_CHECKLIST.md | 182 | References missing npm script "deploy:production". |
-| warning | platform | CLAUDE.md | 156 | References missing npm script "typecheck". |
-| warning | platform | CLAUDE.md | 226 | References missing npm script "dev". |
-| warning | platform | CLAUDE.md | 259 | References missing npm script "phase-7:scaffold". |
+| warning | platform | CLAUDE.md | 158 | References missing npm script "typecheck". |
+| warning | platform | CLAUDE.md | 228 | References missing npm script "dev". |
+| warning | platform | CLAUDE.md | 261 | References missing npm script "phase-7:scaffold". |
 | warning | platform | docs/ACCESS.md | 37 | References missing workflow .github/workflows/deploy-admin-studio-worker.yml. |
 | warning | platform | docs/ACCESS.md | 41 | References missing workflow .github/workflows/deploy-developer-index.yml. |
 | warning | platform | docs/ACCESS.md | 42 | References missing workflow .github/workflows/deploy-status-page.yml. |
@@ -48,7 +48,7 @@
 | warning | platform | docs/ADMIN_STUDIO_SETUP.md | 143 | References missing npm script "deploy:production". |
 | warning | platform | docs/ADMIN_STUDIO_SETUP.md | 237 | References missing npm script "deploy:staging". |
 | warning | platform | docs/ADMIN_STUDIO_SETUP.md | 303 | References missing npm script "deploy:staging". |
-| warning | platform | docs/ADMIN_UI_AGENT_PLAN.md | 42 | References missing npm script "typecheck". |
+| warning | platform | docs/ADMIN_UI_AGENT_PLAN.md | 50 | References missing npm script "typecheck". |
 | warning | admin-studio | docs/admin-studio/00-MASTER-PLAN.md | 567 | References missing workflow .github/workflows/test-on-demand.yml. |
 | warning | architecture | docs/adr/0003-claude-as-primary-reviewer.md | 75 | References missing workflow .github/workflows/claude-review.yml. |
 | warning | architecture | docs/adr/0006-cascading-multi-agent-review.md | 92 | References missing workflow .github/workflows/peer-review-cascade.yml. |

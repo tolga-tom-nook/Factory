@@ -62,6 +62,13 @@ jobs:
     env:
       STAGING_WORKER_URL: https://${{ inputs.app_name }}-staging.adrper79.workers.dev
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
@@ -89,10 +96,8 @@ jobs:
           fetch_to_env CF_API_TOKEN        CF_API_TOKEN
           fetch_to_env CF_ACCOUNT_ID       CF_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
           # GitHub — GH_PAT: classic PAT with repo + read:packages scopes
-          fetch_to_env GH_PAT              GH_PAT
           # npm — NODE_AUTH_TOKEN = GH_PAT (same classic PAT has read:packages)
           # secrets.NODE_AUTH_TOKEN does not exist in this repo; do NOT use it.
-          fetch_to_env NODE_AUTH_TOKEN     GH_PAT
 
       - name: Validate required creds
         run: |
@@ -103,8 +108,6 @@ jobs:
           [ -z "${BOOTSTRAP_PASSWORD:-}" ] && missing="$missing BOOTSTRAP_PASSWORD"
           [ -z "${CF_API_TOKEN:-}" ]       && missing="$missing CF_API_TOKEN"
           [ -z "${CF_ACCOUNT_ID:-}" ]      && missing="$missing CF_ACCOUNT_ID"
-          [ -z "${GH_PAT:-}" ]             && missing="$missing GH_PAT"
-          [ -z "${NODE_AUTH_TOKEN:-}" ]    && missing="$missing NODE_AUTH_TOKEN"
           if [ -n "$missing" ]; then
             echo "::error::Missing required creds from GCP Secret Manager:$missing"
             echo "::error::Add them to factory-495015 with 'printf '%s' value | gcloud secrets create ...'"
@@ -160,7 +163,7 @@ jobs:
       - name: Create GitHub repo for app
         env:
           APP_NAME: ${{ inputs.app_name }}
-          GH_TOKEN: ${{ env.GH_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
           # Check if repo already exists (idempotent — re-runs after failure are safe)
@@ -278,10 +281,10 @@ jobs:
             "${HANDOFF_ID}" "${HYPERDRIVE_ID}" "${{ inputs.rate_limiter_namespace_id }}")
           git commit --allow-empty -m "${COMMIT_MSG}"
           git remote add origin \
-            "https://x-access-token:${GH_PAT}@github.com/Latimer-Woods-Tech/${APP_NAME}.git" \
+            "https://x-access-token:${APP_TOKEN}@github.com/Latimer-Woods-Tech/${APP_NAME}.git" \
             2>/dev/null || \
           git remote set-url origin \
-            "https://x-access-token:${GH_PAT}@github.com/Latimer-Woods-Tech/${APP_NAME}.git"
+            "https://x-access-token:${APP_TOKEN}@github.com/Latimer-Woods-Tech/${APP_NAME}.git"
           git push -u origin main --force-with-lease || git push -u origin main --force
           echo "✅ Scaffold pushed to Latimer-Woods-Tech/${APP_NAME}"
 

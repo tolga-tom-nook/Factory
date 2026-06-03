@@ -5,54 +5,68 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
 
-  // Cron: 7:00 AM ET daily (11:00 UTC).
+  // 4 crons (UTC). Maps to ~6:00/6:30 AM and 6:00/6:30 PM ET (EDT = UTC-4).
+  // Drifts ±1h in winter (EST = UTC-5) — acceptable for a daily brief.
   "triggers": {
-    "crons": ["0 11 * * *"]
+    "crons": [
+      "0 10 * * *",   // 6:00 AM ET  — dispatch morning build to GHA
+      "30 10 * * *",  // 6:30 AM ET  — send morning brief (reads R2)
+      "0 22 * * *",   // 6:00 PM ET  — dispatch evening build to GHA
+      "30 22 * * *"   // 6:30 PM ET  — send evening brief (reads R2)
+    ]
   },
 
   "r2_buckets": [
     {
       "binding": "AUDIO_BUCKET",
       // Create with: npx wrangler r2 bucket create daily-brief-audio
+      // No public access needed — audio + web view served by the worker's own routes.
       "bucket_name": "daily-brief-audio"
-      // After creating, enable public access and copy the r2.dev URL into AUDIO_PUBLIC_BASE_URL
     }
   ],
 
   "vars": {
     "GITHUB_ORG": "Latimer-Woods-Tech",
+    "GITHUB_REPO": "Factory",
     "ZIP_CODE": "30019",
     "RECIPIENTS": "adrper79@gmail.com,aperry@latwoodtech.com",
     "RESEND_FROM_ADDRESS": "brief@apunlimited.com",
     "RESEND_FROM_NAME": "Daily Brief",
-    // After enabling public R2 access: set to your r2.dev subdomain
-    "AUDIO_PUBLIC_BASE_URL": "https://pub-db3409ef2f2645ac873d50ef674ecae1.r2.dev",
-    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/daily-brief",
+    "PUBLIC_BASE_URL": "https://dbrief.latwoodtech.work",
+    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
     "VERTEX_PROJECT": "factory-495015",
     "VERTEX_LOCATION": "us-central1"
   },
 
-  "flagship": { "binding": "FLAGS" },
-  "d1_databases": [
-    { "binding": "FLAG_TELEMETRY", "database_id": "f03af37d-11d9-4428-b0db-b3cdca8fe7c4", "database_name": "flag-meter" }
-  ],
-
   "env": {
     "production": {
+      // Explicit name prevents Wrangler from deploying as "daily-brief-production".
+      "name": "daily-brief",
       "workers_dev": false,
+      // r2_buckets, triggers are NOT inherited by environments in Wrangler 4.
+      "triggers": {
+        "crons": [
+          "0 10 * * *",
+          "30 10 * * *",
+          "0 22 * * *",
+          "30 22 * * *"
+        ]
+      },
+      "r2_buckets": [
+        { "binding": "AUDIO_BUCKET", "bucket_name": "daily-brief-audio" }
+      ],
       "vars": {
         "GITHUB_ORG": "Latimer-Woods-Tech",
+        "GITHUB_REPO": "Factory",
         "ZIP_CODE": "30019",
         "RECIPIENTS": "adrper79@gmail.com,aperry@latwoodtech.com",
         "RESEND_FROM_ADDRESS": "brief@apunlimited.com",
         "RESEND_FROM_NAME": "Daily Brief",
-        "AUDIO_PUBLIC_BASE_URL": "https://pub-db3409ef2f2645ac873d50ef674ecae1.r2.dev",
-        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/daily-brief",
+        "PUBLIC_BASE_URL": "https://dbrief.latwoodtech.work",
+        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
         "VERTEX_PROJECT": "factory-495015",
         "VERTEX_LOCATION": "us-central1"
       }
     }
   }
 }
-
-

@@ -28,4 +28,17 @@ export interface Env {
   FLAGS?: Fetcher;
   /** flag-meter D1 database for flag telemetry. */
   FLAG_TELEMETRY?: D1Database;
+  /**
+   * selfprime Neon Postgres connection string (plain — not Hyperdrive).
+   * Used by the subscription-dispatch cron to query video_subscription rows.
+   * Set via: `wrangler secret put SELFPRIME_DB_URL`
+   */
+  SELFPRIME_DB_URL: string;
+  /**
+   * Shared HMAC-SHA256 secret for signing subscription dispatch requests to
+   * selfprime's internal render trigger endpoint. Must match the value
+   * configured on selfprime (same GCP Secret Manager entry: PRIME_SELF_API_SECRET).
+   * Set via: `wrangler secret put PRIME_SELF_API_SECRET`
+   */
+  PRIME_SELF_API_SECRET: string;
 }

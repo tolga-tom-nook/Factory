@@ -11,6 +11,8 @@ import {
   VIDEO_CALENDAR_MIGRATION_STATEMENTS,
 } from '@latimer-woods-tech/schedule';
 import type { TriggerSource, RenderJobStatus } from '@latimer-woods-tech/schedule';
+import { signRenderPayload } from '@latimer-woods-tech/video';
+import { neon } from '@neondatabase/serverless';
 import type { Env } from './env.js';
 
 type RenderType = 'marketing' | 'training' | 'walkthrough';
@@ -20,7 +22,8 @@ interface ServiceAuth {
   appId: string | null;
 }
 
-const app = new Hono<{ Bindings: Env }>();
+/** @internal Named export so existing tests can call `app.request(...)`. */
+export const app = new Hono<{ Bindings: Env }>();
 
 type ScheduleWorkerContext = Context<{ Bindings: Env }>;
 
@@ -258,7 +261,7 @@ app.get('/jobs/pending', async (c) => {
   return handlePendingJobs(c);
 });
 
-app.get('/training-library', async (c) => {
+app.get('/training-library', (c) => {
   const auth = requireApiToken(c.env, c.req.header('authorization'));
   const requestedAppId = c.req.query('appId') ?? auth.appId ?? undefined;
   if (!requestedAppId) {
@@ -437,19 +440,24 @@ app.get('/diagnostics', async (c) => {
 
   if (!c.env.MONITOR_KV) return c.json({ error: 'MONITOR_KV not bound' }, 503);
 
+  interface KvSnapshot {
+    latencies?: Record<string, number>;
+    failed?: unknown[];
+  }
+
   const { keys } = await c.env.MONITOR_KV.list({ prefix: 'snapshots:', limit: 48 });
   const snapshots = (await Promise.all(
-    keys.map(k => c.env.MONITOR_KV!.get(k.name, 'json') as Promise<any>)
-  )).filter(Boolean);
+    keys.map(k => c.env.MONITOR_KV!.get<KvSnapshot>(k.name, 'json')),
+  )).filter((s): s is KvSnapshot => s !== null);
 
   const byEndpoint: Record<string, number[]> = {};
   let totalChecks = 0, totalFailed = 0;
 
   for (const snap of snapshots) {
-    if (!snap?.latencies) continue;
+    if (!snap.latencies) continue;
     totalChecks += Object.keys(snap.latencies).length;
     totalFailed += (snap.failed?.length ?? 0);
-    for (const [id, ms] of Object.entries(snap.latencies as Record<string, number>)) {
+    for (const [id, ms] of Object.entries(snap.latencies)) {
       (byEndpoint[id] ??= []).push(ms);
     }
   }
@@ -482,4 +490,210 @@ app.onError((err, c) => {
   return c.json(response, status);
 });
 
-export default app;
+// ---------------------------------------------------------------------------
+// Subscription dispatch types (I1 Slice 4, D5)
+// ---------------------------------------------------------------------------
+
+/**
+ * A row from selfprime's `video_subscription` table.
+ * Only the columns this cron needs are fetched.
+ */
+interface VideoSubscriptionRow {
+  id: string;
+  user_id: string;
+  cadence: string;
+  composition_spec: Record<string, unknown>;
+  channels: string[];
+  next_run_at: string | null;
+}
+
+/**
+ * Result counters returned by {@link dispatchDueSubscriptions}.
+ */
+export interface DispatchResult {
+  dispatched: number;
+  skipped: number;
+  errors: number;
+}
+
+/**
+ * Computes the next run timestamp for a subscription by advancing the
+ * current time by the cadence interval.
+ *
+ * Supported cadence values (case-insensitive): `daily`, `weekly`, `monthly`.
+ * Any unrecognised cadence falls back to adding 7 days (weekly).
+ *
+ * @internal
+ */
+export function computeNextRunAt(cadence: string, from: Date = new Date()): Date {
+  const key = cadence.trim().toLowerCase();
+  const next = new Date(from);
+  if (key === 'daily') {
+    next.setUTCDate(next.getUTCDate() + 1);
+  } else if (key === 'monthly') {
+    next.setUTCMonth(next.getUTCMonth() + 1);
+  } else {
+    // weekly (default, covers 'weekly' and unknown rrule strings)
+    next.setUTCDate(next.getUTCDate() + 7);
+  }
+  return next;
+}
+
+const SELFPRIME_DISPATCH_URL =
+  'https://api.selfprime.net/api/internal/video/subscription-dispatch';
+const DISPATCH_BATCH_LIMIT = 50;
+
+/**
+ * Queries selfprime's Neon DB for due `video_subscription` rows and dispatches
+ * each one to selfprime's internal render trigger endpoint (I1 Slice 4, D5).
+ *
+ * Signing uses the same HMAC-SHA256 scheme as the render contract (D10):
+ * `X-Signature = hex(HMAC-SHA256(secret, "${timestamp}.${rawBody}"))`.
+ *
+ * On 2xx: updates `next_run_at` in the DB.
+ * On non-2xx: logs the failure and increments `errors` — `next_run_at` is NOT
+ * updated so the subscription retries on the next cron tick.
+ */
+export async function dispatchDueSubscriptions(
+  env: Pick<Env, 'SELFPRIME_DB_URL' | 'PRIME_SELF_API_SECRET'>,
+  deps: { fetch?: typeof fetch } = {},
+): Promise<DispatchResult> {
+  const fetchImpl = deps.fetch ?? globalThis.fetch;
+  const result: DispatchResult = { dispatched: 0, skipped: 0, errors: 0 };
+
+  // Connect to selfprime Neon via HTTP (no Node built-ins, no WebSocket).
+  const sql = neon(env.SELFPRIME_DB_URL);
+
+  // Fetch at most DISPATCH_BATCH_LIMIT due subscriptions.
+  const rows = (await sql(
+    `SELECT id, user_id, cadence, composition_spec, channels, next_run_at
+     FROM video_subscription
+     WHERE active = true AND next_run_at <= now()
+     LIMIT ${DISPATCH_BATCH_LIMIT}`,
+  )) as VideoSubscriptionRow[];
+
+  if (rows.length === 0) {
+    return result;
+  }
+
+  for (const sub of rows) {
+    const payload = {
+      subscriptionId: sub.id,
+      userId: sub.user_id,
+      spec: sub.composition_spec,
+      channels: sub.channels,
+    };
+    const rawBody = JSON.stringify(payload);
+
+    let signature: string;
+    let timestamp: string;
+    try {
+      ({ signature, timestamp } = await signRenderPayload({
+        rawBody,
+        secret: env.PRIME_SELF_API_SECRET,
+      }));
+    } catch (err) {
+      console.error(
+        JSON.stringify({
+          level: 'error',
+          msg: 'subscription-dispatch: signing failed',
+          subscriptionId: sub.id,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+      result.errors += 1;
+      continue;
+    }
+
+    let res: Response;
+    try {
+      res = await fetchImpl(SELFPRIME_DISPATCH_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Signature': signature,
+          'X-Timestamp': timestamp,
+        },
+        body: rawBody,
+      });
+    } catch (err) {
+      console.error(
+        JSON.stringify({
+          level: 'error',
+          msg: 'subscription-dispatch: fetch failed',
+          subscriptionId: sub.id,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+      result.errors += 1;
+      continue;
+    }
+
+    if (res.ok) {
+      const nextRunAt = computeNextRunAt(sub.cadence);
+      try {
+        await sql(
+          `UPDATE video_subscription SET next_run_at = $1 WHERE id = $2`,
+          [nextRunAt.toISOString(), sub.id],
+        );
+        result.dispatched += 1;
+      } catch (err) {
+        console.error(
+          JSON.stringify({
+            level: 'error',
+            msg: 'subscription-dispatch: next_run_at update failed',
+            subscriptionId: sub.id,
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
+        result.errors += 1;
+      }
+    } else {
+      const body = await res.text().catch(() => '');
+      console.error(
+        JSON.stringify({
+          level: 'error',
+          msg: 'subscription-dispatch: dispatch returned non-2xx',
+          subscriptionId: sub.id,
+          status: res.status,
+          body,
+        }),
+      );
+      result.errors += 1;
+    }
+  }
+
+  return result;
+}
+
+export default {
+  fetch: app.fetch,
+
+  /**
+   * Cron handler — runs on the Worker's configured schedule.
+   * Currently dispatches due user video subscriptions (I1 Slice 4, D5).
+   */
+  scheduled(_event: ScheduledEvent, env: Env, ctx: ExecutionContext): void {
+    ctx.waitUntil(
+      dispatchDueSubscriptions(env).then((counts) => {
+        console.log(
+          JSON.stringify({
+            level: 'info',
+            msg: 'subscription-dispatch complete',
+            environment: env.ENVIRONMENT,
+            ...counts,
+          }),
+        );
+      }).catch((err: unknown) => {
+        console.error(
+          JSON.stringify({
+            level: 'error',
+            msg: 'subscription-dispatch fatal',
+            environment: env.ENVIRONMENT,
+            error: err instanceof Error ? err.message : String(err),
+          }),
+        );
+      }),
+    );
+  },
+};

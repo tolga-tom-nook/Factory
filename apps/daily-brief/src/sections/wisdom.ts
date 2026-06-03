@@ -5,7 +5,7 @@
  */
 
 import { complete } from '@latimer-woods-tech/llm';
-import type { Env } from '../index';
+import type { LlmEnv } from './insights';
 
 export interface WisdomSection {
   /** One short, powerful opening mantra — meant to be read aloud or meditated on */
@@ -48,7 +48,7 @@ Output valid JSON matching this exact shape:
 Do not include any text before or after the JSON object.
 Vary your choices daily — do not repeat the same mantra, insights, or word across days.`;
 
-export async function fetchWisdomSection(env: Env): Promise<WisdomSection> {
+export async function fetchWisdomSection(env: LlmEnv): Promise<WisdomSection> {
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86_400_000,
   );

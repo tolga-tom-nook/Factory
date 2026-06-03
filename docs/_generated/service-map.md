@@ -7,14 +7,14 @@ doc_type: diagram
 fidelity: generated
 title: "Factory Service Map"
 generator: npm run docs:diagrams
-last_generated: 2026-06-01
+last_generated: 2026-06-02
 source:
   - docs/service-registry.yml
 ---
 
 # Factory Service Map
 
-**Source hash:** `sha256:5eb93ef8a0f805506403061e76526b92596288cca070bb82e63e34e815ba5a00`
+**Source hash:** `sha256:cca619f5509a4f451f87dc7e8b8ab9d469718a0b9a3a7919b7260c4172a2abe3`
 
 ```mermaid
 flowchart LR
@@ -40,7 +40,7 @@ flowchart LR
   workers --> worker_factory_core_api["factory-core-api\nhttps://core.latwoodtech.work"]
   workers --> worker_factory_events_replay["factory-events-replay\nurl unknown"]
   workers --> worker_webhook_fanout["webhook-fanout\nhttps://webhooks.latwoodtech.work/stripe"]
-  workers --> worker_daily_brief["daily-brief\nhttps://daily-brief.adrper79.workers.dev"]
+  workers --> worker_daily_brief["daily-brief\nhttps://dbrief.latwoodtech.work"]
   workers --> worker_linkedin_publisher["linkedin-publisher\nhttps://linkedin-publisher.adrper79.workers.dev"]
   workers --> worker_xico_city["xico-city\nhttps://xicocity.com"]
   workers --> worker_xico_city_staging["xico-city-staging\nhttps://staging.xicocity.com"]

@@ -17,7 +17,7 @@
 #       secrets: inherit
 #
 # REQUIRED SECRETS (via secrets: inherit)
-#   GH_PAT — to query project board
+#   FACTORY_APP_ID, FACTORY_APP_PRIVATE_KEY — mints a short-lived App token (GH_PAT no longer required)
 #
 # RELATED
 #   factory#70 (SYN-2)
@@ -92,10 +92,17 @@ jobs:
             echo "::notice::No ESLint config found; skipping"
           fi
 
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
       - name: P0 issue gate
         if: ${{ inputs.p0_gate_enabled }}
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           REPO: ${{ github.repository }}
         run: |
           set -e

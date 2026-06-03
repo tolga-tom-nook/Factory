@@ -90,6 +90,10 @@ on:
         required: true
       GH_PAT:
         required: true
+      FACTORY_APP_ID:
+        required: true
+      FACTORY_APP_PRIVATE_KEY:
+        required: true
 
 concurrency:
   group: neon-pr-${{ inputs.app_name }}-${{ inputs.pr_number }}
@@ -329,9 +333,16 @@ jobs:
           done
           echo "::warning::Preview /health did not return 200 within 60s (DNS/cert may still be propagating)."
 
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
       - name: Post or update PR comment
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR: ${{ inputs.pr_number }}
           APP_NAME: ${{ inputs.app_name }}
           PARENT_BRANCH: ${{ inputs.neon_parent_branch }}
@@ -474,10 +485,17 @@ jobs:
             --project-id "$PROJECT" \
             || echo "Neon branch $BRANCH already gone"
 
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
       - name: Post cleanup confirmation
         if: always()
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           PR: ${{ inputs.pr_number }}
           APP_NAME: ${{ inputs.app_name }}
           WORKER_NAME: ${{ steps.names.outputs.worker_name }}

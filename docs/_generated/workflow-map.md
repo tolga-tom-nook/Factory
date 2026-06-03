@@ -7,7 +7,7 @@ doc_type: diagram
 fidelity: generated
 title: "Factory Workflow Map"
 generator: npm run docs:diagrams
-last_generated: 2026-06-01
+last_generated: 2026-06-02
 source:
   - .github/workflows/*.yml
   - .github/workflows/REGISTRY.md
@@ -121,6 +121,7 @@ flowchart TB
   Other --> refresh_vertex_token_yml["refresh-vertex-token.yml"]
   Other --> regen_lockfile_on_branch_yml["regen-lockfile-on-branch.yml"]
   Other --> regenerate_app_lockfiles_yml["regenerate-app-lockfiles.yml"]
+  Other --> render_daily_brief_yml["render-daily-brief.yml"]
   Other --> render_video_yml["render-video.yml"]
   Reporting --> revenue_digest_yml["revenue-digest.yml"]
   Other --> reviewer_class_hints_yml["reviewer-class-hints.yml"]

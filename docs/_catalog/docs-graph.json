@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 437,
+    "total_docs": 439,
     "canonical": 17,
-    "active": 372,
+    "active": 374,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -353,7 +353,7 @@
         "manual-review"
       ],
       "verified_by": [],
-      "content_hash": "sha256:fa35a0b3202374cbd874a81a1c08c8c592da78620b0b6a3b2de1b09edfb08450",
+      "content_hash": "sha256:c9d8221a3ad29e4fda117419bee1a6f4f7153c04c37a55aa963ba884f6a068da",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": true,
@@ -374,7 +374,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:ec675548e75c598d5dc6ce5d513dd4bb0770813e3e399a37e99fe79a3aca4f5a",
+      "content_hash": "sha256:a5e7d2b3c7ded992c7fa5e7f6e1e4519582c6f1f1d070958d4bc9653b16ff9c7",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -395,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:bfea4ac64d3ce719d3d6e22838be47d6496c4959ef018c871573bf2fe9d2bdb5",
+      "content_hash": "sha256:d4dd7010545de20f87d0b691e240d2dcd42075930ef750df0500dfdd8f61676b",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -416,7 +416,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:4889acda7a1f0ba2b806cc472d644e90db2b9c60c05ccaba76ee1732c9dbdd30",
+      "content_hash": "sha256:5473e806d6b687e166d1cca46c67e77a065e19f1fa203559c975c1bf96edada0",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -563,7 +563,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:56a4cdbd377d3d0162cbb425beb3f8408dc35724f042d8b39c56dbab7f35cb8d",
+      "content_hash": "sha256:54b3da11b99919feadcd0a2570a635bc3b0104611e38fd96808bec81baa9bd7c",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -1088,7 +1088,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:132e92e715c93f4ca84e40dc8d552b296de2132c4623f45632450f0e007a08bd",
+      "content_hash": "sha256:bedc2c7c4fefbf258cd758b74a5b4713f38272a12d1d57a0dffd17c0a4d2ffa0",
       "source": {
         "frontmatter": true,
         "canonical_allowlist": false,
@@ -1915,6 +1915,27 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:7ce1b5ab4ae89abafed9bb539c73d06dbffa98424ee69679c3392ed98537b2e3",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/BUS_FACTOR.md",
+      "title": "Bus-Factor & Recovery — Operator Continuity (G19)",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:3bae75ba8b7ed288dddb008f7f3e5f209594bc11d1f39f988311d3e83b8e7cdf",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -3412,7 +3433,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:8591d01966e19c170aeb7f015597d54e35447ad9780085ffc38781c72c482c96",
+      "content_hash": "sha256:929e1e1031c6c8a9f79e26684f78098f11b420d38f9e4d432ebc573376459f1e",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -3496,7 +3517,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:11af5e506220e935e2d426139f5de62118c5adcf986381e091e8a3b3a093d761",
+      "content_hash": "sha256:1a1c0115d39a775fafb6b78b978de2d91bf4f34fa2e1a59fcc16bf14e02ced77",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -3896,6 +3917,27 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:119f5bb9eb216ed58e17a5071c40037e142198c81462cce30b8e2e5e2f9bf157",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/LEGAL_OPS.md",
+      "title": "Legal & Domain Operations (G18)",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:f90511703a8fdc580cf2adaca5622e2794590c6868422bf430fc3251aafcf246",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7098,7 +7140,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:909c3bbc65409cad0335cc1d2cbf556545259a0d8a261ea6c48cb860ed908683",
+      "content_hash": "sha256:831257f0e1c5e262b0ce9e2039dbe5ef587e841112695cbce51881baae023168",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7518,7 +7560,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:beedbcca6a4d309e9d2d908aa7c4f22ca539df0f69012637490e0b2877db12ce",
+      "content_hash": "sha256:0e0bad5b85cbf1e929c54c95e7554be7ed2a75608ea61cbfc68aa1592753b013",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7710,7 +7752,7 @@
         "validation-output"
       ],
       "verified_by": [],
-      "content_hash": "sha256:5eb93ef8a0f805506403061e76526b92596288cca070bb82e63e34e815ba5a00",
+      "content_hash": "sha256:cca619f5509a4f451f87dc7e8b8ab9d469718a0b9a3a7919b7260c4172a2abe3",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": true,

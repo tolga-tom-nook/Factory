@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import app from './index.js';
+import { app } from './index.js';
 import type { Env } from './env.js';
 
 const mocks = vi.hoisted(() => ({
@@ -32,6 +32,8 @@ const env: Env = {
   WORKER_API_TOKEN: 'internal-token',
   APP_SERVICE_TOKENS: JSON.stringify({ 'selfprime-token': 'selfprime' }),
   ENVIRONMENT: 'test',
+  SELFPRIME_DB_URL: 'postgres://test@host/selfprime',
+  PRIME_SELF_API_SECRET: 'test-secret',
 };
 
 const sampleJob = {

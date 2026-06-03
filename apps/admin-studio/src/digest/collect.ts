@@ -17,6 +17,7 @@
  */
 
 import type { Env } from '../env.js';
+import { getGithubToken } from '../lib/github-app.js';
 
 // ── Timeouts ─────────────────────────────────────────────────────────────────
 // Cloudflare Workers CPU time (free: 10ms, paid: 30ms) measures *JavaScript execution*
@@ -26,85 +27,6 @@ import type { Env } from '../env.js';
 // See: https://developers.cloudflare.com/workers/platform/limits/#cpu-time
 
 const FETCH_TIMEOUT_MS = 10_000;
-
-// ── GitHub App auth ───────────────────────────────────────────────────────────
-
-/**
- * Builds a GitHub App JWT valid for 60 s using the Web Crypto API.
- * No Node.js crypto; no jsonwebtoken.
- */
-async function buildAppJwt(appId: string, privateKeyPem: string): Promise<string> {
-  const now = Math.floor(Date.now() / 1000);
-  const header = { alg: 'RS256', typ: 'JWT' };
-  const payload = { iat: now - 30, exp: now + 300, iss: appId };
-
-  const b64u = (obj: unknown) =>
-    btoa(JSON.stringify(obj)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-  const headerB64 = b64u(header);
-  const payloadB64 = b64u(payload);
-  const signingInput = `${headerB64}.${payloadB64}`;
-
-  // Strip PEM headers and decode
-  const pemBody = privateKeyPem
-    .replace(/-----BEGIN [^-]+-----|-----END [^-]+-----|\s/g, '');
-  const derBuffer = Uint8Array.from(atob(pemBody), (c) => c.charCodeAt(0));
-
-  let key: CryptoKey;
-  try {
-    key = await crypto.subtle.importKey(
-      'pkcs8',
-      derBuffer,
-      { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' },
-      false,
-      ['sign'],
-    );
-  } catch {
-    throw new Error('Failed to parse FACTORY_APP_PRIVATE_KEY: key must be a PKCS#8 PEM (RS256)');
-  }
-
-  const enc = new TextEncoder();
-  const sig = await crypto.subtle.sign(
-    'RSASSA-PKCS1-v1_5',
-    key,
-    enc.encode(signingInput),
-  );
-
-  const sigB64 = btoa(String.fromCharCode(...new Uint8Array(sig)))
-    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-
-  return `${signingInput}.${sigB64}`;
-}
-
-/**
- * Exchanges a GitHub App JWT for a short-lived installation access token.
- */
-async function getInstallationToken(
-  appId: string,
-  privateKeyPem: string,
-  installationId: string,
-): Promise<string> {
-  const jwt = await buildAppJwt(appId, privateKeyPem);
-    const res = await fetch(
-    `https://api.github.com/app/installations/${installationId}/access_tokens`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': 'factory-admin-studio-digest',
-      },
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-    },
-  );
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`GitHub App token exchange failed ${res.status}: ${body}`);
-  }
-  const json = await res.json<{ token: string }>();
-  return json.token;
-}
 
 // ── GitHub data ───────────────────────────────────────────────────────────────
 
@@ -254,11 +176,7 @@ export async function collectGitHub(env: Env): Promise<GitHubResult> {
   }
 
   try {
-    const token = await getInstallationToken(
-      FACTORY_APP_ID,
-      FACTORY_APP_PRIVATE_KEY,
-      FACTORY_APP_INSTALLATION_ID,
-    );
+    const token = await getGithubToken(env);
 
     const since = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
 

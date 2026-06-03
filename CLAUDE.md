@@ -120,7 +120,9 @@ PostHog engagement signals
     transcript, twitter:player card, author/publisher/interactionStatistic
 ```
 
-**Operational runbook (read this before debugging):** [`docs/runbooks/video-pipeline.md`](./docs/runbooks/video-pipeline.md) — full secret matrix, manual test recipe, and the load-bearing gotchas list (GCP secret UTF-8 BOM trap, broken Drizzle ledger, Capricast Pages project named `videoking`, dead `ANTHROPIC_API_KEY` aliasing live `LATIMER_ANTHROPIC_API`, etc.).
+**Operational runbook (read this before debugging):** [`docs/runbooks/video-pipeline.md`](./docs/runbooks/video-pipeline.md) — full secret matrix, manual test recipe, and the load-bearing gotchas list (GCP secret UTF-8 BOM trap, broken Drizzle ledger, Capricast Pages project named `videoking`, etc.).
+
+> ⚠️ **Correction (2026-06-02):** the long-claimed "dead `ANTHROPIC_API_KEY`" is a MYTH — live-tested, both `ANTHROPIC_API_KEY` and `LATIMER_ANTHROPIC_API` GCP SM secrets are valid. LLM failures previously blamed on a "stale key" were actually a **non-existent CF AI Gateway returning 401** (CF 401s an unknown gateway name, which looks identical to a bad key from inside `@latimer-woods-tech/llm`). See [`docs/runbooks/lessons-learned.md` → "AI Gateway ghosts"](./docs/runbooks/lessons-learned.md). The `verify-ai-gateway.mjs` deploy preflight now hard-fails on a ghost gateway.
 
 **Secrets are sourced from GCP Secret Manager via WIF**, NOT GitHub Actions repo secrets. The render-video.yml workflow runs `scripts/fetch_gcp_secrets.sh` after authenticating with `google-github-actions/auth@v3`. All workflow env vars are populated from GCP at runtime. New secrets must be created in factory-495015 with `printf '%s'` (NOT `echo`) to avoid the trailing-newline trap, and granted to the `factory-sa@factory-495015.iam.gserviceaccount.com` WIF identity. See the runbook for the full matrix.
 

@@ -141,7 +141,7 @@
 | [docs/marketing/ROADMAP.md](marketing/ROADMAP.md) | active | unverified | unknown | Marketing Maturation Roadmap |
 | [docs/marketing/VOICES.md](marketing/VOICES.md) | active | unverified | unknown | Voices |
 
-## platform (336)
+## platform (338)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -196,6 +196,7 @@
 | [docs/archive/VIDEO_SECRETS_CONFIGURED.md](archive/VIDEO_SECRETS_CONFIGURED.md) | archive | historical | unknown | Video Pipeline Secrets Configuration |
 | [docs/audits/MARKETING_STAMP_AUDIT.md](audits/MARKETING_STAMP_AUDIT.md) | active | unverified | unknown | Marketing Stamp Audit — 2026-05-21 |
 | [docs/BIRTHTIME_FORMATTING_TODO.md](BIRTHTIME_FORMATTING_TODO.md) | active | unverified | unknown | Birth Time Formatting — Frontend Implementation TODO |
+| [docs/BUS_FACTOR.md](BUS_FACTOR.md) | active | unverified | unknown | Bus-Factor & Recovery — Operator Continuity (G19) |
 | [docs/CAPABILITY_DESIGN_STUDIO_GOLDEN_DESIGN.md](CAPABILITY_DESIGN_STUDIO_GOLDEN_DESIGN.md) | active | unverified | unknown | Capability Design Studio — Golden Design |
 | [docs/CAPABILITY_FACTORY_BACKCASTING_PLAN.md](CAPABILITY_FACTORY_BACKCASTING_PLAN.md) | active | unverified | unknown | Capability Factory — Backcasting Plan |
 | [docs/CAPABILITY_STUDIO_HANDOFF.md](CAPABILITY_STUDIO_HANDOFF.md) | active | unverified | unknown | Capability Design Studio Handoff |
@@ -265,6 +266,7 @@
 | [docs/kpis/metrics/warden_audit.md](kpis/metrics/warden_audit.md) | active | unverified | unknown | Metric: WARDEN_AUDIT |
 | [docs/kpis/README.md](kpis/README.md) | active | unverified | unknown | Governance KPIs — Ground Truth Reference |
 | [docs/kpis/xico-city.md](kpis/xico-city.md) | active | unverified | unknown | xico-city (DJMEXXICO) KPI brief |
+| [docs/LEGAL_OPS.md](LEGAL_OPS.md) | active | unverified | unknown | Legal & Domain Operations (G18) |
 | [docs/MASTER_SUCCESS_METRICS_BASELINE.md](MASTER_SUCCESS_METRICS_BASELINE.md) | active | unverified | unknown | Master Success Metrics Baseline Table |
 | [docs/MEDIA_ROOM_PRODUCTION_CONTROL_PLANE.md](MEDIA_ROOM_PRODUCTION_CONTROL_PLANE.md) | active | unverified | unknown | Media Room Production Control Plane |
 | [docs/migrations/sup-1.4-migration-drift-guard/README.md](migrations/sup-1.4-migration-drift-guard/README.md) | archive | historical | unknown | SUP-1.4 Migration Guide — Migration Drift Guard |

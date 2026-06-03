@@ -16,7 +16,7 @@ export const GENERATED_TARGETS = [
   { id: "lead-gen.health", url: "https://lead-gen.adrper79.workers.dev/health", contains: "ok" },
   { id: "factory-core-api.health", url: "https://core.latwoodtech.work/health", contains: "ok" },
   { id: "webhook-fanout.health", url: "https://webhooks.latwoodtech.work/stripe/health", contains: "ok" },
-  { id: "daily-brief.health", url: "https://daily-brief.adrper79.workers.dev/health", contains: "ok" },
+  { id: "daily-brief.health", url: "https://dbrief.latwoodtech.work/health", contains: "ok" },
   { id: "xico-city.health", url: "https://xicocity.com/health", contains: "ok" },
   { id: "xico-city-staging.health", url: "https://staging.xicocity.com/health", contains: "ok" },
   { id: "qa-tools-worker.health", url: "https://api.qa.latimerwoods.dev/health", contains: "ok" },

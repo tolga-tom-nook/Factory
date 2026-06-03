@@ -54,6 +54,17 @@ jobs:
           fetch_to_env SENTRY_AUTH_TOKEN        SENTRY_AUTH_TOKEN FACTORY_SENTRY_API sentry-auth-token
           fetch_to_env SENTRY_ORG              SENTRY_ORG sentry-org
 
+      - name: Verify AI Gateway exists (preflight)
+        # Checks the gateway actually fetched from GCP SM (AI_GATEWAY_URL).
+        # A ghost gateway 401s every LLM call → silent fallback; fail loud here.
+        # CF_API_TOKEN / CF_ACCOUNT_ID / AI_GATEWAY_BASE_URL come from the fetch
+        # step via $GITHUB_ENV (referenced as shell vars, matching this workflow).
+        run: |
+          set -euo pipefail
+          export CLOUDFLARE_API_TOKEN="$CF_API_TOKEN"
+          export CLOUDFLARE_ACCOUNT_ID="$CF_ACCOUNT_ID"
+          node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
+
       - name: Build local package dependencies
         run: |
           set -euo pipefail

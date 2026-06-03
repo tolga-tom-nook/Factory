@@ -22,6 +22,7 @@ import { fetchFile } from '../lib/github-api.js';
 import type { LLMEnv } from '@latimer-woods-tech/llm';
 import { AGENT_TOOLS, executeTool, extractToolUse } from '../lib/ai-tools.js';
 import type { ToolUseBlock } from '../lib/ai-tools.js';
+import { getGithubToken, hasGithubAuth } from '../lib/github-app.js';
 
 // ---------------------------------------------------------------------------
 // Module-level context cache — fetched once per worker cold start
@@ -378,7 +379,7 @@ ai.post('/chat', async (c) => {
     : 'execution';
 
   // Load factory CONTEXT.md once per cold start and inject as immutable prefix.
-  const factoryCtx = c.env.GITHUB_TOKEN ? await loadFactoryContext(c.env.GITHUB_TOKEN) : '';
+  const factoryCtx = hasGithubAuth(c.env) ? await loadFactoryContext(await getGithubToken(c.env)) : '';
   const ctxPrefix = factoryCtx ? `[FACTORY CONTEXT — immutable architectural rules]\n${factoryCtx}\n\n` : '';
   const system = ctxPrefix + buildSystem(body);
   const messages = body.history.map((t) => ({ role: t.role, content: t.content }));
@@ -481,13 +482,13 @@ ai.post('/chat', async (c) => {
       // Execute the tool
       let toolResult: unknown = { error: 'tool execution failed' };
       try {
-        if (!c.env.GITHUB_TOKEN) {
-          toolResult = { error: 'GITHUB_TOKEN not configured' };
+        if (!hasGithubAuth(c.env)) {
+          toolResult = { error: 'GitHub auth not configured' };
         } else {
           toolResult = await executeTool(
             toolUse.name,
             toolUse.input as Record<string, unknown>,
-            c.env.GITHUB_TOKEN,
+            await getGithubToken(c.env),
             { GCP_SA_KEY: c.env.GCP_SA_KEY },
           );
         }
@@ -693,7 +694,7 @@ export async function runAnalysisCycle(env: Env): Promise<void> {
   const latest = env.MONITOR_KV ? await env.MONITOR_KV.get('latest', 'json') : null;
 
   // 2b. Load CONTEXT.md as immutable architectural rules prefix (cached per cold start)
-  const githubToken = env.GITHUB_TOKEN;
+  const githubToken = hasGithubAuth(env) ? await getGithubToken(env) : null;
   const factoryCtx = githubToken ? await loadFactoryContext(githubToken) : '';
   const ctxPrefix = factoryCtx
     ? `[FACTORY CONTEXT — immutable architectural rules]\n${factoryCtx}\n\n`
@@ -746,7 +747,7 @@ ai.post('/propose-fix', async (c) => {
   if (!body?.filePath || !body?.finding) {
     return c.json({ error: 'filePath and finding required' }, 400);
   }
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   const missingLlmConfig = getMissingCompleteLlmConfig(c.env);
   if (missingLlmConfig.length > 0) {
     return c.json({ error: 'LLM configuration incomplete', missing: missingLlmConfig }, 503);
@@ -756,14 +757,16 @@ ai.post('/propose-fix', async (c) => {
   // fetchFile is imported at module level; get remaining helpers
   const { createBranch, commitFile, openPullRequest } = await import('../lib/github-api.js');
 
+  // Resolve a GitHub token once (App installation token, or PAT fallback).
+  const token = await getGithubToken(c.env);
   // Load CONTEXT.md as immutable architectural rules prefix (cached per cold start)
-  const factoryCtx = await loadFactoryContext(c.env.GITHUB_TOKEN);
+  const factoryCtx = await loadFactoryContext(token);
   const ctxPrefix = factoryCtx
     ? `[FACTORY CONTEXT — immutable architectural rules]\n${factoryCtx}\n\n`
     : '';
 
 
-  const sourceFile = await fetchFile(c.env.GITHUB_TOKEN, body.filePath, 'main');
+  const sourceFile = await fetchFile(token, body.filePath, 'main');
 
   // 2. Ask LLM for a minimal patch
   const fixSystemContent = `${ctxPrefix}You are a senior TypeScript engineer for a Cloudflare Workers monorepo.
@@ -806,10 +809,10 @@ Return ONLY valid JSON — no prose, no markdown:
 
   // 4. Create branch + commit
   const branchName = `auto/fix-${Date.now()}`;
-  await createBranch(c.env.GITHUB_TOKEN, branchName, 'main');
+  await createBranch(token, branchName, 'main');
 
   const newContent = (sourceFile.text ?? '').replace(patch.oldCode, patch.newCode);
-  await commitFile(c.env.GITHUB_TOKEN, {
+  await commitFile(token, {
     path: body.filePath,
     content: newContent,
     message: `[auto] ${body.summary}`,
@@ -818,7 +821,7 @@ Return ONLY valid JSON — no prose, no markdown:
   });
 
   // 5. Open draft PR
-  const pr = await openPullRequest(c.env.GITHUB_TOKEN, {
+  const pr = await openPullRequest(token, {
     title: `[auto] ${body.summary}`,
     body: `## Auto-generated fix
 

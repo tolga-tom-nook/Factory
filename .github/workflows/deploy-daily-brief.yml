@@ -41,26 +41,23 @@ jobs:
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
 
       - name: Fetch secrets from GCP Secret Manager
+        env:
+          # GH_PAT is a long-lived PAT with workflow:write scope — used for the
+          # Worker's GITHUB_TOKEN so it can dispatch render-daily-brief.yml at
+          # cron time. It is NOT rotated by refresh-vertex-token.yml (which writes
+          # to the GitHub Actions secret store, not GCP SM).
+          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           set -euo pipefail
           source scripts/fetch_gcp_secrets.sh
           fetch_to_env CLOUDFLARE_API_TOKEN   CF_API_TOKEN CLOUDFLARE_API_TOKEN
           fetch_to_env CLOUDFLARE_ACCOUNT_ID  CF_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
-          fetch_to_env ANTHROPIC_API_KEY      ANTHROPIC_API_KEY
-          fetch_to_env GROQ_API_KEY           GROQ_API_KEY
-          fetch_to_env GROK_API_KEY           GROK_API_KEY
-          fetch_to_env VERTEX_ACCESS_TOKEN    VERTEX_ACCESS_TOKEN
-          fetch_to_env ELEVENLABS_API_KEY     ELEVENLABS_API_KEY
-          fetch_to_env ELEVENLABS_VOICE_ID    ELEVENLABS_VOICE_ID
           fetch_to_env RESEND_API_KEY         RESEND_API_KEY FACTORY_RESEND_API_KEY
-          fetch_to_env GITHUB_TOKEN           GITHUB_TOKEN FACTORY_GITHUB_TOKEN
-          fetch_to_env NEWS_API_KEY           NEWS_API_KEY
-          fetch_to_env STRIPE_SECRET_KEY      STRIPE_SECRET_KEY
-          fetch_to_env POSTHOG_API_KEY        POSTHOG_API_KEY POSTHOG_KEY POSTHOG_API
-          fetch_to_env POSTHOG_PROJECT_ID     POSTHOG_PROJECT_ID
           fetch_to_env SENTRY_AUTH_TOKEN      SENTRY_AUTH_TOKEN FACTORY_SENTRY_API sentry-auth-token
           fetch_to_env SENTRY_ORG            SENTRY_ORG sentry-org
           fetch_to_env TRIGGER_TOKEN          TRIGGER_TOKEN DAILY_BRIEF_TRIGGER_TOKEN daily-brief-trigger-token
+          # GITHUB_TOKEN sourced from GH_PAT (long-lived, not in GCP SM).
+          echo "GITHUB_TOKEN=${GH_PAT}" >> "$GITHUB_ENV"
 
       - name: Build local package dependencies
         run: |
@@ -120,18 +117,12 @@ jobs:
             printf '%s' "$value" | npx wrangler secret put "$name" --env production
           }
 
-          put_required_secret ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
-          put_required_secret GROQ_API_KEY "$GROQ_API_KEY"
-          put_required_secret VERTEX_ACCESS_TOKEN "$VERTEX_ACCESS_TOKEN"
-          put_required_secret ELEVENLABS_API_KEY "$ELEVENLABS_API_KEY"
-          put_required_secret ELEVENLABS_VOICE_ID "$ELEVENLABS_VOICE_ID"
+          # Worker only needs RESEND + GITHUB_TOKEN (for workflow_dispatch).
+          # LLM/TTS secrets (ANTHROPIC_API_KEY, VERTEX_ACCESS_TOKEN,
+          # ELEVENLABS_*) are used by render-daily-brief.yml in GHA, not by
+          # the Worker itself.
           put_required_secret RESEND_API_KEY "$RESEND_API_KEY"
           put_required_secret GITHUB_TOKEN "$GITHUB_TOKEN"
-          put_required_secret NEWS_API_KEY "$NEWS_API_KEY"
-          put_optional_secret GROK_API_KEY "$GROK_API_KEY"
-          put_optional_secret STRIPE_SECRET_KEY "$STRIPE_SECRET_KEY"
-          put_optional_secret POSTHOG_API_KEY "$POSTHOG_API_KEY"
-          put_optional_secret POSTHOG_PROJECT_ID "$POSTHOG_PROJECT_ID"
           put_optional_secret SENTRY_AUTH_TOKEN "$SENTRY_AUTH_TOKEN"
           put_optional_secret SENTRY_ORG "$SENTRY_ORG"
           put_optional_secret TRIGGER_TOKEN "$TRIGGER_TOKEN"
@@ -147,10 +138,12 @@ jobs:
 
       - name: Inject Sentry debug IDs into bundle
         working-directory: apps/daily-brief
+        continue-on-error: true
         run: sentry-cli sourcemaps inject .sentry-dist/
 
       - name: Upload sourcemaps to Sentry
         working-directory: apps/daily-brief
+        continue-on-error: true
         run: |
           sentry-cli sourcemaps upload \
             --project daily-brief \
@@ -168,7 +161,7 @@ jobs:
         run: |
           echo "Daily Brief deployment complete"
           node scripts/verify-http-endpoint.mjs \
-            --url https://daily-brief.adrper79.workers.dev/health \
+            --url https://dbrief.latwoodtech.work/health \
             --status 200 \
             --json-field status \
             --json-equals ok \

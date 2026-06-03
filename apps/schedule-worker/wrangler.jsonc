@@ -1,4 +1,12 @@
 {
+  // ---------------------------------------------------------------------------
+  // Secrets — must be provisioned with `wrangler secret put` before deploy:
+  //   wrangler secret put WORKER_API_TOKEN
+  //   wrangler secret put APP_SERVICE_TOKENS
+  //   wrangler secret put SELFPRIME_DB_URL       (selfprime Neon connection string — I1 Slice 4)
+  //   wrangler secret put PRIME_SELF_API_SECRET  (HMAC secret for subscription dispatch — I1 Slice 4)
+  // GCP Secret Manager canonical names: SELFPRIME_DB_URL, PRIME_SELF_API_SECRET
+  // ---------------------------------------------------------------------------
   "name": "schedule-worker",
   "main": "src/index.ts",
   "compatibility_date": "2026-05-01",

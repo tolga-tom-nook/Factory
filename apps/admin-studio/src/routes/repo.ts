@@ -29,6 +29,7 @@ import {
   fetchTree,
   openPullRequest,
 } from '../lib/github-api.js';
+import { getGithubToken, hasGithubAuth } from '../lib/github-app.js';
 
 const repo = new Hono<AppEnv>();
 
@@ -49,9 +50,9 @@ async function readJson<T>(c: Context<AppEnv>): Promise<T> {
 }
 
 repo.get('/branches', async (c) => {
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   try {
-    const branches = await fetchBranches(c.env.GITHUB_TOKEN);
+    const branches = await fetchBranches(await getGithubToken(c.env));
     return c.json({ branches });
   } catch (err) {
     return mapError(c, err);
@@ -59,10 +60,10 @@ repo.get('/branches', async (c) => {
 });
 
 repo.get('/tree', async (c) => {
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   const ref = c.req.query('ref') || 'main';
   try {
-    const tree = await fetchTree(c.env.GITHUB_TOKEN, ref);
+    const tree = await fetchTree(await getGithubToken(c.env), ref);
     return c.json(tree);
   } catch (err) {
     return mapError(c, err);
@@ -70,13 +71,13 @@ repo.get('/tree', async (c) => {
 });
 
 repo.get('/file', async (c) => {
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   const path = c.req.query('path');
   const ref = c.req.query('ref') || 'main';
   if (!path) return c.json({ error: 'path query is required' }, 400);
   if (path.includes('..')) return c.json({ error: 'invalid path' }, 400);
   try {
-    const file = await fetchFile(c.env.GITHUB_TOKEN, path, ref);
+    const file = await fetchFile(await getGithubToken(c.env), path, ref);
     return c.json({ file });
   } catch (err) {
     return mapError(c, err);
@@ -84,7 +85,7 @@ repo.get('/file', async (c) => {
 });
 
 repo.post('/branches', async (c) => {
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   let body: RepoCreateBranchRequest;
   try { body = await readJson<RepoCreateBranchRequest>(c); } catch (err) {
     return c.json({ error: (err as Error).message }, 400);
@@ -96,7 +97,7 @@ repo.post('/branches', async (c) => {
     return c.json({ error: 'branch is protected' }, 403);
   }
   try {
-    const created = await createBranch(c.env.GITHUB_TOKEN, body.name, body.from ?? 'main');
+    const created = await createBranch(await getGithubToken(c.env), body.name, body.from ?? 'main');
     return c.json({ branch: created }, 201);
   } catch (err) {
     return mapError(c, err);
@@ -104,7 +105,7 @@ repo.post('/branches', async (c) => {
 });
 
 repo.post('/commit', async (c) => {
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   let body: RepoCommitRequest;
   try { body = await readJson<RepoCommitRequest>(c); } catch (err) {
     return c.json({ error: (err as Error).message }, 400);
@@ -127,7 +128,7 @@ repo.post('/commit', async (c) => {
 
   // Belt-and-braces: also reject branches GitHub reports as protected.
   try {
-    const branches = await fetchBranches(c.env.GITHUB_TOKEN);
+    const branches = await fetchBranches(await getGithubToken(c.env));
     const branch = branches.find((b) => b.name === body.branch);
     if (branch?.protected) {
       return c.json({ error: 'cannot commit to protected branch', branch: body.branch }, 403);
@@ -137,7 +138,7 @@ repo.post('/commit', async (c) => {
   }
 
   try {
-    const result = await commitFile(c.env.GITHUB_TOKEN, {
+    const result = await commitFile(await getGithubToken(c.env), {
       branch: body.branch,
       path: body.path,
       content: body.content,
@@ -156,7 +157,7 @@ repo.post('/commit', async (c) => {
 });
 
 repo.post('/pull-requests', async (c) => {
-  if (!c.env.GITHUB_TOKEN) return c.json({ error: 'GITHUB_TOKEN not configured' }, 503);
+  if (!hasGithubAuth(c.env)) return c.json({ error: 'GitHub auth not configured' }, 503);
   let body: RepoOpenPRRequest;
   try { body = await readJson<RepoOpenPRRequest>(c); } catch (err) {
     return c.json({ error: (err as Error).message }, 400);
@@ -172,7 +173,7 @@ repo.post('/pull-requests', async (c) => {
     return c.json({ error: 'body too long', maxBytes: MAX_PR_BODY_BYTES }, 413);
   }
   try {
-    const pr = await openPullRequest(c.env.GITHUB_TOKEN, body);
+    const pr = await openPullRequest(await getGithubToken(c.env), body);
     return c.json({ pr }, 201);
   } catch (err) {
     return mapError(c, err);

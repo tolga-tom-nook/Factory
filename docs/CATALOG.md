@@ -8,9 +8,9 @@
 
 | Status | Count |
 |---|---:|
-| total_docs | 437 |
+| total_docs | 439 |
 | canonical | 17 |
-| active | 372 |
+| active | 374 |
 | stale | 0 |
 | archive | 45 |
 | generated | 3 |
@@ -39,7 +39,7 @@
 | [prompts/README.md](../prompts/README.md) | canonical | owner-reviewed | platform | unknown | Factory Prompt Index |
 | [WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md](../WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md) | canonical | owner-reviewed | platform | unknown | World-Class Implementation Dashboard |
 
-## Active Docs (372)
+## Active Docs (374)
 
 | Path | Status | Fidelity | Owner | Last Updated | Title |
 |---|---|---|---|---|---|
@@ -98,6 +98,7 @@
 | [docs/architecture/SURFACES.md](architecture/SURFACES.md) | active | unverified | architecture | unknown | Factory Surfaces — Navigation Index |
 | [docs/audits/MARKETING_STAMP_AUDIT.md](audits/MARKETING_STAMP_AUDIT.md) | active | unverified | platform | unknown | Marketing Stamp Audit — 2026-05-21 |
 | [docs/BIRTHTIME_FORMATTING_TODO.md](BIRTHTIME_FORMATTING_TODO.md) | active | unverified | platform | unknown | Birth Time Formatting — Frontend Implementation TODO |
+| [docs/BUS_FACTOR.md](BUS_FACTOR.md) | active | unverified | platform | unknown | Bus-Factor & Recovery — Operator Continuity (G19) |
 | [docs/CAPABILITY_DESIGN_STUDIO_GOLDEN_DESIGN.md](CAPABILITY_DESIGN_STUDIO_GOLDEN_DESIGN.md) | active | unverified | platform | unknown | Capability Design Studio — Golden Design |
 | [docs/CAPABILITY_FACTORY_BACKCASTING_PLAN.md](CAPABILITY_FACTORY_BACKCASTING_PLAN.md) | active | unverified | platform | unknown | Capability Factory — Backcasting Plan |
 | [docs/CAPABILITY_STUDIO_HANDOFF.md](CAPABILITY_STUDIO_HANDOFF.md) | active | unverified | platform | unknown | Capability Design Studio Handoff |
@@ -189,6 +190,7 @@
 | [docs/kpis/metrics/warden_audit.md](kpis/metrics/warden_audit.md) | active | unverified | platform | unknown | Metric: WARDEN_AUDIT |
 | [docs/kpis/README.md](kpis/README.md) | active | unverified | platform | unknown | Governance KPIs — Ground Truth Reference |
 | [docs/kpis/xico-city.md](kpis/xico-city.md) | active | unverified | platform | unknown | xico-city (DJMEXXICO) KPI brief |
+| [docs/LEGAL_OPS.md](LEGAL_OPS.md) | active | unverified | platform | unknown | Legal & Domain Operations (G18) |
 | [docs/marketing/ATTRIBUTION.md](marketing/ATTRIBUTION.md) | active | unverified | marketing | unknown | Attribution |
 | [docs/marketing/BUDGET_CAPS.md](marketing/BUDGET_CAPS.md) | active | unverified | marketing | unknown | Budget Caps |
 | [docs/marketing/CAMPAIGN_TAGGING.md](marketing/CAMPAIGN_TAGGING.md) | active | unverified | marketing | unknown | Campaign Tagging |

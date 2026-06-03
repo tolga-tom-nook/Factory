@@ -354,6 +354,9 @@ jobs:
           fetch_to_env ELEVENLABS_VOICE_CYPHER         ELEVENLABS_VOICE_CYPHER elevenlabs-voice-cypher
           fetch_to_env ELEVENLABS_VOICE_DEFAULT        ELEVENLABS_VOICE_DEFAULT elevenlabs-voice-default
           fetch_to_env CF_ACCOUNT_ID                   CF_ACCOUNT_ID CLOUDFLARE_ACCOUNT_ID
+          # CF_API_TOKEN (general scope) is needed for the AI Gateway preflight;
+          # CF_STREAM_TOKEN below is Stream-scoped and can't read AI Gateway.
+          fetch_to_env CF_API_TOKEN                    CF_API_TOKEN CLOUDFLARE_API_TOKEN cloudflare-api-token
           fetch_to_env CF_STREAM_TOKEN                 CF_STREAM_TOKEN cf-stream-token
           fetch_to_env CF_STREAM_CUSTOMER_DOMAIN       CF_STREAM_CUSTOMER_DOMAIN cf-stream-customer-domain
           fetch_to_env R2_ACCESS_KEY_ID                R2_ACCESS_KEY_ID r2-access-key-id
@@ -373,6 +376,16 @@ jobs:
           # AI_GATEWAY_BASE_URL (note the _BASE_) — fetch_to_env's first arg
           # is the local env var name, subsequent args are GCP secret aliases.
           fetch_to_env AI_GATEWAY_BASE_URL             AI_GATEWAY_URL AI_GATEWAY_BASE_URL ai-gateway-base-url ai-gateway-url
+
+      - name: Verify AI Gateway exists (preflight)
+        # The video pipeline generates headline/script via @latimer-woods-tech/llm
+        # through this gateway. A ghost gateway 401s every call → silent fallback;
+        # fail loud before spending a full render.
+        run: |
+          set -euo pipefail
+          export CLOUDFLARE_API_TOKEN="$CF_API_TOKEN"
+          export CLOUDFLARE_ACCOUNT_ID="$CF_ACCOUNT_ID"
+          node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
 
       - name: Build local package dependencies
         # `llm` added: apps/video-studio/scripts/generate-script.mjs imports

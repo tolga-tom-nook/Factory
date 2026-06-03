@@ -165,6 +165,32 @@ describe('complete', () => {
     expect(String(call[0])).toContain('anthropic/v1/messages');
   });
 
+  it('sends cf-aig-metadata header with caller attribution when set', async () => {
+    const fetchImpl = vi.fn(() => Promise.resolve(anthropicResponse('ok')));
+    await complete(
+      [{ role: 'user', content: 'hi' }],
+      ENV,
+      { tier: 'balanced', project: 'daily-brief', workload: 'narration', actor: 'worker', runId: 'r-1' },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    const call = fetchImpl.mock.calls[0] as unknown as [string, { headers: Record<string, string> }];
+    expect(call[1].headers['cf-aig-metadata']).toBeDefined();
+    const meta = JSON.parse(call[1].headers['cf-aig-metadata']!) as Record<string, string>;
+    expect(meta).toEqual({ project: 'daily-brief', workload: 'narration', actor: 'worker', runId: 'r-1' });
+  });
+
+  it('omits cf-aig-metadata header when no attribution fields are set', async () => {
+    const fetchImpl = vi.fn(() => Promise.resolve(anthropicResponse('ok')));
+    await complete(
+      [{ role: 'user', content: 'hi' }],
+      ENV,
+      { tier: 'balanced' },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    const call = fetchImpl.mock.calls[0] as unknown as [string, { headers: Record<string, string> }];
+    expect(call[1].headers['cf-aig-metadata']).toBeUndefined();
+  });
+
   it('fast tier falls back to Haiku when Grok key is unavailable', async () => {
     const fetchImpl = vi.fn(() => Promise.resolve(anthropicResponse('fast')));
     const res = await complete(

@@ -30,13 +30,20 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
           # Use a long-lived PAT instead of GITHUB_TOKEN so the auto-merge PR
           # the workflow opens triggers required-status workflows on PRs.
           # Events authored by GITHUB_TOKEN do not retrigger workflow runs.
-          token: ${{ secrets.GH_PAT }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
@@ -54,7 +61,7 @@ jobs:
 
       - name: Open auto-merge PR for scorecard snapshot
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           set -euo pipefail
           git add docs/scorecard/ 2>/dev/null || true
@@ -71,7 +78,7 @@ jobs:
           # fresh `git push` from a new branch cannot fall back to interactive
           # prompts (RC-3 in the 2026-05-23 scheduled-workflow triage).
           git remote set-url origin \
-            "https://x-access-token:${{ secrets.GH_PAT }}@github.com/${GITHUB_REPOSITORY}.git"
+            "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${GITHUB_REPOSITORY}.git"
           git checkout -b "$BRANCH"
           git commit -m "chore(scorecard): daily launch readiness ($DATE)"
           git push --set-upstream origin "$BRANCH"

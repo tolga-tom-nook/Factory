@@ -38,6 +38,13 @@ jobs:
       new_version_id:      ${{ steps.capture-new.outputs.new_version_id }}
       has_migrations:      ${{ steps.migrations.outputs.has_migrations }}
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 2
@@ -66,7 +73,6 @@ jobs:
           fetch_to_env STUDIO_ADMIN_EMAIL                   ADMIN_STUDIO_BOOTSTRAP_EMAIL FACTORY_USER
           fetch_to_env STUDIO_ADMIN_PASSWORD                ADMIN_STUDIO_BOOTSTRAP_PASSWORD FACTORY_PW
           fetch_to_env ANTHROPIC_API_KEY                    LATIMER_ANTHROPIC_API ANTHROPIC_API_KEY anthropic-api-key
-          fetch_to_env STUDIO_GITHUB_TOKEN                  GH_PAT FACTORY_GITHUB_TOKEN GITHUB_TOKEN
           fetch_to_env AI_GATEWAY_BASE_URL                  AI_GATEWAY_URL AI_GATEWAY_BASE_URL ai-gateway-base-url ai-gateway-url
           fetch_to_env DEEPSEEK_API_KEY                     DEEPSEEK_API_KEY deepseek-api-key
           fetch_to_env XAI_API_KEY                          XAI_API_KEY GROK_API_KEY grok-api-key xai-api-key
@@ -81,6 +87,15 @@ jobs:
           fetch_to_env STUDIO_ALLOWED_USERS_JSON            ADMIN_STUDIO_ALLOWED_USERS_JSON STUDIO_ALLOWED_USERS_JSON
           fetch_to_env STUDIO_GOOGLE_WORKSPACE_DOMAIN       STUDIO_GOOGLE_WORKSPACE_DOMAIN ADMIN_STUDIO_GOOGLE_WORKSPACE_DOMAIN
           fetch_to_env GCP_SA_KEY                           ADMIN_STUDIO_GCP_SA_KEY
+
+      - name: Verify AI Gateway exists (preflight)
+        # admin-studio routes LLM (AI strategies) through this gateway. A ghost
+        # gateway 401s every call → silent fallback; fail loud pre-deploy.
+        run: |
+          set -euo pipefail
+          export CLOUDFLARE_API_TOKEN="$CF_API_TOKEN"
+          export CLOUDFLARE_ACCOUNT_ID="$CF_ACCOUNT_ID"
+          node scripts/verify-ai-gateway.mjs --url "$AI_GATEWAY_BASE_URL"
 
       - name: Resolve target environment
         id: target
@@ -214,7 +229,8 @@ jobs:
           put_required_secret STUDIO_ADMIN_EMAIL "$studio_admin_email"
           put_required_secret STUDIO_ADMIN_PASSWORD_SHA256 "$password_hash"
           put_required_secret ANTHROPIC_API_KEY "$anthropic_api_key"
-          put_required_secret GITHUB_TOKEN "$github_token"
+          put_required_secret FACTORY_APP_ID "${{ secrets.FACTORY_APP_ID }}"
+          put_required_secret FACTORY_APP_PRIVATE_KEY "${{ secrets.FACTORY_APP_PRIVATE_KEY }}"
 
           put_optional_secret DEEPSEEK_API_KEY "${DEEPSEEK_API_KEY:-}"
           put_optional_secret XAI_API_KEY "${XAI_API_KEY:-}"
@@ -233,7 +249,6 @@ jobs:
           FALLBACK_STUDIO_ADMIN_EMAIL: ${{ secrets.FACTORY_USER }}
           FALLBACK_STUDIO_ADMIN_PASSWORD: ${{ secrets.FACTORY_PW }}
           FALLBACK_ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          FALLBACK_GITHUB_TOKEN: ${{ secrets.GH_PAT }}
           FALLBACK_STUDIO_WEBHOOK_SECRET: ${{ secrets.STUDIO_WEBHOOK_SECRET }}
           FALLBACK_WORKER_API_TOKEN: ${{ secrets.WORKER_API_TOKEN }}
           FALLBACK_GOOGLE_CLIENT_ID: ${{ secrets.ADMIN_STUDIO_GOOGLE_CLIENT_ID }}

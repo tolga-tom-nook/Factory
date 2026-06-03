@@ -14,6 +14,13 @@ import type { StripeMrrData } from '../sections/stripe';
 import type { PostHogSnapshot } from '../sections/posthog';
 import type { SentryErrorData } from '../sections/sentry';
 
+interface SectionFailures {
+  weather: boolean;
+  news: boolean;
+  github: boolean;
+  health: boolean;
+}
+
 interface EmailInput {
   dateLabel: string;
   weather: WeatherData | null;
@@ -26,6 +33,10 @@ interface EmailInput {
   stripeMrr: StripeMrrData | null;
   postHog: PostHogSnapshot | null;
   sentry: SentryErrorData | null;
+  /** Branded "view in browser" link for the archived HTML brief. */
+  webViewUrl?: string;
+  /** Which always-on core sections errored, for explicit "couldn't load" cards. */
+  failures?: SectionFailures;
 }
 
 const COLORS = {
@@ -83,6 +94,18 @@ function section(title: string, emoji: string, body: string): string {
       ">${emoji}&nbsp;&nbsp;${escapeHtml(title)}</h2>
       ${body}
     </div>`;
+}
+
+/** Compact "couldn't load" card so a failed core section is visible, not silently dropped. */
+function unavailableSection(title: string, emoji: string): string {
+  return section(
+    title,
+    emoji,
+    `<div style="font-size:13px;color:${COLORS.muted};display:flex;align-items:center;gap:8px">
+      <span style="color:${COLORS.yellow}">&#9888;</span>
+      Couldn't load this section today — the upstream source didn't respond. It'll be back in tomorrow's brief.
+    </div>`,
+  );
 }
 
 function pill(text: string, color: string): string {
@@ -505,15 +528,41 @@ function buildSentrySection(s: SentryErrorData): string {
 }
 
 export function buildEmailHtml(input: EmailInput): string {
+  const failures = input.failures ?? { weather: false, news: false, github: false, health: false };
+
   const wisdomHtml = input.wisdom ? buildWisdomSection(input.wisdom) : '';
-  const weatherHtml = input.weather ? buildWeatherSection(input.weather) : '';
-  const newsHtml = input.news ? buildNewsSection(input.news) : '';
-  const githubHtml = input.activity ? buildGithubSection(input.activity) : '';
-  const healthHtml = input.health ? buildHealthSection(input.health) : '';
+  const weatherHtml = input.weather
+    ? buildWeatherSection(input.weather)
+    : failures.weather ? unavailableSection('Weather', '🌤️') : '';
+  const newsHtml = input.news
+    ? buildNewsSection(input.news)
+    : failures.news ? unavailableSection('News', '📰') : '';
+  const githubHtml = input.activity
+    ? buildGithubSection(input.activity)
+    : failures.github ? unavailableSection('GitHub Pulse', '💻') : '';
+  const healthHtml = input.health
+    ? buildHealthSection(input.health)
+    : failures.health ? unavailableSection('Worker Health', '🚦') : '';
   const stripeHtml = input.stripeMrr ? buildStripeSection(input.stripeMrr) : '';
   const postHogHtml = input.postHog ? buildPostHogSection(input.postHog) : '';
   const sentryHtml = input.sentry ? buildSentrySection(input.sentry) : '';
   const insightsHtml = buildInsightsSection(input.insights, input.audioUrl);
+
+  // Hidden preheader — the snippet inboxes show next to the subject line.
+  const preheaderText = input.insights.winOfTheDay?.trim() || input.insights.textSummary?.trim() || '';
+  const preheader = preheaderText
+    ? `<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;height:0;width:0">${escapeHtml(preheaderText)}</div>`
+    : '';
+
+  const webViewHtml = input.webViewUrl
+    ? `<div style="text-align:center;margin-bottom:16px">
+        <a href="${safeHref(input.webViewUrl)}" style="font-size:11px;color:${COLORS.muted};text-decoration:underline">View in browser</a>
+      </div>`
+    : '';
+
+  const webViewFooter = input.webViewUrl
+    ? `<div style="margin-top:4px"><a href="${safeHref(input.webViewUrl)}" style="color:${COLORS.muted};text-decoration:underline">View this brief in your browser</a></div>`
+    : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -530,7 +579,10 @@ export function buildEmailHtml(input: EmailInput): string {
   color:${COLORS.text};
   -webkit-font-smoothing:antialiased;
 ">
+  ${preheader}
   <div style="max-width:680px;margin:0 auto;padding:32px 16px 48px">
+
+    ${webViewHtml}
 
     <!-- Header -->
     <div style="text-align:center;margin-bottom:32px">
@@ -553,6 +605,7 @@ export function buildEmailHtml(input: EmailInput): string {
     <div style="text-align:center;margin-top:32px;font-size:11px;color:${COLORS.muted}">
       <div>Sent by Factory Daily Brief · Cloudflare Workers</div>
       <div style="margin-top:4px">Built by the one and only you.</div>
+      ${webViewFooter}
     </div>
   </div>
 </body>
