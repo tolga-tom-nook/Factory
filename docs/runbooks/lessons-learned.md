@@ -1181,3 +1181,40 @@ with a UTF-8 BOM; `2>$null` swallows the crash and you get an **empty string**, 
 on Windows set `[Console]::OutputEncoding = [Text.Encoding]::UTF8` and read via
 `(& gcloud ... | Out-String).Trim()`. Also: the daily-brief trigger token lives in GCP SM as
 **`DAILY_BRIEF_TRIGGER_TOKEN`** (the bare `TRIGGER_TOKEN` secret does not exist).
+
+## RLS connection-layer retrofit on Neon (selfprime, June 2026)
+
+Discoveries from building Postgres row-level-security onto an existing raw-`@neondatabase/serverless` app (HumanDesign), then rolling it to prod. Reusable across the whole Workers+Neon portfolio.
+
+### Connecting as the table owner SILENTLY bypasses RLS
+Postgres RLS policies are only enforced for roles that are **not** the table owner and **not** `BYPASSRLS`. The default Neon connection role (`neondb_owner`) owns the tables, so it bypasses every policy. **Setting `app.user_id` and writing perfect policies enforces NOTHING if your app still connects as the owner.** User-request queries MUST connect as a dedicated non-owner role (`app_rls`) with explicit `GRANT`s. The owner connection stays for migrations + cross-user service tasks (cron). This is the single most important — and most silent — RLS gotcha: it "works" in every test that uses the owner connection and protects nothing in prod. **Verify with a deliberate cross-tenant probe that the role does NOT bypass.**
+
+### Neon's role API creates roles WITH `BYPASSRLS`; create the RLS role via owner SQL
+Creating the non-bypass app role via Neon's roles **API/console** sets `BYPASSRLS=true` (silently defeating RLS), and the Neon owner **cannot** `ALTER ROLE … NOBYPASSRLS` (no superuser on Neon). Create it via owner **SQL** (`CREATE ROLE … LOGIN PASSWORD`), which defaults to `NOBYPASSRLS`; SQL-created roles authenticate fine through the pooler. Make provisioning a script that hard-fails if the role ends up `BYPASSRLS`, and prove a clean ordered apply on a throwaway copy-on-write branch before prod.
+
+### Carry request-scoped identity with AsyncLocalStorage, not N function signatures
+To RLS-scope queries without editing ~85 `createQueryFn` call sites: set an `AsyncLocalStorage` store once at the request entry (`runWithRls({ userId, enabled, connectionString }, () => handler())`) and have the query factory read the ambient store at query time. Needs `nodejs_compat` (`node:async_hooks`). Benefits: (1) service tasks/cron run *outside* the request scope → self-exempt to the owner connection; (2) gate on an `RLS_ENABLED` env flag so it ships **dark** (deployed but inert) and the flag is an **instant kill switch**; (3) **fail-closed** — lost context → `app.user_id` unset against the non-bypass role → zero rows, never another tenant's. The DB is the boundary; ALS is just wiring. Caveat: `ctx.waitUntil()` runs after the response, outside the scope.
+
+### Neon HTTP driver batches `set_config` + query in ONE round-trip; the WS pool can't carry it
+A stateless HTTP query can't keep a `SET LOCAL` across calls. Use the HTTP driver's non-interactive transaction: `neon(conn,{fullResults:true}).transaction([ sql.query("SELECT set_config('app.user_id',$1,true)",[uid]), sql.query(text,params) ])` — both statements ride one round-trip; `fullResults` returns the pg-shaped `{rows,…}`. (A WS-`Pool` interactive transaction is 4 round-trips.) **In Node** the WS `Pool` path needs `neonConfig.webSocketConstructor = ws`; the HTTP path needs only global `fetch`.
+
+### Audit cross-user READS and WRITES separately — against `WITH CHECK`, not just `USING`
+A read audit (which scoped routes read another user's row) is not enough: a separate **write audit** of every `INSERT`/`UPDATE` against each table's `WITH CHECK` found legitimate flows where a client writes a practitioner-owned row (note view-tracking, accepting an invitation) that the read audit missed. Relational/social features (clusters, messaging, practitioner↔client) break under naive per-user RLS — they need controlled cross-user policy branches (often via `SECURITY DEFINER` set-returning helpers to avoid recursive-RLS) or gated `SECURITY DEFINER` functions for lookups that can't be expressed on the caller's session (invite codes, push to a counterparty). Isolation-correct ≠ feature-complete.
+
+### `no-useless-escape` on a SQL string can be a REAL bug — never blind-`--fix`
+`replace(replace(replace($1,'\','\\'),'%','\%'),'_','\_')` inside a **backtick template literal** collapses `\%`→`%`, `\_`→`_` at runtime, so the LIKE-wildcard-escaping chain is a no-op. eslint flags `no-useless-escape` correctly, but `eslint --fix` "fixes" it by stripping the backslash, cementing the bug. The correct fix doubles the backslashes (`'\\%'`). Hand-fix SQL-string escapes and verify the emitted SQL against a real DB; don't let a `lint-staged` `--fix` hook touch them.
+
+### `cmd | tail` reports tail's exit code, not the command's
+`eslint … | tail` makes the shell report the last pipe stage's exit (0), masking an upstream failure — produced a false "lint clean" when the repo had ~929 errors. Capture to a file (`cmd > out; echo $?`) or check `${PIPESTATUS[0]}`.
+
+### A Node script that `process.exit()`s while Neon sockets close crashes on Windows
+`Assertion failed: !(handle->flags & UV_HANDLE_CLOSING)` (libuv) fires on `process.exit()` while Neon's HTTP keep-alive sockets are closing — after your logic finished, but it corrupts the exit code (127) and breaks CI gating. Set `process.exitCode = …` and let Node drain.
+
+### A mocked unit suite can't validate a DB-driver or RLS change — real-DB harness, baseline FIRST
+The mocked test suite proves code *shape*, not driver/RLS behavior. (1) spin a **dedicated copy-on-write Neon branch** (isolated, deletable; never test against prod — it's a full PII copy, delete after); (2) harness with a **prod-guard** (refuse if the host is in a prod deny-list, no `--force`); (3) capture a **golden baseline BEFORE the change** so the diff distinguishes a regression from pre-existing behavior; (4) the baseline expires once policies turn on. Drive the branch yourself via the Neon API (`NEON_ORGANIZATION_KEY` is the write-capable org key) rather than have a human paste a connection string — that invites pasting the *prod* string.
+
+### "Merge to main IS a prod deploy" — validate staging BEFORE merge, not after
+On a pipeline where push-to-`main` deploys staging **and** prod in one run (no branch-staging-deploy), merging a PR is itself a production deploy — even if the feature ships dark. You cannot "merge → validate staging → promote to prod." Staging validation must be a **manual branch deploy** (`wrangler deploy --env staging` / `workflow_dispatch`) *before* the merge. Read the deploy workflow's triggers before sequencing a rollout; don't assume merge = "just reviewable." (Also: a "staging" worker often shares the prod DB — repoint its connection at an isolated branch before testing, or staging "tests" hit prod data.)
+
+### "Deployed ≠ wired" — verify build-injected values land in the LIVE artifact
+A green deploy only proves the build ran. For a build-time-injected secret/env value (e.g. a frontend Sentry DSN via a `VITE_*` var), verify it actually reached the live artifact — fetch the deployed bundle and grep for the value — AND that the downstream service accepts it (send a synthetic event → expect 2xx + id). A missing CI secret or env-wiring gap deploys cleanly but leaves the feature inert. (On a CSP/SRI-gated client: a bundled SDK needs no CSP change if there's no `connect-src` to block ingestion, but mind the per-chunk bundle budget and regenerate SRI hashes.)
