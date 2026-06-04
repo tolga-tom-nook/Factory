@@ -4,21 +4,21 @@
   "generated_at": "source-derived",
   "ok": false,
   "counts": {
-    "broken": 391,
+    "broken": 392,
     "canonical": 0,
-    "active": 275,
+    "active": 276,
     "archive": 116,
     "generated": 0
   },
   "by_owner": {
     "platform": 274,
     "admin-studio": 4,
-    "architecture": 3,
+    "architecture": 4,
     "capricast": 31,
     "marketing": 79
   },
   "by_status": {
-    "active": 275,
+    "active": 276,
     "archive": 116
   },
   "broken": [
@@ -1169,6 +1169,15 @@
       "file": "docs/architecture/ADMIN_TECHNICAL_GUIDE.md",
       "line": 288,
       "target": "../PRODUCT_PRINCIPLES.md",
+      "reason": "file not found",
+      "owner": "architecture",
+      "status": "active",
+      "fidelity": "unverified"
+    },
+    {
+      "file": "docs/architecture/AGENT_RUNTIME.md",
+      "line": 159,
+      "target": "../../apps/supervisor/src/tools/registry.ts",
       "reason": "file not found",
       "owner": "architecture",
       "status": "active",

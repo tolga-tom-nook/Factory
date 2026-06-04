@@ -7,7 +7,7 @@ doc_type: diagram
 fidelity: generated
 title: "Factory Documentation Trust Map"
 generator: npm run docs:diagrams
-last_generated: 2026-06-03
+last_generated: 2026-06-04
 source:
   - docs/_catalog/docs-graph.json
   - docs/_governance/canonical-docs.yml
