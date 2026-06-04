@@ -16,9 +16,10 @@
   },
   "dependencies": {
     "@latimer-woods-tech/admin": "^0.2.0",
+    "@latimer-woods-tech/agent": "^0.1.0",
     "@latimer-woods-tech/errors": "^0.2.0",
     "@latimer-woods-tech/llm": "^0.3.1",
-    "@latimer-woods-tech/llm-meter": "^0.2.0",
+    "@latimer-woods-tech/llm-meter": "^0.2.4",
     "@latimer-woods-tech/logger": "^0.2.0"
   },
   "devDependencies": {

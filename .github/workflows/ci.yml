@@ -87,6 +87,7 @@ jobs:
             entitlements
             protocol
             bodygraph
+            agent
           )
 
           for package in "${packages[@]}"; do

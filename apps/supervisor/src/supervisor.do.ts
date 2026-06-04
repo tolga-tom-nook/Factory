@@ -3,7 +3,7 @@ import { matchTemplate } from './planner/match';
 import { parameterize } from './planner/parameterize';
 import { loadTemplates } from './planner/load';
 import { readMemory, writeMemory } from './memory/d1';
-import { ToolRegistry } from './tools/registry';
+import { ToolRegistry } from '@latimer-woods-tech/agent';
 import { GENERATED_CAPABILITIES } from './capabilities.generated';
 import { getTemplateStats, recordRun } from './stats';
 import { executePlan } from './executor';

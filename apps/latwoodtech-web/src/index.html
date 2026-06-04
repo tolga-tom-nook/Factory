@@ -7,30 +7,79 @@
     <meta property="og:title" content="Latimer Woods" />
     <meta property="og:description" content="Technology for people who want more life, not more efficiency." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://latwoodtech.com" />
+    <meta property="og:url" content="https://latwoodtech.com/" />
+    <meta property="og:image" content="https://latwoodtech.com/assets/og-image.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Latimer Woods" />
     <meta name="twitter:description" content="Technology for people who want more life, not more efficiency." />
+    <meta name="twitter:image" content="https://latwoodtech.com/assets/og-image.svg" />
     <meta name="theme-color" content="#05070a" />
+    <link rel="canonical" href="https://latwoodtech.com/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="image" href="assets/latimerWoodslogovideo.png" fetchpriority="high" />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234f7bff' width='100' height='100'/><text x='50' y='60' font-size='70' font-weight='700' fill='white' text-anchor='middle'>L</text></svg>" />
     <title>Latimer Woods — Human-Centered Technology & Product Portfolio</title>
     <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Latimer Woods Technology",
+      "alternateName": "Latimer Woods",
+      "url": "https://latwoodtech.com/",
+      "image": "https://latwoodtech.com/assets/og-image.svg",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://latwoodtech.com/assets/latimerWoodslogovideo.png",
+        "width": 112,
+        "height": 112
+      },
+      "description": "Technology for people who want more life, not more efficiency. A portfolio of edge-first platforms across healing, media, governance, and operations.",
+      "founder": {
+        "@type": "Person",
+        "name": "Adrian L. Perry",
+        "jobTitle": "Founder & Principal Engineer"
+      },
+      "sameAs": [
+        "https://github.com/Latimer-Woods-Tech"
+      ],
+      "knowsAbout": [
+        "Cloudflare Workers",
+        "Edge computing",
+        "AI orchestration",
+        "Platform engineering"
+      ]
+    }
+    </script>
     <script type="module" src="app.js"></script>
   </head>
   <body>
     <a href="#main" class="skip-link">Skip to main content</a>
     <div class="page-shell">
+      <nav class="site-nav" aria-label="Primary">
+        <a class="site-nav-brand" href="/">
+          <span class="site-nav-mark" aria-hidden="true"></span>
+          Latimer Woods
+        </a>
+        <div class="site-nav-links">
+          <a href="/stack/">Stack</a>
+          <a href="/status/">Status</a>
+          <a href="/founder/">Founder</a>
+        </div>
+      </nav>
       <header class="hero">
         <div class="hero-copy">
           <div class="hero-mark" aria-hidden="true"></div>
-          <p class="eyebrow">Latimer Woods</p>
-          <h1>Let's be clear: Technology should make us more human.</h1>
+          <p class="eyebrow">Latimer Woods Technology</p>
+          <h1>Technology should make us more human.</h1>
+          <p class="hero-diff">Edge-first platforms. Zero technical debt. Human outcomes.</p>
           <p class="subtitle">
-            We build systems where healing, media, governance, and edge infrastructure move as one deliberate experience.
-            Real products. Real rigor. More life.
+            We build systems where healing, media, governance, and infrastructure move as one deliberate experience.
+            Real products. Real rigor. 27 apps live. $9.11/month cost.
           </p>
           <div class="hero-actions">
             <a class="button button-primary" href="#mission">Mission</a>
@@ -107,24 +156,24 @@
 
             <div class="pulse-kpis" data-pulse-stats>
               <article class="pulse-kpi pulse-kpi-placeholder">
-                <span class="pulse-kpi-label">Weighted completion</span>
+                <span class="pulse-kpi-label">Merged PRs</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Build-generated public signal</span>
+                <span class="pulse-kpi-context">Shipped and reviewed across the platform</span>
               </article>
               <article class="pulse-kpi pulse-kpi-placeholder">
-                <span class="pulse-kpi-label">Known coverage</span>
+                <span class="pulse-kpi-label">Commits</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Curated, not exhaustive</span>
+                <span class="pulse-kpi-context">Public, auditable change history</span>
               </article>
               <article class="pulse-kpi pulse-kpi-placeholder">
-                <span class="pulse-kpi-label">Verified functions</span>
+                <span class="pulse-kpi-label">Deployed apps</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Proof over posture</span>
+                <span class="pulse-kpi-context">Serverless surfaces in production</span>
               </article>
               <article class="pulse-kpi pulse-kpi-placeholder">
-                <span class="pulse-kpi-label">Public surfaces</span>
+                <span class="pulse-kpi-label">Shared packages</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Only branded domains exposed</span>
+                <span class="pulse-kpi-context">Reusable infrastructure modules</span>
               </article>
             </div>
 
@@ -180,14 +229,14 @@
 
             <section class="pulse-panel pulse-panel-wide">
               <div class="pulse-panel-header">
-                <p class="card-label">Tracked Domains</p>
-                <h3>Where the work is hardening right now</h3>
+                <p class="card-label">Live Surfaces</p>
+                <h3>Brand surfaces, probed on every deploy</h3>
               </div>
               <div class="pulse-vectors" data-pulse-vectors>
                 <article class="vector-card">
-                  <span class="vector-name">HumanDesign</span>
+                  <span class="vector-name">Prime Self</span>
                   <strong class="vector-value">--</strong>
-                  <p class="vector-context">Awaiting signal</p>
+                  <p class="vector-context">Awaiting liveness probe</p>
                 </article>
               </div>
             </section>
@@ -201,7 +250,8 @@
           </div>
 
           <div class="grid results-grid">
-            <article class="card">
+            <article class="card card-featured">
+              <span class="card-badge">Flagship</span>
               <p class="card-label">Live now</p>
               <h3>Prime Self</h3>
               <p>Practitioner-first software for structured chart data, AI-assisted interpretation, client deliverables, and follow-up workflows.</p>
@@ -213,7 +263,8 @@
               <a href="https://selfprime.net" target="_blank" rel="noreferrer">selfprime.net</a>
             </article>
 
-            <article class="card">
+            <article class="card card-featured">
+              <span class="card-badge">Live</span>
               <p class="card-label">Live now</p>
               <h3>Capricast</h3>
               <p>Premium creator video platform for uploading, watching, interacting, and monetizing in real time on the edge.</p>
@@ -368,9 +419,64 @@
           <p>
             The journey is just beginning. We’re building something that matters, right here on the edge of the future. Let’s make something beautiful.
           </p>
+          <p style="margin-top: 20px;">
+            <a href="/founder" style="color: var(--accent); text-decoration: none; font-size: 0.88rem; letter-spacing: 0.06em;">Founder profile →</a>
+          </p>
         </section>
       </main>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Latimer Woods</h3>
+            <p class="footer-text">Edge-first platforms for healing, media, governance, and infrastructure.</p>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Platforms</p>
+            <ul class="footer-links">
+              <li><a href="https://selfprime.net" target="_blank" rel="noreferrer">Prime Self</a></li>
+              <li><a href="https://capricast.com" target="_blank" rel="noreferrer">Capricast</a></li>
+              <li><a href="https://cypherofhealing.com" target="_blank" rel="noreferrer">Cypher of Healing</a></li>
+              <li><a href="https://apunlimited.com" target="_blank" rel="noreferrer">AP Unlimited</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Learn</p>
+            <ul class="footer-links">
+              <li><a href="/stack/">Stack & Architecture</a></li>
+              <li><a href="/founder/">Founder Profile</a></li>
+              <li><a href="/status/">System Status</a></li>
+              <li><a href="https://github.com/Latimer-Woods-Tech" target="_blank" rel="noreferrer">GitHub</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Contact</p>
+            <ul class="footer-links">
+              <li><a href="mailto:aperry@latwoodtech.com">aperry@latwoodtech.com</a></li>
+              <li><a href="tel:+17062677235">(706) 267-7235</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Latimer Woods Technology. <a href="/privacy.html">Privacy Policy</a>.</p>
+        </div>
+      </footer>
     </div>
-    <script type="module" src="hero-circuitry.js"></script>
+    <script>
+      // Lazy-load hero circuitry after page is interactive to avoid blocking render
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          const s = document.createElement('script');
+          s.type = 'module';
+          s.src = 'hero-circuitry.js';
+          document.body.appendChild(s);
+        });
+      } else {
+        const s = document.createElement('script');
+        s.type = 'module';
+        s.src = 'hero-circuitry.js';
+        document.body.appendChild(s);
+      }
+    </script>
   </body>
 </html>

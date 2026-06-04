@@ -8,9 +8,9 @@
 
 | Status | Count |
 |---|---:|
-| total_docs | 439 |
+| total_docs | 440 |
 | canonical | 17 |
-| active | 374 |
+| active | 375 |
 | stale | 0 |
 | archive | 45 |
 | generated | 3 |
@@ -39,7 +39,7 @@
 | [prompts/README.md](../prompts/README.md) | canonical | owner-reviewed | platform | unknown | Factory Prompt Index |
 | [WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md](../WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md) | canonical | owner-reviewed | platform | unknown | World-Class Implementation Dashboard |
 
-## Active Docs (374)
+## Active Docs (375)
 
 | Path | Status | Fidelity | Owner | Last Updated | Title |
 |---|---|---|---|---|---|
@@ -90,6 +90,7 @@
 | [docs/ARCHITECTURAL_DECISION_RECORDS.md](ARCHITECTURAL_DECISION_RECORDS.md) | active | unverified | platform | unknown | Architectural Decision Records: VideoKing Phase 4 |
 | [docs/architecture/ADMIN_BUILD_PLAN.md](architecture/ADMIN_BUILD_PLAN.md) | active | unverified | architecture | unknown | Admin Build Plan — Three Passes + Testing + Targeting |
 | [docs/architecture/ADMIN_TECHNICAL_GUIDE.md](architecture/ADMIN_TECHNICAL_GUIDE.md) | active | unverified | architecture | unknown | Factory Admin Technical Guide |
+| [docs/architecture/AGENT_RUNTIME.md](architecture/AGENT_RUNTIME.md) | active | unverified | architecture | unknown | Factory Agent Runtime — Architecture & Implementation Plan |
 | [docs/architecture/CAPABILITY_FACTORY_REGISTRY.md](architecture/CAPABILITY_FACTORY_REGISTRY.md) | active | unverified | architecture | unknown | Capability Factory Registry |
 | [docs/architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md](architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md) | active | unverified | architecture | unknown | I1 — Energy Blueprint Video Engine: Final-State Design |
 | [docs/architecture/I1_PERSUASION_POLICY.md](architecture/I1_PERSUASION_POLICY.md) | active | unverified | architecture | unknown | I1 — Narration Persuasion Policy (DRAFT — for red-line) |

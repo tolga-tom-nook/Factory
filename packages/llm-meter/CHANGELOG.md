@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.2.4 — 2026-06-03
+
+### Changed (single source of truth)
+
+- `@latimer-woods-tech/llm`'s `MODEL_PRICE_PER_1M` is now the **canonical** rate
+  source. `PRICING_CENTS_PER_MTOK` here is defined as that table × 100, and a new
+  drift-guard test (`pricing-sync.test.ts`) fails CI if any rate diverges. This
+  prevents the silent divergence that produced the earlier gemini ($5 vs $10) and
+  missing-deepseek/llama errors.
+- Removed `gemini-1.5-flash` and `llama-3.3-70b-versatile` (not in the canonical
+  table and not in active routing). They now bill `$0` like any unknown model;
+  add them to `llm`'s table if they ever need pricing.
+
+---
+
+## 0.2.3 — 2026-06-03
+
+### Fixed (correctness)
+
+- **`computeCostCents` under-reported every cost by 100×.** The per-MTok price
+  table is denominated in cents (Sonnet `300` = $3.00/1M), but the function
+  treated its cents result as "ucents" and divided by 100 a second time. This
+  made all tier budget caps (`TIER_BUDGET_CENTS`, `perRunCapCents`) effectively
+  100× too loose and understated ledger COGS 100×. The only test asserted `> 0`,
+  so CI never caught it. Removed the erroneous `/100`.
+- Renamed `PRICING_UCENTS_PER_MTOK` → `PRICING_CENTS_PER_MTOK` and corrected the
+  mislabeled unit comment + README (values are **US cents per 1M tokens**).
+
+### Added (no breaking changes)
+
+- Populated previously-missing rates so they no longer bill `$0`/half, mirrored
+  from `@latimer-woods-tech/llm` `MODEL_PRICE_PER_1M`:
+  - `llama-4-maverick` (live `verifier` tier) — $0.50/$0.77 per MTok
+  - `deepseek-chat` / `deepseek-reasoner` (live `workbench` tier)
+  - `gemini-2.5-pro` output corrected $5 → $10 per MTok; added cache-read rate
+- Pinned regression tests (1M Sonnet input = 300c; verifier/workbench ≠ 0).
+
+> Note: `@latimer-woods-tech/llm` `estimateCostUsd` was already correct, so the
+> in-call `maxCostUsd` hard cap was unaffected. The two packages still maintain
+> separate pricing tables — reconciling to a single source is a tracked follow-up.
+
+---
+
 ## 0.2.2 — 2026-05-27
 
 ### Added (no breaking changes)

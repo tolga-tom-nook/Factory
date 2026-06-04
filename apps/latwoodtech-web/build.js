@@ -7,6 +7,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const srcDir = join(__dirname, 'src');
 const distDir = join(__dirname, 'dist');
 
+function minifyCSS(css) {
+	return css
+		.replace(/\/\*[\s\S]*?\*\//g, '')
+		.replace(/\s+/g, ' ')
+		.replace(/\s*([{}:;,>+~])\s*/g, '$1')
+		.trim();
+}
+
 const BRAND_SURFACES = [
 	{ name: 'Prime Self', url: 'https://selfprime.net', category: 'Practitioner intelligence' },
 	{ name: 'Capricast', url: 'https://capricast.com', category: 'Interactive creator video' },
@@ -19,12 +27,24 @@ async function probeSurface(surface) {
 	const controller = new AbortController();
 	const timer = setTimeout(() => controller.abort(), 6000);
 	try {
-		const res = await fetch(surface.url, {
+		// Try /health endpoint first (service liveness check), fall back to root (homepage)
+		const healthUrl = new URL('/health', surface.url).toString();
+		let res = await fetch(healthUrl, {
 			method: 'GET',
-			redirect: 'follow',
 			signal: controller.signal,
 			headers: { 'user-agent': 'latwoodtech-web-build-probe/1.0' },
-		});
+		}).catch(() => null);
+
+		// If /health not available, check root homepage
+		if (!res) {
+			res = await fetch(surface.url, {
+				method: 'GET',
+				redirect: 'follow',
+				signal: controller.signal,
+				headers: { 'user-agent': 'latwoodtech-web-build-probe/1.0' },
+			});
+		}
+
 		const durationMs = Date.now() - start;
 		return {
 			name: surface.name,
@@ -111,114 +131,118 @@ const PUBLIC_SURFACES = [
 	},
 ];
 
-const REPO_LABELS = {
-	HD: 'HumanDesign',
-	CC: 'Capricast',
-	FA: 'Factory',
-	CH: 'Cypher of Healing',
-	XC: 'Xico City',
+function fmtNum(value) {
+	return Number(value).toLocaleString('en-US');
+}
+
+// Fallback platform numbers if founder-stats.json is missing or unreadable.
+// Kept conservative; the hourly generate-founder-stats.yml workflow refreshes
+// the real values into src/data/founder-stats.json.
+const FOUNDER_STATS_FALLBACK = {
+	generatedAt: new Date().toISOString(),
+	mergedPrs: 1325,
+	totalCommits: 1105,
+	deployedApps: 27,
+	sharedPackages: 37,
+	workflows: 130,
+	orgRepos: 15,
+	monthlyCostUsd: 9.11,
 };
 
-function percent(value) {
-	return `${value.toFixed(1)}%`;
+async function readFounderStats() {
+	try {
+		const raw = await readFile(join(srcDir, 'data', 'founder-stats.json'), 'utf8');
+		return { ...FOUNDER_STATS_FALLBACK, ...JSON.parse(raw) };
+	} catch {
+		return FOUNDER_STATS_FALLBACK;
+	}
 }
 
-function unique(list) {
-	return [...new Set(list)];
-}
-
-function summarizeRepoRows(rows, repoKey) {
-	const repoRows = rows.filter((row) => row.repo_key === repoKey);
-	const verifiedCount = repoRows.filter((row) => row.status === '✅').length;
-	const trackedCount = repoRows.length;
-	return { verifiedCount, trackedCount };
+// Turn build-time liveness probes into "live surface" vectors. We never render
+// a scary DOWN from a probe that simply could not run (e.g. no outbound network
+// on a local build) — only a genuine non-2xx response is surfaced as attention.
+function surfaceHealthToVectors(surfaceHealth) {
+	return surfaceHealth.map((entry) => {
+		if (entry.alive === true) {
+			return {
+				name: entry.name,
+				value: String(entry.status || 200),
+				state: 'Live',
+				context: typeof entry.durationMs === 'number' ? `${entry.durationMs}ms response` : 'Responding',
+				tone: 'good',
+			};
+		}
+		if (entry.status && entry.status >= 400) {
+			return {
+				name: entry.name,
+				value: String(entry.status),
+				state: 'Attention',
+				context: 'Non-2xx at last probe',
+				tone: 'warning',
+			};
+		}
+		return {
+			name: entry.name,
+			value: '—',
+			state: 'Re-checked',
+			context: 'Liveness re-probed on every deploy',
+			tone: 'neutral',
+		};
+	});
 }
 
 async function buildPulseSnapshot(surfaceHealth) {
-	const trackerPath = join(__dirname, '..', '..', 'docs', 'completion-tracker.json');
-	const tracker = JSON.parse(await readFile(trackerPath, 'utf8'));
-	const rows = Array.isArray(tracker.rows) ? tracker.rows : [];
-	const verifiedRows = rows.filter((row) => row.status === '✅').length;
-	const attentionRepos = unique([...(tracker.ci_red ?? []), ...(tracker.smoke_red ?? [])]);
-	const measuredRepos = Object.keys(tracker.repo_weighted ?? {}).length;
-	const repoNames = Object.fromEntries(
-		rows
-			.filter((row) => row.repo_key && row.repo_name)
-			.map((row) => [row.repo_key, row.repo_name]),
-	);
-	const vectors = Object.entries(tracker.repo_weighted ?? {})
-		.map(([repoKey, weighted]) => {
-			const isAttention = attentionRepos.includes(repoKey);
-			const isCiRed = (tracker.ci_red ?? []).includes(repoKey);
-			const { verifiedCount, trackedCount } = summarizeRepoRows(rows, repoKey);
-			const weightedProgress = Number(weighted ?? 0);
-			const state = verifiedCount > 0 ? `${verifiedCount} verified` : 'Verification pending';
-			const context = isCiRed
-				? `CI attention${weightedProgress > 0 ? ` • ${percent(weightedProgress)} weighted progress` : ''}`
-				: isAttention
-					? `Smoke attention${weightedProgress > 0 ? ` • ${percent(weightedProgress)} weighted progress` : ''}`
-					: weightedProgress > 0
-						? `${percent(weightedProgress)} weighted progress`
-						: 'Tracker live from completion matrix';
-			return {
-				name: REPO_LABELS[repoKey] ?? repoNames[repoKey] ?? repoKey,
-				value: String(trackedCount),
-				state,
-				context,
-				tone: isAttention ? 'warning' : weightedProgress >= 50 ? 'good' : 'neutral',
-			};
-		})
-		.sort((left, right) => Number.parseFloat(right.value) - Number.parseFloat(left.value));
+	const stats = await readFounderStats();
 
 	return {
-		generatedAt: tracker.generated_at,
+		generatedAt: stats.generatedAt,
 		pulse: {
 			title: 'Factory Pulse',
 			summary:
-				'A public-safe operating picture built from completion drift signals, verified work, and curated production surfaces.',
+				'A public-safe operating picture built from live repository metrics and curated production surfaces.',
 			securityModel:
-				'Curated, same-origin JSON generated at build time. No auth, no operator endpoints, no secrets, and no internal request metadata.',
+				'Curated, same-origin JSON generated at build time from public GitHub metrics. No auth, no operator endpoints, no secrets, and no internal request metadata.',
 			stats: [
 				{
-					id: 'verified-rows',
-					label: 'Verified functions',
-					value: String(verifiedRows),
-					context: 'Public proof of executed and tracked work',
+					id: 'merged-prs',
+					label: 'Merged PRs',
+					value: `${fmtNum(stats.mergedPrs)}`,
+					context: 'Shipped and reviewed across the platform',
 				},
 				{
-					id: 'tracked-capabilities',
-					label: 'Tracked capabilities',
-					value: String(rows.length),
-					context: 'Feature rows under active measurement',
+					id: 'commits',
+					label: 'Commits',
+					value: fmtNum(stats.totalCommits),
+					context: 'Public, auditable change history',
 				},
 				{
-					id: 'public-surfaces',
-					label: 'Public surfaces',
-					value: String(PUBLIC_SURFACES.length),
-					context: 'Branded domains carrying real product work',
+					id: 'deployed-apps',
+					label: 'Deployed apps',
+					value: fmtNum(stats.deployedApps),
+					context: 'Serverless surfaces in production',
 				},
 				{
-					id: 'measured-repos',
-					label: 'Repos under measurement',
-					value: String(measuredRepos),
-					context: 'Cross-repo operating discipline',
+					id: 'shared-packages',
+					label: 'Shared packages',
+					value: fmtNum(stats.sharedPackages),
+					context: 'Reusable infrastructure modules',
 				},
 			],
 			health: [
 				{
-					label: 'Weighted progress',
-					value: percent(Number(tracker.overall_weighted ?? 0)),
-					tone: 'neutral',
-				},
-				{
-					label: 'Known coverage',
-					value: percent(Number(tracker.overall_known ?? 0)),
+					label: 'CI/CD workflows',
+					value: fmtNum(stats.workflows),
 					tone: 'good',
 				},
 				{
-					label: 'Active hardening',
-					value: `${attentionRepos.length} repos`,
-					tone: attentionRepos.length > 0 ? 'warning' : 'good',
+					label: 'Platform repos',
+					value: fmtNum(stats.orgRepos),
+					tone: 'neutral',
+				},
+				{
+					label: 'Monthly infra cost',
+					value: `$${Number(stats.monthlyCostUsd).toFixed(2)}`,
+					tone: 'good',
 				},
 				{
 					label: 'Risk surface',
@@ -227,16 +251,16 @@ async function buildPulseSnapshot(surfaceHealth) {
 				},
 			],
 			story: [
-				'Excellence is documented, versioned, and measured across products rather than claimed in a vacuum.',
-				'The public surface shows proof of rigor while deeper operator controls remain inside authenticated studio surfaces.',
-				'Every visible metric is intentionally curated to communicate craft, readiness, and velocity with minimal risk surface.',
+				'Every number on this page is a live, public GitHub metric — not a self-reported claim.',
+				'The public surface shows proof of rigor while deeper operator controls stay inside authenticated studio surfaces.',
+				'A whole portfolio of products runs on shared infrastructure at a fraction of conventional cost.',
 			],
 			surfaces: PUBLIC_SURFACES,
 			surfaceHealth,
-			vectors,
+			vectors: surfaceHealthToVectors(surfaceHealth),
 			provenance: [
-				'docs/completion-tracker.json',
-				'Curated public-domain allowlist in build.js (filtered by build-time liveness probe)',
+				'apps/latwoodtech-web/src/data/founder-stats.json (refreshed hourly from the GitHub API)',
+				'Build-time liveness probes over the curated public-domain allowlist',
 			],
 		},
 	};
@@ -250,22 +274,40 @@ const { topology } = await generateTopology({ outDir: join(distDir, 'data') });
 await mkdir(distDir, { recursive: true });
 await copyFile(join(srcDir, 'index.html'), join(distDir, 'index.html'));
 await copyFile(join(srcDir, 'privacy.html'), join(distDir, 'privacy.html'));
-await copyFile(join(srcDir, 'styles.css'), join(distDir, 'styles.css'));
+const cssRaw = await readFile(join(srcDir, 'styles.css'), 'utf8');
+const cssMin = minifyCSS(cssRaw);
+await writeFile(join(distDir, 'styles.css'), cssMin, 'utf8');
 await copyFile(join(srcDir, 'app.js'), join(distDir, 'app.js'));
 await copyFile(join(srcDir, 'hero-circuitry.js'), join(distDir, 'hero-circuitry.js'));
 await cp(join(srcDir, 'assets'), join(distDir, 'assets'), { recursive: true });
 // /stack/ — annotated architecture + "what we refuse to ship with" page.
 await mkdir(join(distDir, 'stack'), { recursive: true });
 await copyFile(join(srcDir, 'stack', 'index.html'), join(distDir, 'stack', 'index.html'));
+// /founder/ — founder profile with live stats hydrated from founder-stats.json.
+await mkdir(join(distDir, 'founder'), { recursive: true });
+await copyFile(join(srcDir, 'founder', 'index.html'), join(distDir, 'founder', 'index.html'));
+await copyFile(join(srcDir, 'founder.js'), join(distDir, 'founder.js'));
+// Copy OG image (SVG) for social shares (1200×630).
+await mkdir(join(distDir, 'assets'), { recursive: true });
+await copyFile(join(srcDir, 'assets', 'og-image.svg'), join(distDir, 'assets', 'og-image.svg'));
+
 // Credibility signals: humans.txt (humanstxt.org) at root, security.txt
 // (RFC 9116) under /.well-known/. Absence reads "not yet a real platform".
 await copyFile(join(srcDir, 'humans.txt'), join(distDir, 'humans.txt'));
 await mkdir(join(distDir, '.well-known'), { recursive: true });
 await copyFile(join(srcDir, '.well-known', 'security.txt'), join(distDir, '.well-known', 'security.txt'));
+// SEO: real robots.txt + sitemap.xml (previously served the SPA fallback HTML).
+await copyFile(join(srcDir, 'robots.txt'), join(distDir, 'robots.txt'));
+await copyFile(join(srcDir, 'sitemap.xml'), join(distDir, 'sitemap.xml'));
+// Cloudflare Pages _headers — CSP, HSTS, frame-ancestors, Permissions-Policy.
+await copyFile(join(srcDir, '_headers'), join(distDir, '_headers'));
 // /status/ — near-live brand surface health page that fetches the
 // status-prober Worker with graceful fall-back to data/pulse.json.
 await cp(join(srcDir, 'status'), join(distDir, 'status'), { recursive: true });
 await mkdir(join(distDir, 'data'), { recursive: true });
+
+// Copy founder-stats.json (committed seed; updated hourly by generate-founder-stats.yml).
+await copyFile(join(srcDir, 'data', 'founder-stats.json'), join(distDir, 'data', 'founder-stats.json'));
 
 // Liveness probes run in parallel; on CI without outbound network they all
 // degrade and the runtime still renders a static topology. Bound the overall

@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 439,
+    "total_docs": 440,
     "canonical": 17,
-    "active": 374,
+    "active": 375,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -374,7 +374,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:a5e7d2b3c7ded992c7fa5e7f6e1e4519582c6f1f1d070958d4bc9653b16ff9c7",
+      "content_hash": "sha256:ebdcf2d774e2a0581cd0a8b924d098573b1bb8f4e7a1f47fd417052d2208f569",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -395,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:d4dd7010545de20f87d0b691e240d2dcd42075930ef750df0500dfdd8f61676b",
+      "content_hash": "sha256:d2a4d5e22bdb7825ba9faebb4e0519d3ff4bf460b8074922e713d69816e13463",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -416,7 +416,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:5473e806d6b687e166d1cca46c67e77a065e19f1fa203559c975c1bf96edada0",
+      "content_hash": "sha256:0e19d8b87426e2cac95f7f3c122ea463684e7615b4a0e04f1aa37d2c01ede135",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -1112,6 +1112,27 @@
       "content_hash": "sha256:9eca86c08e36a1cbc820469d5fc3243d5562da2e09c10d7bf5d49752498eb90a",
       "source": {
         "frontmatter": true,
+        "canonical_allowlist": false,
+        "override": "docs/architecture/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/architecture/AGENT_RUNTIME.md",
+      "title": "Factory Agent Runtime — Architecture & Implementation Plan",
+      "status": "active",
+      "owner": "architecture",
+      "doc_type": "architecture",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:7e8df56f288b32d7ce4dda3216d46b23655afabe5311db0148960170cdecb7d1",
+      "source": {
+        "frontmatter": false,
         "canonical_allowlist": false,
         "override": "docs/architecture/**"
       },
@@ -7686,7 +7707,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:fa7115c1bdcbdf937f139b1b3bf0273a3cd1821e8e03c32935dbd3cc71413f41",
+      "content_hash": "sha256:a394fbefa3102826cb986909e6252a6a5a802be21a6e5d4b82de5fede83395bc",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,

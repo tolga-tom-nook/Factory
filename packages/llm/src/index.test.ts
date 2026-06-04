@@ -9,6 +9,7 @@ import {
   PROVIDER_COOLDOWN_MS,
   type LLMEnv,
   type LLMRecordRow,
+  type LLMResult,
 } from './index.js';
 
 const ENV: LLMEnv = {
@@ -1447,5 +1448,331 @@ describe('onRecord metering callback', () => {
     await new Promise((r) => setTimeout(r, 0));
     expect(result.error).toBeNull();
     expect(warnSpy).toHaveBeenCalledWith('llm.onRecord.error', expect.objectContaining({ message: 'timeout' }));
+  });
+});
+
+// ─── Tool-calling (Anthropic) — PR 1a ────────────────────────────────────────
+describe('tool-calling', () => {
+  const lookupTool = {
+    name: 'lookup',
+    description: 'look up a record',
+    parameters: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] },
+  };
+
+  function anthropicToolUse() {
+    return new Response(
+      JSON.stringify({
+        content: [
+          { type: 'text', text: 'checking' },
+          { type: 'tool_use', id: 'toolu_1', name: 'lookup', input: { id: 'cust_1' } },
+        ],
+        stop_reason: 'tool_use',
+        usage: { input_tokens: 20, output_tokens: 9 },
+        model: 'claude-sonnet-4-20250514',
+      }),
+      { status: 200, headers: { 'cf-aig-request-id': 'aig-tool' } },
+    );
+  }
+
+  function bodyOf(fetchImpl: ReturnType<typeof vi.fn>): Record<string, unknown> {
+    return JSON.parse((fetchImpl.mock.calls[0]![1] as RequestInit).body as string) as Record<string, unknown>;
+  }
+
+  it('parses tool_use into normalized toolCalls + stopReason', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(anthropicToolUse());
+    const res = await complete(
+      [{ role: 'user', content: 'look up cust_1' }],
+      ENV,
+      { tier: 'balanced', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.error).toBeNull();
+    expect(res.data!.stopReason).toBe('tool_use');
+    expect(res.data!.toolCalls).toEqual([{ id: 'toolu_1', name: 'lookup', arguments: { id: 'cust_1' } }]);
+  });
+
+  it('sends tools + tool_choice in the Anthropic request body', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(anthropicToolUse());
+    await complete(
+      [{ role: 'user', content: 'go' }],
+      ENV,
+      { tier: 'balanced', tools: [lookupTool], toolChoice: 'auto' },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    const body = bodyOf(fetchImpl);
+    expect(body.tools).toEqual([
+      { name: 'lookup', description: 'look up a record', input_schema: lookupTool.parameters },
+    ]);
+    expect(body.tool_choice).toEqual({ type: 'auto' });
+  });
+
+  it('maps toolChoice {name} to a forced tool', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(anthropicToolUse());
+    await complete(
+      [{ role: 'user', content: 'go' }],
+      ENV,
+      { tier: 'balanced', tools: [lookupTool], toolChoice: { name: 'lookup' } },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(bodyOf(fetchImpl).tool_choice).toEqual({ type: 'tool', name: 'lookup' });
+  });
+
+  it('allows a tool_use turn with no text content (not an empty-content failure)', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          content: [{ type: 'tool_use', id: 'toolu_2', name: 'lookup', input: {} }],
+          stop_reason: 'tool_use',
+          usage: { input_tokens: 5, output_tokens: 3 },
+          model: 'claude-sonnet-4-20250514',
+        }),
+        { status: 200 },
+      ),
+    );
+    const res = await complete(
+      [{ role: 'user', content: 'go' }],
+      ENV,
+      { tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.error).toBeNull();
+    expect(res.data!.content).toBe('');
+    expect(res.data!.toolCalls).toHaveLength(1);
+  });
+
+  it('passes structured tool_use / tool_result content through to the provider', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(anthropicResponse('done'));
+    await complete(
+      [
+        { role: 'user', content: 'look up cust_1' },
+        { role: 'assistant', content: [{ type: 'tool_use', id: 'toolu_1', name: 'lookup', input: { id: 'cust_1' } }] },
+        { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'toolu_1', content: '{"plan":"pro"}' }] },
+      ],
+      ENV,
+      { tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    const msgs = bodyOf(fetchImpl).messages as Array<{ content: Array<Record<string, unknown>> }>;
+    expect(msgs[1]?.content?.[0]).toMatchObject({ type: 'tool_use', id: 'toolu_1' });
+    expect(msgs[2]?.content?.[0]).toMatchObject({ type: 'tool_result', tool_use_id: 'toolu_1' });
+  });
+
+  it('fails closed when the tier has no tool-capable provider', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(anthropicResponse());
+    await expect(
+      complete(
+        [{ role: 'user', content: 'go' }],
+        ENV,
+        { tier: 'verifier', tools: [lookupTool] },
+        { fetch: fetchImpl as unknown as typeof fetch },
+      ),
+    ).rejects.toThrow(/tool-capable/);
+    expect(fetchImpl).not.toHaveBeenCalled();
+  });
+
+  it('normal (no-tools) completion reports stopReason end and no toolCalls', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          content: [{ type: 'text', text: 'hi' }],
+          stop_reason: 'end_turn',
+          usage: { input_tokens: 3, output_tokens: 2 },
+          model: 'claude-sonnet-4-20250514',
+        }),
+        { status: 200 },
+      ),
+    );
+    const res = await complete(
+      [{ role: 'user', content: 'hi' }],
+      ENV,
+      { tier: 'balanced' },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.data!.stopReason).toBe('end');
+    expect(res.data!.toolCalls).toBeUndefined();
+  });
+});
+
+// ─── Tool-calling — OpenAI providers (Grok / DeepSeek) — PR 1b ────────────────
+describe('tool-calling (OpenAI-style providers)', () => {
+  const lookupTool = {
+    name: 'lookup',
+    description: 'look up a record',
+    parameters: { type: 'object', properties: { id: { type: 'string' } }, required: ['id'] },
+  };
+  const GROK_ENV = { ...ENV, GROK_API_KEY: 'gk-test' };
+
+  function openAiToolUse(model: string, callId = 'call_abc') {
+    return new Response(
+      JSON.stringify({
+        choices: [
+          {
+            message: {
+              content: null,
+              tool_calls: [{ id: callId, type: 'function', function: { name: 'lookup', arguments: '{"id":"cust_1"}' } }],
+            },
+            finish_reason: 'tool_calls',
+          },
+        ],
+        usage: { prompt_tokens: 15, completion_tokens: 8 },
+        model,
+      }),
+      { status: 200, headers: { 'cf-aig-request-id': 'oai-tool' } },
+    );
+  }
+
+  function reqBody(fetchImpl: ReturnType<typeof vi.fn>): Record<string, unknown> {
+    return JSON.parse((fetchImpl.mock.calls[0]![1] as RequestInit).body as string) as Record<string, unknown>;
+  }
+
+  it('grok: parses OpenAI tool_calls into normalized toolCalls + stopReason', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(openAiToolUse('grok-4.3'));
+    const res = await complete(
+      [{ role: 'user', content: 'go' }],
+      GROK_ENV,
+      { tier: 'fast', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.error).toBeNull();
+    expect(res.data!.provider).toBe('grok');
+    expect(res.data!.stopReason).toBe('tool_use');
+    expect(res.data!.toolCalls).toEqual([{ id: 'call_abc', name: 'lookup', arguments: { id: 'cust_1' } }]);
+  });
+
+  it('grok: sends OpenAI-format tools + tool_choice', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(openAiToolUse('grok-4.3'));
+    await complete(
+      [{ role: 'user', content: 'go' }],
+      GROK_ENV,
+      { tier: 'fast', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    const body = reqBody(fetchImpl);
+    expect((body.tools as Array<Record<string, unknown>>)[0]).toMatchObject({
+      type: 'function',
+      function: { name: 'lookup', description: 'look up a record' },
+    });
+    expect(body.tool_choice).toBe('auto');
+  });
+
+  it('deepseek: parses tool_calls on the workbench tier', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(openAiToolUse('deepseek-chat', 'call_ds'));
+    const res = await complete(
+      [{ role: 'user', content: 'go' }],
+      ENV,
+      { tier: 'workbench', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.error).toBeNull();
+    expect(res.data!.provider).toBe('deepseek');
+    expect(res.data!.toolCalls).toEqual([{ id: 'call_ds', name: 'lookup', arguments: { id: 'cust_1' } }]);
+  });
+
+  it('converts structured tool_use / tool_result blocks to OpenAI tool_calls + tool role', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [{ message: { content: 'done' }, finish_reason: 'stop' }],
+          usage: { prompt_tokens: 3, completion_tokens: 2 },
+          model: 'grok-4.3',
+        }),
+        { status: 200 },
+      ),
+    );
+    await complete(
+      [
+        { role: 'user', content: 'look up' },
+        { role: 'assistant', content: [{ type: 'tool_use', id: 'call_1', name: 'lookup', input: { id: 'c1' } }] },
+        { role: 'user', content: [{ type: 'tool_result', tool_use_id: 'call_1', content: '{"plan":"pro"}' }] },
+      ],
+      GROK_ENV,
+      { tier: 'fast', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    const msgs = reqBody(fetchImpl).messages as Array<Record<string, unknown>>;
+    const asst = msgs.find((m) => m.role === 'assistant') as { tool_calls: Array<Record<string, unknown>> };
+    expect(asst.tool_calls[0]).toMatchObject({ id: 'call_1', type: 'function', function: { name: 'lookup' } });
+    const toolMsg = msgs.find((m) => m.role === 'tool');
+    expect(toolMsg).toMatchObject({ tool_call_id: 'call_1', content: '{"plan":"pro"}' });
+  });
+
+  it('fast tier now permits tools (grok is tool-capable — no fail-closed)', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(openAiToolUse('grok-4.3'));
+    const res = await complete(
+      [{ role: 'user', content: 'go' }],
+      GROK_ENV,
+      { tier: 'fast', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.error).toBeNull();
+    expect(fetchImpl).toHaveBeenCalled();
+  });
+
+  it('tolerates malformed tool-call arguments (bills as {} rather than throwing)', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          choices: [
+            {
+              message: { content: null, tool_calls: [{ id: 'c1', function: { name: 'lookup', arguments: '{bad json' } }] },
+              finish_reason: 'tool_calls',
+            },
+          ],
+          usage: { prompt_tokens: 4, completion_tokens: 2 },
+          model: 'grok-4.3',
+        }),
+        { status: 200 },
+      ),
+    );
+    const res = await complete(
+      [{ role: 'user', content: 'go' }],
+      GROK_ENV,
+      { tier: 'fast', tools: [lookupTool] },
+      { fetch: fetchImpl as unknown as typeof fetch },
+    );
+    expect(res.error).toBeNull();
+    expect(res.data!.toolCalls).toEqual([{ id: 'c1', name: 'lookup', arguments: {} }]);
+  });
+});
+
+// ─── Streaming tool-calling (Anthropic) — PR 1c ──────────────────────────────
+describe('completionStream tool-calling', () => {
+  function anthropicToolStream(): ReadableStream<Uint8Array> {
+    const enc = new TextEncoder();
+    const events = [
+      { type: 'message_start', message: { usage: { input_tokens: 10 }, model: 'claude-sonnet-4-20250514' } },
+      { type: 'content_block_start', index: 0, content_block: { type: 'tool_use', id: 'toolu_s', name: 'lookup' } },
+      { type: 'content_block_delta', index: 0, delta: { type: 'input_json_delta', partial_json: '{"id":' } },
+      { type: 'content_block_delta', index: 0, delta: { type: 'input_json_delta', partial_json: '"cust_9"}' } },
+      { type: 'message_delta', delta: { stop_reason: 'tool_use' }, usage: { output_tokens: 7 } },
+    ];
+    return new ReadableStream<Uint8Array>({
+      start(c) {
+        for (const e of events) c.enqueue(enc.encode(`data: ${JSON.stringify(e)}\n\n`));
+        c.enqueue(enc.encode('data: [DONE]\n\n'));
+        c.close();
+      },
+    });
+  }
+
+  it('accumulates input_json_delta fragments into a normalized toolCall + stopReason', async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(
+      new Response(anthropicToolStream(), { status: 200, headers: { 'cf-aig-request-id': 'aig-s' } }),
+    );
+    const gen = completionStream(
+      [{ role: 'user', content: 'go' }],
+      ENV,
+      {
+        tier: 'balanced',
+        tools: [{ name: 'lookup', parameters: { type: 'object' } }],
+        deps: { fetch: fetchImpl as unknown as typeof fetch },
+      },
+    );
+    const { chunks, result } = await drainStream(gen);
+    const r = result as LLMResult;
+    // No text deltas in a pure tool-use turn.
+    expect(chunks.join('')).toBe('');
+    expect(r.stopReason).toBe('tool_use');
+    expect(r.toolCalls).toEqual([{ id: 'toolu_s', name: 'lookup', arguments: { id: 'cust_9' } }]);
   });
 });

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { executePlan, executeStep, type StepReceipt } from './executor';
 import type { Env } from './index';
-import { ToolRegistry, type Tool } from './tools/registry';
+import { ToolRegistry, type Tool } from '@latimer-woods-tech/agent';
 import type { Template } from './planner/load';
 
 /**

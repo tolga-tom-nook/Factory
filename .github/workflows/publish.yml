@@ -48,7 +48,7 @@ jobs:
       - name: Build local dependencies in order
         run: |
           set -euo pipefail
-          DEPS=(errors monitoring logger realtime bodygraph design-tokens ui auth neon stripe llm telephony analytics deploy testing email copy content social seo validation crm compliance admin video schedule llm-meter studio-core creator design-system entitlements protocol browser flags)
+          DEPS=(errors monitoring logger realtime bodygraph design-tokens ui auth neon stripe llm telephony analytics deploy testing email copy content social seo validation crm compliance admin video schedule llm-meter studio-core creator design-system entitlements protocol browser flags agent)
           for pkg in "${DEPS[@]}"; do
             if [ "$pkg" = "$PACKAGE" ]; then
               break
@@ -74,3 +74,9 @@ jobs:
         run: cd "packages/${PACKAGE}" && (npm run prepublish --if-present || echo 'no prepublish')
       - name: Publish to npmjs.org
         run: cd "packages/${PACKAGE}" && npm publish --access public --ignore-scripts --provenance
+        env:
+          # Authenticate with the automation token (setup-node wired registry-url
+          # to read NODE_AUTH_TOKEN). This replaces tokenless OIDC, which required
+          # a per-package trusted publisher configured in the npm web UI. Keeping
+          # --provenance still attaches a Sigstore attestation via id-token: write.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

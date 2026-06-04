@@ -1,5 +1,77 @@
 # Changelog
 
+## 0.4.4 — 2026-06-03
+
+### Added — streaming tool-calls (Phase 1c; Anthropic)
+
+- `completionStream` now accumulates Anthropic tool-use stream events
+  (`content_block_start` + `input_json_delta` fragments) into the same
+  normalized `LLMResult.toolCalls`, and captures `stopReason` from the
+  `message_delta`. The returned result of a streamed tool-use turn matches the
+  non-streaming shape. Text deltas still stream incrementally as before.
+
+---
+
+## 0.4.3 — 2026-06-03
+
+### Added — tool-calling for OpenAI-style providers (Phase 1b: Grok, DeepSeek)
+
+- **Grok and DeepSeek now support tool-calling.** Requests carry OpenAI-format
+  `tools` + `tool_choice`; responses parse `tool_calls` + `finish_reason` into
+  the same normalized `LLMResult.toolCalls` / `stopReason` as Anthropic.
+- Anthropic-shaped tool blocks are converted to OpenAI wire format:
+  `tool_use` → an assistant message with `tool_calls`; `tool_result` → a
+  standalone `tool` message keyed by `tool_call_id`.
+- **`TOOL_CAPABLE_PROVIDERS`** widened to `anthropic, grok, deepseek`, so the
+  `fast` (Grok→Haiku) and `workbench` (DeepSeek) tiers support tool loops while
+  still failing closed for `verifier` (Groq Llama).
+- Malformed tool-call argument JSON is tolerated (billed as `{}`, never throws).
+
+### Not yet
+
+- **Gemini** tool-calling is deferred to a focused follow-up — its
+  `tool_use_id`↔function-name correlation and schema constraints need dedicated
+  handling. Gemini stays out of `TOOL_CAPABLE_PROVIDERS` until then.
+
+---
+
+## 0.4.2 — 2026-06-03
+
+### Added — tool-calling (Agent Runtime Phase 1a; Anthropic)
+
+- **`LLMOptions.tools`** (`LLMTool[]`) and **`LLMOptions.toolChoice`**
+  (`'auto' | 'none' | { name }`). When `tools` is set, routing **fails closed**
+  to tool-capable providers — failover never silently falls back to one that
+  can't honour the tool schema (1a: Anthropic only; others land in 1b).
+- **`LLMResult.toolCalls`** (`LLMToolCall[]`) and **`LLMResult.stopReason`**
+  (`'end' | 'tool_use' | 'max_tokens' | 'other'`), normalized across providers.
+- **`LLMMessage.content`** now accepts `string | LLMContentBlock[]` — structured
+  `text` / `tool_use` / `tool_result` blocks for multi-turn tool conversations.
+  Backwards-compatible: existing `string` content is unchanged; providers without
+  tool support receive the text projection.
+- New exported types: `LLMTool`, `LLMToolCall`, `LLMContentBlock`.
+
+### Notes
+
+- A `tool_use` response with no text content is no longer treated as an empty
+  (failed) completion.
+- Anthropic `tool_use` blocks pass through unchanged (the block shapes mirror the
+  Messages wire format). Other providers' tool formats are normalized in 1a's
+  follow-ups (1b: Grok/DeepSeek/Gemini; 1c: streaming tool-call accumulation).
+
+---
+
+## 0.4.1 — 2026-06-03
+
+### Added (no breaking changes)
+
+- Export `MODEL_PRICE_PER_1M` — the canonical USD-per-1M-tokens rate table. This
+  makes it the single source of truth for pricing across the platform;
+  `@latimer-woods-tech/llm-meter` now derives its cents table from it and enforces
+  parity with a drift-guard test. Make all rate changes here.
+
+---
+
 ## 0.3.4 — 2026-05-28
 
 ### Added (no breaking changes)
