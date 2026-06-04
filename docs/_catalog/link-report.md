@@ -1,9 +1,9 @@
 # Documentation Broken Link Report
 
 **Generated:** source-derived
-**Broken links:** 391
+**Broken links:** 392
 **Canonical:** 0
-**Active:** 275
+**Active:** 276
 **Archive:** 116
 
 ## By Owner
@@ -14,7 +14,7 @@
 | marketing | 79 |
 | capricast | 31 |
 | admin-studio | 4 |
-| architecture | 3 |
+| architecture | 4 |
 
 ## First 150 Broken Links
 
@@ -148,6 +148,7 @@
 | active | admin-studio | docs/admin-studio/00-MASTER-PLAN.md | 778 | ./04-DEPLOYMENT.md | file not found |
 | active | admin-studio | docs/admin-studio/00-MASTER-PLAN.md | 779 | ./05-OPERATIONS.md | file not found |
 | active | architecture | docs/architecture/ADMIN_TECHNICAL_GUIDE.md | 288 | ../PRODUCT_PRINCIPLES.md | file not found |
+| active | architecture | docs/architecture/AGENT_RUNTIME.md | 159 | ../../apps/supervisor/src/tools/registry.ts | file not found |
 | active | architecture | docs/architecture/SURFACES.md | 79 | ../PRODUCT_PRINCIPLES.md | file not found |
 | active | architecture | docs/architecture/SURFACES.md | 129 | ../PORTFOLIO_FOCUS.md | file not found |
 | archive | platform | docs/archive/BIRTHTIME_INPUT_IMPLEMENTATION_COMPLETE.md | 236 | ./docs/BIRTHTIME_FORMATTING_TODO.md | file not found |
@@ -169,4 +170,3 @@
 | archive | platform | docs/archive/EXECUTION_COMPLETE_T6_1_AND_T7_1.md | 25 | ./docs/runbooks/definition-of-ready-done.md#definition-of-ready | file not found |
 | archive | platform | docs/archive/EXECUTION_COMPLETE_T6_1_AND_T7_1.md | 26 | ./docs/runbooks/definition-of-ready-done.md#definition-of-done | file not found |
 | archive | platform | docs/archive/EXECUTION_COMPLETE_T6_1_AND_T7_1.md | 27 | ./.github/PULL_REQUEST_TEMPLATE.md | file not found |
-| archive | platform | docs/archive/EXECUTION_COMPLETE_T6_1_AND_T7_1.md | 37 | ./docs/IMPLEMENTATION_MASTER_INDEX.md | file not found |

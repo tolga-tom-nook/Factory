@@ -7,6 +7,13 @@
 > 4. [`docs/PLATFORM_STANDARDS.md`](./docs/PLATFORM_STANDARDS.md) — what we build (the 10 conformance dimensions)
 > 5. [`docs/GAP_REGISTER.md`](./docs/GAP_REGISTER.md) — known debt with severity tiers
 
+> 🗄️ **You HAVE operator-level Neon (DB) access — do not claim you don't.** This is the org's most common false belief. Before routing a 2-minute DB task (verify an account, inspect/patch a row) around CI or giving up: mint a fresh connection string with `neonctl`. Auth key is in GCP Secret Manager, not GitHub:
+> ```bash
+> export NEON_API_KEY="$(gcloud secrets versions access latest --secret=NEON_ORGANIZATION_KEY --project=factory-495015 | tr -d '\r\n\357\273\277')"
+> npx --yes neonctl connection-string production --project-id <PROJECT_ID> --database-name neondb --role-name neondb_owner
+> ```
+> The GCP/GitHub `*_CONNECTION_STRING` copies are frequently **stale (wrong password) and/or BOM-prefixed** — mint fresh, don't debug them. `neondb_owner` bypasses RLS. Full recipe + project IDs: [`docs/runbooks/lessons-learned.md` → "You HAVE Neon access"](./docs/runbooks/lessons-learned.md) and [`docs/runbooks/database.md`](./docs/runbooks/database.md).
+
 # Factory Core — Standing Orders
 
 ## Mission

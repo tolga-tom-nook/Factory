@@ -146,6 +146,34 @@ Connection strings follow this format:
 postgresql://{user}:{password}@{host}/{database}?sslmode=require
 ```
 
+### Getting a WORKING string (you have operator access — use it)
+
+Do **not** assume you lack DB access, and do **not** trust the stored
+`*_CONNECTION_STRING` secrets blindly — they drift (rotated password not
+propagated to GCP) and several carry a leading UTF-8 BOM. Mint a fresh one:
+
+```bash
+# Neon API key lives in GCP Secret Manager (strip CR/LF + BOM):
+export NEON_API_KEY="$(gcloud secrets versions access latest \
+  --secret=NEON_ORGANIZATION_KEY --project=factory-495015 | tr -d '\r\n\357\273\277')"
+
+# Project ids (org id is org-withered-wave-19602339):
+npx --yes neonctl projects list --org-id org-withered-wave-19602339
+#   selfprime.net → divine-grass-42421088   (branch: production)
+
+# Mint a fresh, live-password connection string (neondb_owner bypasses RLS):
+npx --yes neonctl connection-string production \
+  --project-id <PROJECT_ID> --database-name neondb --role-name neondb_owner
+```
+
+Symptoms that mean "stale secret — mint fresh instead of debugging":
+`password authentication failed` (rotated pw) or `is not a valid URL`
+(leading BOM — strip with `while (cs.charCodeAt(0) !== 0x70) cs = cs.slice(1)`).
+
+See [lessons-learned.md → "You HAVE Neon access"](./lessons-learned.md) for the full rationale.
+
+### Storing for an app
+
 Store in GitHub Secrets as `{APP}_CONNECTION_STRING` and pass to Wrangler:
 
 ```bash

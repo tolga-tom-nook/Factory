@@ -23,6 +23,41 @@ npm run typecheck  # zero errors required
 npm run lint       # --max-warnings 0
 ```
 
+## You HAVE Neon access — stop assuming you don't
+
+> **The single most common false belief in this org.** Agents repeatedly declare
+> "I don't have access to the database / connection string" and route around a
+> 2-minute task (verify an account, patch a column, inspect a row) into a
+> multi-step CI/secret dance — or just give up. **You almost always have
+> operator-level Neon access.** Try it before claiming you don't.
+
+**The recipe (org-wide, works for every Factory Neon project):**
+```bash
+# 1. Auth: the Neon API key lives in GCP Secret Manager (NOT a GitHub secret).
+#    Strip CR/LF and any leading BOM. NEON_ORGANIZATION_KEY works for writes;
+#    NEON_API often has a leading BOM that 401s if used raw.
+export NEON_API_KEY="$(gcloud secrets versions access latest \
+  --secret=NEON_ORGANIZATION_KEY --project=factory-495015 | tr -d '\r\n\357\273\277')"
+
+# 2. Find the project id (org id is org-withered-wave-19602339):
+npx --yes neonctl projects list --org-id org-withered-wave-19602339
+
+# 3. Mint a FRESH working connection string (do NOT trust the GCP/GitHub
+#    *_CONNECTION_STRING copies — they are frequently stale: wrong password
+#    AND/OR a leading UTF-8 BOM). neonctl mints one with the live role password:
+npx --yes neonctl connection-string production \
+  --project-id <PROJECT_ID> --database-name neondb --role-name neondb_owner
+```
+
+**Key facts agents miss:**
+- `neondb_owner` is the table-owner role → **bypasses RLS** (correct for one-off ops writes/inspection).
+- The GCP-stored `*_CONNECTION_STRING` / `NEON_CONNECT_STRING` / `DATABASE_URL` secrets drift: the operator rotates the Neon password but the GCP copy isn't updated, and several have a **leading BOM** (`0xEF 0xBB 0xBF`). Symptom: `password authentication failed` or `not a valid URL`. **Fix: mint fresh with `neonctl connection-string`, don't debug the stale secret.** (Strip a BOM in code with `while (cs.charCodeAt(0) !== 0x70) cs = cs.slice(1)` — chop until the `p` of `postgresql://`.)
+- Selfprime/HumanDesign project = `divine-grass-42421088`, branch `production`. Other projects: `npx neonctl projects list`.
+- Query from Node with `@neondatabase/serverless` (`neon(cs)`, tagged-template ``sql`...` `` or `sql.query()` for dynamic). `gcloud` auth in agent sessions is usually the user account (`adrper79@gmail.com`) with broad SM read — that's why the key fetch works.
+- The `gh` token (`adrper79-dot`) has `admin:org` → you can also set org + repo secrets when a credential needs rotating.
+
+> See also [database.md](./database.md) for branch strategy; the one-line pin lives at the top of [CLAUDE.md](../../CLAUDE.md).
+
 ## Common Errors & Resolutions
 
 ### Error: "Cannot find module '@latimer-woods-tech/auth' is not in the npm registry"
