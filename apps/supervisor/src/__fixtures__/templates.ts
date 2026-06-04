@@ -4,8 +4,8 @@
  */
 
 import type { Template } from '../planner/load';
-import type { Tool } from '../tools/registry';
-import { ToolRegistry } from '../tools/registry';
+import type { Tool } from '@latimer-woods-tech/agent';
+import { ToolRegistry } from '@latimer-woods-tech/agent';
 
 /** Baseline: no gates, all steps succeed */
 export const templateSimpleReadonly: Template = {

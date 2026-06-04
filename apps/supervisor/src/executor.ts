@@ -13,7 +13,7 @@
  */
 
 import type { Env } from './index';
-import type { ToolRegistry } from './tools/registry';
+import type { ToolRegistry } from '@latimer-woods-tech/agent';
 import { mintReadonlyJwt, mintMutatorJwt } from './auth';
 import type { Template } from './planner/load';
 

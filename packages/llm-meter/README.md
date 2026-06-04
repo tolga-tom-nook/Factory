@@ -125,7 +125,7 @@ await assertTenantBudget(env.DB, tenantId, 'practitioner', {
 
 ## Pricing catalogue
 
-`PRICING_UCENTS_PER_MTOK` in `src/index.ts` lists input/output/cached-input rates in micro-cents per million tokens for every model the `llm` package routes to. Keep in sync with provider pricing pages — unknown models bill at 0 and emit nothing special (budget checks still work on the $0).
+`PRICING_CENTS_PER_MTOK` in `src/index.ts` lists input/output/cached-input rates in **US cents per million tokens** (USD × 100 — e.g. Sonnet input `300` = $3.00/1M) for every model the `llm` package routes to. Keep in sync with provider pricing pages — unknown models bill at 0 and emit nothing special (budget checks still work on the $0).
 
 ## Querying spend
 

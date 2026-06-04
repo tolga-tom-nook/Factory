@@ -15,7 +15,7 @@
 
 import { mkdir, writeFile } from 'fs/promises';
 import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { dirname, isAbsolute, join } from 'path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -252,7 +252,11 @@ function build() {
 
 export async function generateTopology({ outDir } = {}) {
   const topology = build();
-  const outputDir = outDir ? join(__dirname, outDir) : join(__dirname, '..', 'src', 'data');
+  const outputDir = outDir
+    ? isAbsolute(outDir)
+      ? outDir
+      : join(__dirname, outDir)
+    : join(__dirname, '..', 'src', 'data');
   await mkdir(outputDir, { recursive: true });
   const outPath = join(outputDir, 'circuit-topology.json');
   await writeFile(outPath, `${JSON.stringify(topology, null, 2)}\n`, 'utf8');

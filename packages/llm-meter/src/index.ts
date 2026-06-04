@@ -174,10 +174,14 @@ export interface RunTotals {
 
 const DEFAULT_RUN_CAP_CENTS = 500;
 
-// Pricing in micro-dollars per 1M tokens (USD × 10_000 to keep ints).
-// Keep in sync with provider pricing pages; update on price changes.
-// Sources (2026-05): anthropic.com/pricing, cloud.google.com/vertex-ai/pricing, groq.com/pricing, docs.x.ai
-const PRICING_UCENTS_PER_MTOK: Record<string, { input: number; output: number; cachedInput?: number }> = {
+// Pricing in US cents per 1M tokens (USD × 100). e.g. Sonnet input 300 = $3.00 / 1M tokens.
+//
+// CANONICAL SOURCE: @latimer-woods-tech/llm MODEL_PRICE_PER_1M (USD/1M). These
+// values are that table × 100. Do NOT edit rates here — change them in `llm` and
+// update these to match; `pricing-sync.test.ts` fails CI if they diverge. Every
+// model below MUST exist in the canonical table (so unknown/stale models bill $0
+// rather than a guessed rate).
+const PRICING_CENTS_PER_MTOK: Record<string, { input: number; output: number; cachedInput?: number }> = {
   // Anthropic
   'claude-haiku-4-20250514':   { input: 80,    output: 400,   cachedInput: 8 },
   'claude-haiku-4-5-20251001': { input: 80,    output: 400,   cachedInput: 8 },
@@ -186,14 +190,16 @@ const PRICING_UCENTS_PER_MTOK: Record<string, { input: number; output: number; c
   'claude-opus-4-20250514':    { input: 1500,  output: 7500,  cachedInput: 150 },
   'claude-opus-4-7':           { input: 1500,  output: 7500,  cachedInput: 150 },
   // Google
-  'gemini-2.5-pro':            { input: 125,   output: 500 },
-  'gemini-1.5-flash':          { input: 8,     output: 30 },
-  // Groq
-  'llama-3.3-70b-versatile':   { input: 59,    output: 79 },
+  'gemini-2.5-pro':            { input: 125,   output: 1000,  cachedInput: 31 },
+  // Groq — llama-4-maverick is the live `verifier` tier model.
+  'llama-4-maverick':          { input: 50,    output: 77,    cachedInput: 5 },
   // xAI
   'grok-4.3':                  { input: 125,   output: 250 },
   'grok-4-fast':               { input: 125,   output: 250 },
   'grok-3-mini-latest':        { input: 125,   output: 250 },
+  // DeepSeek — the live `workbench` tier; previously absent ⇒ billed $0.
+  'deepseek-chat':             { input: 27,    output: 110,   cachedInput: 7 },
+  'deepseek-reasoner':         { input: 55,    output: 219,   cachedInput: 14 },
 };
 
 /**
@@ -206,14 +212,15 @@ export function computeCostCents(
   output: number,
   cachedInput = 0,
 ): number {
-  const p = PRICING_UCENTS_PER_MTOK[model];
+  const p = PRICING_CENTS_PER_MTOK[model];
   if (!p) return 0; // unknown model — record 0 and log a warning upstream
   const billableInput = Math.max(0, input - cachedInput);
-  const inputUcents = (billableInput / 1_000_000) * p.input;
-  const cachedUcents = p.cachedInput ? (cachedInput / 1_000_000) * p.cachedInput : 0;
-  const outputUcents = (output / 1_000_000) * p.output;
-  const totalUcents = inputUcents + cachedUcents + outputUcents;
-  return Math.ceil(totalUcents / 100); // 1 cent = 100 ucents
+  // Prices are cents per 1M tokens, so (tokens / 1M) * centsPerMtok yields cents directly.
+  const inputCents = (billableInput / 1_000_000) * p.input;
+  const cachedCents = p.cachedInput ? (cachedInput / 1_000_000) * p.cachedInput : 0;
+  const outputCents = (output / 1_000_000) * p.output;
+  const totalCents = inputCents + cachedCents + outputCents;
+  return Math.ceil(totalCents);
 }
 
 function currentYyyyMm(now = new Date()): string {
@@ -559,6 +566,6 @@ export async function meteredComplete(
 }
 
 export {
-  PRICING_UCENTS_PER_MTOK,
+  PRICING_CENTS_PER_MTOK,
   DEFAULT_RUN_CAP_CENTS,
 };

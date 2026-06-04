@@ -1,0 +1,113 @@
+name: Generate Founder Stats
+
+# Queries the GitHub API for live Factory metrics and commits
+# founder-stats.json into apps/latwoodtech-web/src/data/ so the
+# /resume page always shows current numbers. The commit triggers
+# deploy-latwoodtech-web.yml automatically.
+
+on:
+  schedule:
+    - cron: '0 * * * *'   # every hour
+  workflow_dispatch:
+
+concurrency:
+  group: generate-founder-stats
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Collect stats from GitHub API
+        id: stats
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -e
+
+          # Merged PR count via search API (single request, returns total_count)
+          MERGED_PRS=$(gh api "search/issues?q=repo:Latimer-Woods-Tech/Factory+is:pr+is:merged&per_page=1" \
+            --jq '.total_count')
+
+          # Commit count via pagination: GET with per_page=1, parse Link header last page
+          COMMIT_RESP=$(gh api "repos/Latimer-Woods-Tech/Factory/commits?per_page=1" -i 2>/dev/null || true)
+          TOTAL_COMMITS=$(echo "$COMMIT_RESP" | grep -i '^link:' | \
+            grep -oP 'page=\K[0-9]+(?=>; rel="last")' || echo "")
+          # If Link header absent (repo has ≤1 commit), fall back to 1
+          TOTAL_COMMITS=${TOTAL_COMMITS:-1}
+
+          # Directory counts (authoritative from the repo itself)
+          DEPLOYED_APPS=$(ls apps/ | wc -l | tr -d ' ')
+          SHARED_PACKAGES=$(ls packages/ | wc -l | tr -d ' ')
+          WORKFLOWS=$(ls .github/workflows/*.yml 2>/dev/null | wc -l | tr -d ' ')
+
+          # Org repo count
+          ORG_REPOS=$(gh api "orgs/Latimer-Woods-Tech/repos?per_page=100" --jq 'length')
+
+          # Repo creation date (static but sourced live to be safe)
+          REPO_CREATED=$(gh api "repos/Latimer-Woods-Tech/Factory" --jq '.created_at')
+
+          echo "merged_prs=$MERGED_PRS"         >> "$GITHUB_OUTPUT"
+          echo "total_commits=$TOTAL_COMMITS"    >> "$GITHUB_OUTPUT"
+          echo "deployed_apps=$DEPLOYED_APPS"    >> "$GITHUB_OUTPUT"
+          echo "shared_packages=$SHARED_PACKAGES" >> "$GITHUB_OUTPUT"
+          echo "workflows=$WORKFLOWS"            >> "$GITHUB_OUTPUT"
+          echo "org_repos=$ORG_REPOS"            >> "$GITHUB_OUTPUT"
+          echo "repo_created=$REPO_CREATED"      >> "$GITHUB_OUTPUT"
+
+      - name: Write founder-stats.json
+        run: |
+          cat > apps/latwoodtech-web/src/data/founder-stats.json <<JSON
+          {
+            "generatedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "repoCreatedAt": "${{ steps.stats.outputs.repo_created }}",
+            "mergedPrs": ${{ steps.stats.outputs.merged_prs }},
+            "totalCommits": ${{ steps.stats.outputs.total_commits }},
+            "deployedApps": ${{ steps.stats.outputs.deployed_apps }},
+            "sharedPackages": ${{ steps.stats.outputs.shared_packages }},
+            "workflows": ${{ steps.stats.outputs.workflows }},
+            "orgRepos": ${{ steps.stats.outputs.org_repos }},
+            "monthlyCostUsd": 9.11
+          }
+          JSON
+          # Strip leading spaces introduced by the heredoc indentation
+          python3 -c "
+          import json, sys
+          with open('apps/latwoodtech-web/src/data/founder-stats.json') as f:
+              data = json.load(f)
+          with open('apps/latwoodtech-web/src/data/founder-stats.json', 'w') as f:
+              json.dump(data, f, indent=2)
+              f.write('\n')
+          "
+
+      - name: Commit if changed
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          git config user.name  "factory-cross-repo[bot]"
+          git config user.email "factory-cross-repo[bot]@users.noreply.github.com"
+          git add apps/latwoodtech-web/src/data/founder-stats.json
+          if git diff --cached --quiet; then
+            echo "No change in founder-stats.json — skipping commit."
+          else
+            git commit -m "chore(latwoodtech-web): update founder stats $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi

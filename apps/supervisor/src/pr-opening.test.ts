@@ -5,7 +5,7 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { openSupervisorPR, type PROpeningResult } from './pr-opening';
 import type { StepReceipt } from './executor';
-import { ToolRegistry } from './tools/registry';
+import { ToolRegistry } from '@latimer-woods-tech/agent';
 
 describe('PR Opening Integration', () => {
   let mockEnv: Record<string, unknown>;

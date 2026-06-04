@@ -9,7 +9,7 @@
 
 import type { Env } from './index';
 import type { StepReceipt } from './executor';
-import { ToolRegistry } from './tools/registry';
+import { ToolRegistry } from '@latimer-woods-tech/agent';
 
 /**
  * Extracted repository information from a step receipt.

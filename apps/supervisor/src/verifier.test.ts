@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { AcceptanceGate, VerifierResult } from './verifier';
 import { runVerifier } from './verifier';
 import type { StepReceipt } from './executor';
-import type { ToolRegistry } from './tools/registry';
+import type { ToolRegistry } from '@latimer-woods-tech/agent';
 import type { Env } from './index';
 
 // Mock implementations

@@ -51,6 +51,7 @@ This view lists docs that are stale/archive or missing a `Last Updated`/`last_up
 | [docs/ARCHITECTURAL_DECISION_RECORDS.md](ARCHITECTURAL_DECISION_RECORDS.md) | active | unverified | platform | unknown | Architectural Decision Records: VideoKing Phase 4 |
 | [docs/architecture/ADMIN_BUILD_PLAN.md](architecture/ADMIN_BUILD_PLAN.md) | active | unverified | architecture | unknown | Admin Build Plan — Three Passes + Testing + Targeting |
 | [docs/architecture/ADMIN_TECHNICAL_GUIDE.md](architecture/ADMIN_TECHNICAL_GUIDE.md) | active | unverified | architecture | unknown | Factory Admin Technical Guide |
+| [docs/architecture/AGENT_RUNTIME.md](architecture/AGENT_RUNTIME.md) | active | unverified | architecture | unknown | Factory Agent Runtime — Architecture & Implementation Plan |
 | [docs/architecture/CAPABILITY_FACTORY_REGISTRY.md](architecture/CAPABILITY_FACTORY_REGISTRY.md) | active | unverified | architecture | unknown | Capability Factory Registry |
 | [docs/architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md](architecture/I1_PERSONAL_BLUEPRINT_VIDEO.md) | active | unverified | architecture | unknown | I1 — Energy Blueprint Video Engine: Final-State Design |
 | [docs/architecture/I1_PERSUASION_POLICY.md](architecture/I1_PERSUASION_POLICY.md) | active | unverified | architecture | unknown | I1 — Narration Persuasion Policy (DRAFT — for red-line) |

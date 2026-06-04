@@ -10,7 +10,7 @@
  */
 
 import type { Env } from './index';
-import type { ToolRegistry } from './tools/registry';
+import type { ToolRegistry } from '@latimer-woods-tech/agent';
 import type { StepReceipt } from './executor';
 import { mintReadonlyJwt } from './auth';
 import { writeMemory } from './memory/d1';

@@ -67,12 +67,27 @@ const ENV = {
 
 describe('computeCostCents', () => {
   it('bills input + output with cache discount', () => {
+    // Sonnet: $3/1M in, $15/1M out, $0.30/1M cache-read.
+    // billable input 60k = 18c; cache 40k = 1.2c; output 50k = 75c => 94.2c, ceil => 95c.
     const c = computeCostCents('claude-sonnet-4-20250514', 100_000, 50_000, 40_000);
-    expect(c).toBeGreaterThan(0);
+    expect(c).toBe(95);
+  });
+
+  it('bills 1M Sonnet input tokens at $3.00 (300 cents), not $0.03', () => {
+    // Regression guard for the 100x under-billing bug: the per-Mtok values are
+    // cents, so 1M input tokens must cost 300 cents, not 3.
+    expect(computeCostCents('claude-sonnet-4-6', 1_000_000, 0, 0)).toBe(300);
   });
 
   it('returns 0 for unknown model', () => {
     expect(computeCostCents('unknown-model', 1000, 1000)).toBe(0);
+  });
+
+  it('bills the live verifier/workbench models (previously $0)', () => {
+    // 1M input each, priced from @lwt/llm MODEL_PRICE_PER_1M (USD x 100 => cents).
+    expect(computeCostCents('llama-4-maverick', 1_000_000, 0, 0)).toBe(50);  // $0.50/1M
+    expect(computeCostCents('deepseek-chat', 1_000_000, 0, 0)).toBe(27);     // $0.27/1M
+    expect(computeCostCents('gemini-2.5-pro', 0, 1_000_000, 0)).toBe(1000);  // $10/1M out
   });
 
   it('zero tokens bills zero', () => {
