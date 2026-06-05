@@ -1,3 +1,7 @@
+# Music/media assets belong in R2, not git
+selfprime_music/
+*.mp3
+
 node_modules/
 packages/*/coverage/
 packages/*/dist/

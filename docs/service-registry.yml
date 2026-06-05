@@ -495,6 +495,36 @@ workers:
     consumers:
       - apps/supervisor/src/pr-opening.ts
 
+  - id: factory-agent-gateway
+    name: factory-agent-gateway                                # matches wrangler.jsonc name
+    repo: Latimer-Woods-Tech/factory
+    url: https://factory-agent-gateway.adrper79.workers.dev     # workers.dev until branded domain DNS is added
+    workers_dev_url: https://factory-agent-gateway.adrper79.workers.dev
+    custom_domain: agent-gateway.latwoodtech.work
+    custom_domain_status: pending_dns_record                    # configured in wrangler env.production; DNS + --env production deploy still TODO
+    health_endpoint: /health
+    verification_targets:
+      staging: https://factory-agent-gateway.adrper79.workers.dev/health
+      production: https://agent-gateway.latwoodtech.work/health
+    telemetry_required: false
+    notes: >
+      Agent Runtime Phase 3 gateway (apps/agent-gateway). Hono Worker fronting the
+      AgentSessionDO instances (re-exported from @latimer-woods-tech/agent). Deployed
+      + E2E-verified live on workers.dev 2026-06-04 (/health 200; real task ran for
+      ~$0.000186). Production branded domain agent-gateway.latwoodtech.work is in
+      wrangler env.production but needs a proxied DNS record before --env production.
+      Deploy via .github/workflows/deploy-agent-gateway.yml. See
+      docs/architecture/AGENT_RUNTIME_STATUS.md.
+    required_bindings:
+      - AGENT_SESSIONS
+      - DB
+      - KV
+      - RATE_LIMITER
+    required_secrets:
+      - JWT_SECRET
+      - ANTHROPIC_API_KEY
+      - GROQ_API_KEY
+
   - id: factory-supervisor
     name: factory-supervisor                                   # matches wrangler.jsonc name
     repo: Latimer-Woods-Tech/factory

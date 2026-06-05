@@ -21,7 +21,13 @@
 |---|---|---|---|---|
 | [apps/admin-studio-ui/README.md](../apps/admin-studio-ui/README.md) | active | unverified | unknown | Factory Admin Studio — UI |
 
-## architecture (24)
+## agent-gateway (1)
+
+| Path | Status | Fidelity | Last Updated | Title |
+|---|---|---|---|---|
+| [apps/agent-gateway/README.md](../apps/agent-gateway/README.md) | active | unverified | unknown | factory-agent-gateway |
+
+## architecture (25)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -40,6 +46,7 @@
 | [docs/adr/0012-dependency-version-policy.md](adr/0012-dependency-version-policy.md) | active | unverified | unknown | ADR-0012 — Dependency Version Policy |
 | [docs/architecture/ADMIN_BUILD_PLAN.md](architecture/ADMIN_BUILD_PLAN.md) | active | unverified | unknown | Admin Build Plan — Three Passes + Testing + Targeting |
 | [docs/architecture/ADMIN_TECHNICAL_GUIDE.md](architecture/ADMIN_TECHNICAL_GUIDE.md) | active | unverified | unknown | Factory Admin Technical Guide |
+| [docs/architecture/AGENT_RUNTIME_STATUS.md](architecture/AGENT_RUNTIME_STATUS.md) | active | unverified | unknown | Agent Runtime — Status & Handoff (as of 2026-06-04) |
 | [docs/architecture/AGENT_RUNTIME.md](architecture/AGENT_RUNTIME.md) | active | unverified | unknown | Factory Agent Runtime — Architecture & Implementation Plan |
 | [docs/architecture/CAPABILITY_FACTORY_REGISTRY.md](architecture/CAPABILITY_FACTORY_REGISTRY.md) | active | unverified | unknown | Capability Factory Registry |
 | [docs/architecture/FACTORY_V1.md](architecture/FACTORY_V1.md) | canonical | owner-reviewed | unknown | The Factory — Architecture & Playbook, v1 |

@@ -60,6 +60,28 @@ on:
         required: false
         type: string
         default: '#a5b4fc'
+      forge_theme:
+        description: 'Atmospheric forge theme for EnergyBlueprintVideo (chronos|eros|aether|lux|phoenix|self)'
+        required: false
+        type: choice
+        default: 'self'
+        options:
+          - 'self'
+          - 'chronos'
+          - 'eros'
+          - 'aether'
+          - 'lux'
+          - 'phoenix'
+      hd_type:
+        description: 'HD energy type for body graph colouring (generator|manifesting_generator|projector|manifestor|reflector)'
+        required: false
+        type: string
+        default: ''
+      signature_gates:
+        description: 'JSON array of gate numbers to highlight on body graph, e.g. [1,2,64]'
+        required: false
+        type: string
+        default: '[]'
       logo_url:
         description: 'Logo image URL (may be empty)'
         required: false
@@ -641,6 +663,9 @@ jobs:
           STEPS_JSON: ${{ steps.script.outputs.steps || steps.brief.outputs.steps }}
           VISUAL_BEATS_JSON: ${{ steps.brief.outputs.visual_beats }}
           DURATION_SECONDS: ${{ steps.brief.outputs.duration_seconds }}
+          FORGE_THEME:     ${{ inputs.forge_theme || 'self' }}
+          HD_TYPE:         ${{ inputs.hd_type || '' }}
+          SIGNATURE_GATES: ${{ inputs.signature_gates || '[]' }}
         run: |
           set -euo pipefail
           write_json_array() {
@@ -657,6 +682,9 @@ jobs:
           write_json_array "$SCREENSHOT_URLS_JSON" /tmp/screenshot-urls.json
           write_json_array "$STEPS_JSON" /tmp/render-steps.json
           write_json_array "$VISUAL_BEATS_JSON" /tmp/visual-beats.json
+
+          SIGNATURE_GATES_JSON="$SIGNATURE_GATES"
+          write_json_array "$SIGNATURE_GATES_JSON" /tmp/signature-gates.json
 
           if [ -n "$DURATION_SECONDS" ]; then
             jq -e -n --arg value "$DURATION_SECONDS" '$value | tonumber | . > 0' >/dev/null
@@ -676,12 +704,28 @@ jobs:
             --slurpfile steps /tmp/render-steps.json \
             --slurpfile visualBeats /tmp/visual-beats.json \
             --arg durationSeconds "$DURATION_SECONDS" \
+            --arg forgeTheme   "$FORGE_THEME" \
+            --arg hdType       "$HD_TYPE" \
+            --slurpfile signatureGates /tmp/signature-gates.json \
             'if $composition == "WalkthroughVideo"
              then {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl,screenshotUrls:$screenshotUrls[0]}
              elif $composition == "TrainingVideo"
              then {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl,steps:$steps[0],durationSeconds:($durationSeconds | if . == "" then 30 else tonumber end)}
              elif $composition == "MarketingVideo"
              then {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl,visualBeats:$visualBeats[0],durationSeconds:($durationSeconds | if . == "" then 15 else tonumber end)}
+             elif $composition == "EnergyBlueprintVideo"
+             then {
+               appId:$appId,
+               topic:$topic,
+               script:$script,
+               narrationUrl:$narrationUrl,
+               brandColor:$brandColor,
+               brandAccent:$brandAccent,
+               logoUrl:$logoUrl,
+               forgeTheme:$forgeTheme,
+               hdType:(if $hdType == "" then null else $hdType end),
+               signatureGates:$signatureGates[0]
+             }
              else {appId:$appId,topic:$topic,script:$script,narrationUrl:$narrationUrl,brandColor:$brandColor,brandAccent:$brandAccent,logoUrl:$logoUrl}
              end')
           cd apps/video-studio
