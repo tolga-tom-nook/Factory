@@ -15,6 +15,11 @@ export type SideEffects = 'none' | 'read-external' | 'write-app' | 'write-extern
 /** Result of a tool invocation. */
 export type ToolResult = { ok: true; result: unknown } | { ok: false; error: string };
 
+/**
+ * A registered tool. Declares its name, trust `side_effects`, the JWT
+ * `required_scope` to invoke it, an async `invoke` function, and (optionally) a
+ * JSON-Schema `parameters` shape that makes it eligible for LLM tool-calling.
+ */
 export interface Tool {
   /** Fully-qualified name, e.g. "humandesign.admin.users.suspend". */
   name: string;
@@ -42,6 +47,11 @@ export function isLLMExposed(tool: Tool): boolean {
   return tool.exposeToLLM ?? true;
 }
 
+/**
+ * In-memory tool registry. Registers tools by name (and optional fixture id),
+ * filters by trust tier ({@link ToolRegistry.byTier}), and selects the
+ * LLM-exposable subset ({@link ToolRegistry.llmTools}) for the reasoning loop.
+ */
 export class ToolRegistry {
   private byName = new Map<string, Tool>();
   private byId = new Map<string, Tool>();

@@ -24,6 +24,7 @@ import {
   type LLMToolCall,
 } from '@latimer-woods-tech/llm';
 import { type Tool, type ToolRegistry } from './registry.js';
+import { pruneMessages } from './pruning.js';
 
 /** Outcome of a single tool invocation within a loop turn. */
 export interface ToolCallReceipt {
@@ -58,6 +59,7 @@ export interface AgentResult {
   totalTurns: number;
 }
 
+/** Options controlling a {@link runLoop} invocation. */
 export interface AgentLoopOptions {
   /** LLM environment bindings (AI Gateway + provider keys). */
   env: LLMEnv;
@@ -75,6 +77,14 @@ export interface AgentLoopOptions {
   stopOnToolError?: boolean;
   /** LLM options forwarded to `complete()` (tier, model, system, etc.). */
   llmOpts?: Omit<LLMOptions, 'tools' | 'toolChoice' | 'maxCostUsd'>;
+  /**
+   * Maximum number of messages to send to the LLM on each turn. When the
+   * accumulated history exceeds this limit, `pruneMessages` keeps the most
+   * recent window while preserving the original first-user task message as an
+   * anchor. Default 40. Set to `Infinity` to disable pruning entirely (not
+   * recommended for long sessions).
+   */
+  maxContextMessages?: number;
   /** Optional injectable deps for testing (fetch, now). */
   deps?: Parameters<typeof complete>[3];
 }
@@ -186,8 +196,15 @@ export async function runLoop(
   let lastContent = '';
 
   for (let turn = 0; turn < maxTurns; turn++) {
+    // Prune the message history before sending to the LLM. The full `messages`
+    // array is never mutated — only the copy forwarded to `complete()` is
+    // trimmed. This keeps the session DO history intact for replay and auditing.
+    const contextMessages = pruneMessages(messages, {
+      maxMessages: opts.maxContextMessages ?? 40,
+    });
+
     const res = await complete(
-      messages,
+      contextMessages,
       opts.env,
       {
         ...opts.llmOpts,

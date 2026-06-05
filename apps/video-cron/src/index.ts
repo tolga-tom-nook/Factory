@@ -133,6 +133,9 @@ async function dispatchRenderWorkflow(env: Env, job: RenderJob): Promise<void> {
         brand_color: '#6366f1',
         brand_accent: '#a5b4fc',
         logo_url: '',
+        forge_theme: job.forgeTheme || 'self',
+        hd_type: job.hdType || '',
+        signature_gates: JSON.stringify(job.signatureGates || []),
       },
     }),
   });

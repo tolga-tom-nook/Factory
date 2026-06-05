@@ -395,4 +395,4 @@ export {
   type ScreenshotDiffResult,
   type PerformanceBudget,
   type CapturedScreenshots,
-} from './regression-gates.js';
+} from './regression-gates.js';export { MockLLM } from './mock-llm.js';

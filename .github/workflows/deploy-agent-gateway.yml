@@ -1,0 +1,151 @@
+name: Deploy factory-agent-gateway (Worker + DO)
+
+# Agent Runtime Phase 3 gateway. Deploys apps/agent-gateway, which fronts the
+# AgentSessionDO instances. Consumes @latimer-woods-tech/agent + @lwt/llm from
+# the public npm registry (no local package build needed). Secrets are sourced
+# from GCP Secret Manager via WIF (same pattern as deploy-supervisor.yml).
+#
+# CRITICAL: AI_GATEWAY_BASE_URL is a wrangler.jsonc var (prime-self gateway),
+# NOT a secret — do not create an "agent-gateway"-named ghost gateway.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/agent-gateway/**'
+      - '.github/workflows/deploy-agent-gateway.yml'
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        required: true
+        default: staging
+        type: choice
+        options: [staging, production]
+
+concurrency:
+  group: agent-gateway-${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+  cancel-in-progress: false
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy to ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+    permissions:
+      contents: read
+      packages: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          credentials_json: ${{ secrets.VERTEX_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Fetch secrets from GCP Secret Manager
+        run: |
+          set -euo pipefail
+          source scripts/fetch_gcp_secrets.sh
+          fetch_to_env JWT_SECRET        JWT_SECRET
+          fetch_to_env ANTHROPIC_API_KEY ANTHROPIC_API_KEY
+          fetch_to_env GROQ_API_KEY      GROQ_API_KEY
+
+      - name: Install agent-gateway
+        run: npm ci
+        working-directory: apps/agent-gateway
+
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: apps/agent-gateway
+
+      - name: Confirm CF_API_TOKEN is set
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        run: |
+          test -n "${CF_API_TOKEN}" || \
+            (echo "::error::CF_API_TOKEN secret is not set. Create a Workers-capable token at https://dash.cloudflare.com/profile/api-tokens." && exit 1)
+
+      - name: Apply D1 migration (idempotent)
+        working-directory: apps/agent-gateway
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          TARGET_ENV: ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+        run: |
+          # CREATE TABLE IF NOT EXISTS — safe to re-run on every deploy.
+          DB_NAME=$([ "${TARGET_ENV}" = "production" ] && echo "agent-gateway-memory" || echo "agent-gateway-memory")
+          npx wrangler d1 execute "$DB_NAME" --remote \
+            --file=node_modules/@latimer-woods-tech/agent/migrations/0001_agent_sessions.sql || \
+            echo "::warning::D1 migration step returned non-zero (may be already applied)"
+
+      - name: Provision secrets
+        working-directory: apps/agent-gateway
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          SECRET_JWT_SECRET: ${{ env.JWT_SECRET }}
+          SECRET_ANTHROPIC_API_KEY: ${{ env.ANTHROPIC_API_KEY }}
+          SECRET_GROQ_API_KEY: ${{ env.GROQ_API_KEY }}
+          SECRET_GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
+          SECRET_VERTEX_ACCESS_TOKEN: ${{ secrets.VERTEX_ACCESS_TOKEN }}
+          TARGET_ENV: ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+        run: |
+          put_secret() {
+            local name="$1" val="$2"
+            if [ -z "$val" ]; then
+              echo "::warning::Skipping $name — not set"
+              return 0
+            fi
+            ENV_FLAG=$([ "${TARGET_ENV}" = "production" ] && echo "--env production" || echo "")
+            printf '%s' "$val" | npx wrangler secret put "$name" ${ENV_FLAG} 2>&1 | grep -v "^$" || true
+          }
+          put_secret JWT_SECRET          "${SECRET_JWT_SECRET}"
+          put_secret ANTHROPIC_API_KEY   "${SECRET_ANTHROPIC_API_KEY}"
+          put_secret GROQ_API_KEY        "${SECRET_GROQ_API_KEY}"
+          put_secret GROK_API_KEY        "${SECRET_GROK_API_KEY}"
+          put_secret VERTEX_ACCESS_TOKEN "${SECRET_VERTEX_ACCESS_TOKEN}"
+
+      - name: Deploy
+        working-directory: apps/agent-gateway
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          TARGET_ENV: ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+        run: |
+          # Staging/default = top-level config (no --env); production = --env production.
+          ENV_FLAG=$([ "${TARGET_ENV}" = "production" ] && echo "--env production" || echo "")
+          npx wrangler deploy ${ENV_FLAG}
+
+      - name: Post-deploy health check
+        env:
+          TARGET_ENV: ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
+        run: |
+          URL=$([ "${TARGET_ENV}" = "production" ] && echo "https://agent-gateway.latwoodtech.work" || echo "https://factory-agent-gateway.adrper79.workers.dev")
+          for i in 1 2 3 4 5; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "${URL}/health")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed on ${URL}"
+              exit 0
+            fi
+            echo "Attempt $i: status=${STATUS}, retrying in 10s..."
+            sleep 10
+          done
+          echo "::error::Health check failed after 5 attempts (last status: ${STATUS})"
+          exit 1

@@ -206,6 +206,12 @@ export interface RenderJob {
   createdAt: string;
   /** ISO 8601 last-updated timestamp. */
   updatedAt: string;
+  /** Atmospheric forge theme for EnergyBlueprintVideo renders. */
+  forgeTheme?: string;
+  /** HD energy type for body graph colouring. */
+  hdType?: string;
+  /** Gate numbers to highlight on the body graph. */
+  signatureGates?: number[];
 }
 
 // ---------------------------------------------------------------------------

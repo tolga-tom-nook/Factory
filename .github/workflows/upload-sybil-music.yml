@@ -1,0 +1,141 @@
+name: Upload Sybil Music to R2
+
+# One-shot workflow: restores Sybil music tracks from git history, uploads
+# them to R2 under sybil-music/{forge,type}/*.mp3, and sets SYBIL_MUSIC_BASE_URL
+# on the Cloud Run render service so the music bed plays in personal renders.
+#
+# Run manually once via:
+#   gh workflow run upload-sybil-music.yml
+#
+# Idempotent — safe to re-run if a track fails.
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+  # GitHub release that holds the 11 Sybil tracks as assets
+  MUSIC_RELEASE_TAG: sybil-music-assets-v1
+  MUSIC_RELEASE_REPO: Latimer-Woods-Tech/Factory
+  # Cloud Run service name + region
+  CLOUD_RUN_SERVICE: video-render-service
+  CLOUD_RUN_REGION: us-central1
+
+jobs:
+  upload:
+    name: Upload Sybil music tracks + wire SYBIL_MUSIC_BASE_URL
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - name: Install AWS CLI
+        run: aws --version || (sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends awscli)
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          credentials_json: ${{ secrets.VERTEX_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Fetch secrets from GCP Secret Manager
+        run: |
+          set -euo pipefail
+          source scripts/fetch_gcp_secrets.sh
+          fetch_to_env CF_ACCOUNT_ID      CF_ACCOUNT_ID      CLOUDFLARE_ACCOUNT_ID
+          fetch_to_env R2_ACCESS_KEY_ID   R2_ACCESS_KEY_ID   r2-access-key-id
+          fetch_to_env R2_SECRET_ACCESS_KEY R2_SECRET_ACCESS_KEY r2-secret-access-key
+          fetch_to_env R2_BUCKET_NAME     R2_BUCKET_NAME     r2-bucket-name
+          fetch_to_env R2_PUBLIC_DOMAIN   R2_PUBLIC_DOMAIN   r2-public-domain
+
+      - name: Download music tracks from GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sybil-music/forge /tmp/sybil-music/type
+          BASE="https://github.com/${MUSIC_RELEASE_REPO}/releases/download/${MUSIC_RELEASE_TAG}"
+          download() {
+            local dest="$1" asset="$2"
+            echo "downloading $asset..."
+            gh release download "$MUSIC_RELEASE_TAG" \
+              --repo "$MUSIC_RELEASE_REPO" \
+              --pattern "$asset" \
+              --output "$dest" \
+              --clobber
+          }
+          # forge-theme tracks
+          download /tmp/sybil-music/forge/chronos.mp3              chronos.mp3
+          download /tmp/sybil-music/forge/eros.mp3                 eros.mp3
+          download /tmp/sybil-music/forge/aether.mp3               aether.mp3
+          download /tmp/sybil-music/forge/lux.mp3                  lux.mp3
+          download /tmp/sybil-music/forge/phoenix.mp3              phoenix.mp3
+          download /tmp/sybil-music/forge/self.mp3                 self.mp3
+          # HD-type tracks
+          download /tmp/sybil-music/type/generator.mp3             generator.mp3
+          download /tmp/sybil-music/type/manifesting_generator.mp3 manifesting_generator.mp3
+          download /tmp/sybil-music/type/projector.mp3             projector.mp3
+          download /tmp/sybil-music/type/manifestor.mp3            manifestor.mp3
+          download /tmp/sybil-music/type/reflector.mp3             reflector.mp3
+          echo "Track sizes:"
+          du -sh /tmp/sybil-music/forge/* /tmp/sybil-music/type/*
+
+      - name: Upload tracks to R2
+        run: |
+          set -euo pipefail
+          export AWS_ACCESS_KEY_ID="$R2_ACCESS_KEY_ID"
+          export AWS_SECRET_ACCESS_KEY="$R2_SECRET_ACCESS_KEY"
+          export AWS_DEFAULT_REGION="auto"
+          ENDPOINT="https://${CF_ACCOUNT_ID}.r2.cloudflarestorage.com"
+
+          upload() {
+            local key="$1" file="$2"
+            echo "→ sybil-music/$key"
+            aws s3 cp "$file" \
+              "s3://${R2_BUCKET_NAME}/sybil-music/$key" \
+              --endpoint-url "$ENDPOINT" \
+              --content-type "audio/mpeg" \
+              --no-progress
+          }
+
+          upload forge/chronos.mp3              /tmp/sybil-music/forge/chronos.mp3
+          upload forge/eros.mp3                 /tmp/sybil-music/forge/eros.mp3
+          upload forge/aether.mp3               /tmp/sybil-music/forge/aether.mp3
+          upload forge/lux.mp3                  /tmp/sybil-music/forge/lux.mp3
+          upload forge/phoenix.mp3              /tmp/sybil-music/forge/phoenix.mp3
+          upload forge/self.mp3                 /tmp/sybil-music/forge/self.mp3
+          upload type/generator.mp3             /tmp/sybil-music/type/generator.mp3
+          upload type/manifesting_generator.mp3 /tmp/sybil-music/type/manifesting_generator.mp3
+          upload type/projector.mp3             /tmp/sybil-music/type/projector.mp3
+          upload type/manifestor.mp3            /tmp/sybil-music/type/manifestor.mp3
+          upload type/reflector.mp3             /tmp/sybil-music/type/reflector.mp3
+          echo "✓ 11 tracks uploaded to s3://${R2_BUCKET_NAME}/sybil-music/"
+
+      - name: Verify tracks are publicly reachable
+        run: |
+          set -euo pipefail
+          BASE="https://${R2_PUBLIC_DOMAIN}/sybil-music"
+          fail=0
+          for key in forge/chronos forge/eros forge/aether forge/lux forge/phoenix forge/self \
+                     type/generator type/manifesting_generator type/projector type/manifestor type/reflector; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$BASE/$key.mp3")
+            if [ "$code" = "200" ]; then
+              echo "✓ $key.mp3 → $code"
+            else
+              echo "✗ $key.mp3 → $code  ← FAIL"
+              fail=1
+            fi
+          done
+          [ "$fail" = "0" ] || { echo "::error::One or more tracks not reachable — check R2 bucket public access"; exit 1; }
+
+      - name: Smoke-verify render service is live
+        run: |
+          set -euo pipefail
+          # SYBIL_MUSIC_BASE_URL is set in cloudbuild.yaml (PR #1265) and already present
+          # on the running service. No Cloud Run update needed here — the env var
+          # points at the public R2 URL where tracks were just uploaded.
+          SERVICE_URL="https://video-render-service-891842778224.us-central1.run.app"
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "$SERVICE_URL/health")
+          [ "$CODE" = "200" ] && echo "✓ Render service /health → 200" || { echo "::error::Render service /health returned $CODE"; exit 1; }

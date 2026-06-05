@@ -520,5 +520,7 @@ export function toRenderJob(row: VideoCalendarRow): RenderJob {
     error: row.error ?? undefined,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    // TODO: add DB columns forge_theme, hd_type, signature_gates in a follow-up migration
+    // VideoCalendarRow does not yet carry these fields; they are optional on RenderJob.
   };
 }

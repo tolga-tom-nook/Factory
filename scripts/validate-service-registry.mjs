@@ -76,6 +76,16 @@ const WORKFLOW_RULES = [
     ],
   },
   {
+    path: '.github/workflows/deploy-agent-gateway.yml',
+    section: 'workers',
+    verifier: 'curl -s -o /dev/null',
+    matchMode: 'base-url',
+    targets: [
+      { id: 'factory-agent-gateway', key: 'staging' },
+      { id: 'factory-agent-gateway', key: 'production' },
+    ],
+  },
+  {
     path: '.github/workflows/deploy-synthetic-monitor.yml',
     section: 'workers',
     verifier: 'verify-http-endpoint.mjs',

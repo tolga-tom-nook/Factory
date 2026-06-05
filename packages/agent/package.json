@@ -1,6 +1,6 @@
 {
   "name": "@latimer-woods-tech/agent",
-  "version": "0.2.0",
+  "version": "0.6.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "migrations"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",
@@ -31,16 +32,17 @@
     "prepublish": "npm run lint && npm run typecheck && npm run test && npm run build"
   },
   "dependencies": {
+    "@latimer-woods-tech/errors": "^0.2.0",
     "@latimer-woods-tech/llm": "^0.4.4"
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
-    "@vitest/coverage-v8": "^3.2.4",
+    "@vitest/coverage-v8": "^4.1.8",
     "eslint": "^8.57.0",
     "tsup": "^8.1.0",
     "typescript": "^5.4.0",
-    "vitest": "^3.2.4"
+    "vitest": "^4.1.8"
   }
 }

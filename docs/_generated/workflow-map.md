@@ -69,6 +69,7 @@ flowchart TB
   Other --> dependency_review_yml["dependency-review.yml"]
   Deploy --> deploy_admin_studio_ui_yml["deploy-admin-studio-ui.yml"]
   Deploy --> deploy_admin_studio_yml["deploy-admin-studio.yml"]
+  Deploy --> deploy_agent_gateway_yml["deploy-agent-gateway.yml"]
   Deploy --> deploy_daily_brief_yml["deploy-daily-brief.yml"]
   Deploy --> deploy_factory_core_api_yml["deploy-factory-core-api.yml"]
   Deploy --> deploy_factory_cross_repo_yml["deploy-factory-cross-repo.yml"]

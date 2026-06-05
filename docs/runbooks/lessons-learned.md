@@ -1241,3 +1241,63 @@ Running `eslint … | tail -40` (or any pipe to `tail`/`head`) makes the shell r
 
 ### A mocked unit suite cannot validate a DB-driver or RLS change — build a real-DB harness, baseline FIRST
 The 3284-test suite mocks the DB, so it proves code *shape* but nothing about a driver swap or RLS enforcement. For changes at the driver/DB layer: (1) spin a **dedicated Neon branch** (copy-on-write off prod — isolated, instant, deletable; never test against prod — branches contain a full copy of prod PII, delete after); (2) build a harness with a **prod-guard** (refuse to run if the target host is in a prod deny-list, no `--force`); (3) capture a **golden baseline BEFORE the change** so the after-diff distinguishes a regression from pre-existing behavior — without it you can't tell "we broke it" from "it was always like that"; (4) note the baseline's validity window (a pre-RLS parity baseline becomes *expected*-to-differ once policies turn on). Drive the branch yourself via the Neon API (`NEON_ORGANIZATION_KEY` is the write-capable org key) rather than asking a human to paste a connection string — a paste invites pasting the *prod* string, the exact disaster the prod-guard exists to prevent.
+
+## Capricast runtime API audit (June 2026)
+
+Lessons from a full cross-reference of all frontend `fetch()` calls against registered worker routes. 7 gaps found; all fixed in one session (PRs #565–568).
+
+### How to find all broken API routes in a Workers app
+Cross-reference every outbound call in the frontend against every registered route in the worker. Reliable recipe:
+1. `grep -rn "fetch(\|api\.get\|api\.post" apps/web/src` — lists every outbound call with path strings
+2. `grep -rn "router\.\(get\|post\|put\|delete\|patch\)" apps/worker/src/routes/*.ts` — lists every registered route
+3. Cross-reference: any path the frontend calls that has no matching route is a guaranteed 404
+4. For each registered route, grep for `throw new Error\|TODO\|not implemented\|return c\.json({.*mock\|hardcoded` — stubs that look real
+5. For every `c.env.SOME_SECRET` usage, check whether it appears as a comment in `wrangler.toml` (`# SOME_SECRET — required`) vs actually set — comments = unset = runtime crash
+
+This audit reliably surfaces 5–10 hidden bugs per run. Do it before shipping any new feature area.
+
+### Cloudflare Calls API token is only returned at app creation
+The `POST /accounts/{id}/calls/apps` response includes `secret` (the app token). Subsequent `GET` and `PUT` on the same app never return the secret again — it is permanently hidden. If you lose the token, the only recovery is to **delete the app and recreate it** (`DELETE` then `POST`). There is no rotation endpoint. Store the token as a worker secret immediately after creation; do not rely on being able to retrieve it from the API later.
+
+### CF Calls API rejects extra fields in the request body — causes worker 502
+`POST /sessions/{sessionId}/tracks/new` only accepts `{ sessionDescription, tracks }`. Passing any extra field (e.g. `callsSessionId` forwarded from an internal struct) returns a CF Calls validation error. This error surfaces as a `throw` inside the DO's `callsFetch`, which the DO catch block converts to 500, which the Hono route handler converts to 502. The 502 gives no indication the root cause is a body field. **Lesson:** always destructure internal keys out of the payload before forwarding to an external API — never spread an internal struct directly.
+
+### R2 Workers binding has no presigned URL generation — use direct-upload pattern
+`env.R2_BUCKET.createMultipartUpload()` creates a multipart upload session but does NOT return a URL the browser can PUT to. There is no native presigned URL in the Workers R2 binding. For client-to-R2 uploads: (1) accept the file body in a worker route (`multipart/form-data`), (2) call `env.R2_BUCKET.put(key, await file.arrayBuffer(), { httpMetadata })`, (3) serve files back through a separate worker GET route. No external R2 credentials or S3-compatible configuration needed. The two-route pattern (upload + serve) is the correct Workers-native approach.
+
+### Non-null assertion `!` on optional Worker bindings crashes at runtime
+`c.env.OPTIONAL_QUEUE!.send(...)` compiles fine but throws `TypeError: Cannot read properties of undefined` in prod when the binding is absent. Optional bindings (marked `?` in the `Env` type) require an explicit guard:
+```typescript
+if (!c.env.OPTIONAL_QUEUE) {
+  console.warn('[handler] OPTIONAL_QUEUE not bound — skipping');
+} else {
+  await c.env.OPTIONAL_QUEUE.send(msg);
+}
+```
+This matches the pattern already used for `EXPORT_QUEUE` in the videos route. `EMBEDDING_QUEUE` was the offender; the fix guards it the same way.
+
+### `instanceof File` fails in the Workers TypeScript config
+The Workers TypeScript target doesn't expose `File` as a constructor for `instanceof` checks on `FormDataEntryValue`. This causes `TS2358: left-hand side of 'instanceof' must be of type 'any', an object type or a type parameter`. Use a string-type guard instead:
+```typescript
+const entry = formData.get('file');
+if (!entry || typeof entry === 'string') {
+  return c.json({ error: 'BadRequest', message: 'Missing file field' }, 400);
+}
+const file = entry as Blob & { name?: string };
+```
+
+### Push stub routes that echo input silently discard user data
+A route that validates its input and returns a plausible response but never writes to a store is indistinguishable from a working route at the network level. Users who subscribe to push notifications, mute conversations, or set DND see a 200 and assume the action persisted — but on reload the preference is gone. **Pattern to catch this:** grep for routes that return the request body fields verbatim with no DB/KV write in between. Fix: KV is the right store for per-user notification preferences (key scheme `push:{type}:{userId}[:{entityId}]`); D1/Neon for anything requiring queries across users.
+
+### Getting the Cloudflare account ID without a dashboard login
+When `wrangler whoami` fails ("Failed to automatically retrieve account IDs") and you need the account ID programmatically:
+```bash
+gcloud secrets versions access latest --secret=CF_ACCOUNT_ID --project=factory-495015 | tr -d '\r\n\357\273\277'
+# → a1c8a33cbe8a3c9e260480433a0dbb06
+```
+The `CF_ACCOUNT_ID` GCP secret is the canonical source. Use it with the CF API:
+```bash
+CF_TOKEN=$(gcloud secrets versions access latest --secret=CF_API_TOKEN --project=factory-495015 | tr -d '\r\n\357\273\277')
+curl "https://api.cloudflare.com/client/v4/accounts/a1c8a33cbe8a3c9e260480433a0dbb06/calls/apps" \
+  -H "Authorization: Bearer $CF_TOKEN"
+```

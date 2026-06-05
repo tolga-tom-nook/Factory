@@ -1,0 +1,181 @@
+{
+  "name": "factory-agent-gateway",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+
+  // Required secrets (injected via `wrangler secret put` or sync-worker-secrets.yml):
+  //   JWT_SECRET              — HS256 signing secret for Bearer JWT verification
+  //   ANTHROPIC_API_KEY       — Anthropic provider key (forwarded to @lwt/llm)
+  //   GROQ_API_KEY            — Groq fallback provider key
+  //   GROK_API_KEY            — Grok fallback provider key (optional)
+  //   VERTEX_ACCESS_TOKEN     — GCP Vertex AI access token (optional)
+  //
+  // CRITICAL: AI_GATEWAY_BASE_URL MUST point at the provisioned prime-self AI Gateway:
+  //   https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self
+  //
+  // DO NOT create a new AI Gateway named "agent-gateway". An unprovisioned gateway
+  // silently 401s → degrades to direct provider calls (ghost-gateway incident, 2026-06-02).
+  // See docs/architecture/AGENT_RUNTIME.md §13 and docs/supervisor/FRIDGE.md.
+
+  "durable_objects": {
+    "bindings": [
+      { "name": "AGENT_SESSIONS", "class_name": "AgentSessionDO" }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["AgentSessionDO"]
+    }
+  ],
+
+  "d1_databases": [
+    {
+      // TODO(operator): create D1 database via `wrangler d1 create agent-gateway-memory`
+      // and replace database_id with the UUID from the output.
+      "binding": "DB",
+      "database_name": "agent-gateway-memory",
+      "database_id": "5378c8c4-4a18-4a67-b4a0-17a7a9a6f313"
+    }
+  ],
+
+  "kv_namespaces": [
+    {
+      // TODO(operator): create KV namespace via `wrangler kv:namespace create "agent-gateway-config"`
+      // and replace id with the UUID from the output.
+      "binding": "KV",
+      "id": "dbf85e2023834127af8637498f1fa5f1"
+    }
+  ],
+
+  "unsafe": {
+    "bindings": [
+      {
+        // TODO(operator): allocate rate limiter ID 1013 via the Cloudflare dashboard
+        // or CF API. See docs/runbooks/add-new-app.md for the registry.
+        // Rate: 100 requests per 60 seconds per user (keyed by JWT subject).
+        "type": "ratelimit",
+        "name": "RATE_LIMITER",
+        "namespace_id": "1013",
+        "simple": {
+          "limit": 100,
+          "period": 60
+        }
+      }
+    ]
+  },
+
+  "vars": {
+    // CRITICAL: Must point at the provisioned prime-self gateway — NOT an agent-gateway ghost.
+    // See the ghost-gateway incident note above.
+    "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
+    "VERTEX_PROJECT": "factory-495015",
+    "VERTEX_LOCATION": "us-central1"
+  },
+
+  "env": {
+    "production": {
+      "workers_dev": false,
+      "routes": [
+        // TODO(operator): replace with the branded custom domain for this worker.
+        // NEVER expose *.workers.dev URLs in user-facing code — see CLAUDE.md hard constraints.
+        // Example: { "pattern": "agent-gateway.latwoodtech.work/*", "zone_name": "latwoodtech.work" }
+        { "pattern": "agent-gateway.latwoodtech.work/*", "zone_name": "latwoodtech.work" }
+      ],
+      // NOTE: wrangler v4 does NOT inherit top-level vars/durable_objects/d1_databases/migrations
+      // into named environments. They MUST be repeated here or the production worker deploys
+      // without them. (Learned the hard way — see docs/runbooks/lessons-learned.md.)
+      "vars": {
+        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
+        "VERTEX_PROJECT": "factory-495015",
+        "VERTEX_LOCATION": "us-central1"
+      },
+      "durable_objects": {
+        "bindings": [
+          { "name": "AGENT_SESSIONS", "class_name": "AgentSessionDO" }
+        ]
+      },
+      "migrations": [
+        {
+          "tag": "v1",
+          "new_sqlite_classes": ["AgentSessionDO"]
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "agent-gateway-memory",
+          "database_id": "5378c8c4-4a18-4a67-b4a0-17a7a9a6f313"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+          "id": "dbf85e2023834127af8637498f1fa5f1"
+        }
+      ],
+      "unsafe": {
+        "bindings": [
+          {
+            "type": "ratelimit",
+            "name": "RATE_LIMITER",
+            "namespace_id": "1013",
+            "simple": {
+              "limit": 100,
+              "period": 60
+            }
+          }
+        ]
+      }
+    },
+    "staging": {
+      "workers_dev": true,
+      "vars": {
+        "AI_GATEWAY_BASE_URL": "https://gateway.ai.cloudflare.com/v1/a1c8a33cbe8a3c9e260480433a0dbb06/prime-self",
+        "VERTEX_PROJECT": "factory-495015",
+        "VERTEX_LOCATION": "us-central1"
+      },
+      "durable_objects": {
+        "bindings": [
+          { "name": "AGENT_SESSIONS", "class_name": "AgentSessionDO" }
+        ]
+      },
+      "migrations": [
+        {
+          "tag": "v1",
+          "new_sqlite_classes": ["AgentSessionDO"]
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "agent-gateway-memory-staging",
+          "database_id": "TODO_REPLACE_WITH_STAGING_D1_UUID"
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "KV",
+          "id": "TODO_REPLACE_WITH_STAGING_KV_UUID"
+        }
+      ],
+      "unsafe": {
+        "bindings": [
+          {
+            // TODO(operator): allocate a separate staging rate-limiter ID (next after 1013)
+            // per add-new-app.md — staging and prod must not share a namespace.
+            "type": "ratelimit",
+            "name": "RATE_LIMITER",
+            "namespace_id": "TODO_ALLOCATE_STAGING_RATE_LIMITER_ID",
+            "simple": {
+              "limit": 100,
+              "period": 60
+            }
+          }
+        ]
+      }
+    }
+  }
+}

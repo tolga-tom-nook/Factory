@@ -23,3 +23,36 @@ export {
   type ToolCallReceipt,
   type StopReason,
 } from './loop.js';
+
+export {
+  AgentSessionDO,
+  runSession,
+  type DOStorage,
+  type SessionState,
+  type SessionRunOptions,
+} from './session.js';
+
+export {
+  GuardrailError,
+  detectInjection,
+  assertCleanUserMessage,
+  assertCleanToolResult,
+  truncateToolResult,
+  MAX_USER_MESSAGE_CHARS,
+  MAX_TOOL_RESULT_CHARS,
+} from './guardrails.js';
+
+export {
+  recordEpisode,
+  getRecentEpisodes,
+  getProjectEpisodes,
+  getEpisodeSummary,
+  type Episode,
+  type RecordEpisodeParams,
+  type D1Like,
+} from './memory/episodic.js';
+
+export {
+  pruneMessages,
+  type PruneOptions,
+} from './pruning.js';
