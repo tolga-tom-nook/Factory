@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 442,
+    "total_docs": 443,
     "canonical": 17,
-    "active": 377,
+    "active": 378,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -395,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:87cc11526f1a436eac2fd0fc0291c3850eb7c54056f24dfc8a1687fe672008a1",
+      "content_hash": "sha256:aa4450e69b29dbcf7b1ada926fdbeec116edcb22568f97e329cc405e3acc2df4",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -8005,6 +8005,27 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:ba52423e2db70df842d1343d21db8478a5aa6918eb00f0aa5131bfbc37d59553",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/supervisor/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/supervisor/aos-green-smoke.md",
+      "title": "AOS Green Smoke",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:fbf4a5bba2a352762b4164220db0382314b34d8bcc967696a6a007bafae1e624",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
