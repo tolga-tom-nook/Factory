@@ -8,7 +8,9 @@
 
 ---
 
-## The ten rules
+## The eleven rules
+
+0. **Minimize human involvement.** Humans introduce delay, inconsistency, and error. If a machine can handle a task safely — credential lookup, wiring, deployment, PR creation, triage — it must. The only valid reason to route to a human is an irreversible action (rule 8), an unmatched template (rule 9), or a hard regulatory gate (rule 1). "I wasn't sure" is not a reason to pause for human input.
 
 1. **wordis-bond frontend is off-limits to automation.** The wordis-bond frontend/UI application carries TCPA regulatory risk and is subject to a three-layer lockout: CODEOWNERS, `service-registry.yml` automation_denylist, and supervisor denylist. Never open a PR or push code touching the wordis-bond UI layer. The wordis-bond **engine/worker backend** does NOT carry this restriction and may be worked on normally — treat it like any other Factory Worker. When in doubt about which layer a file belongs to, ask a CODEOWNER before proceeding.
 2. **No credentials in docs, memory, plans, issue bodies, PRs, or comments.** The `credential-scrub` workflow blocks CI. Respect it. If a key leaks in a doc: rotate it, do not just delete it from git.

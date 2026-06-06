@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="How Adrian L. Perry takes on platform engineering engagements — scope, process, what's included, and what to expect." />
+    <meta property="og:title" content="How I Work — Latimer Woods" />
+    <meta property="og:description" content="Platform builds, AI pipeline integrations, and automated video pipelines. Fixed scope, production-grade delivery." />
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://latwoodtech.com/work/" />
+    <meta property="og:image" content="https://latwoodtech.com/assets/og-image.svg" />
+
+    <meta name="theme-color" content="#05070a" />
+    <link rel="canonical" href="https://latwoodtech.com/work/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234f7bff' width='100' height='100'/><text x='50' y='60' font-size='70' font-weight='700' fill='white' text-anchor='middle'>L</text></svg>" />
+    <title>How I Work — Latimer Woods</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      .work-shell {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 0 1.5rem 6rem;
+      }
+      .work-hero {
+        padding: 48px 0 64px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 64px;
+      }
+      .work-hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(2.4rem, 5vw, 4rem);
+        font-weight: 600;
+        color: var(--accent-strong);
+        line-height: 1.1;
+        margin: 0 0 20px;
+        max-width: 720px;
+      }
+      .work-hero p {
+        color: rgba(248, 241, 222, 0.75);
+        font-size: 1.1rem;
+        line-height: 1.7;
+        max-width: 600px;
+        margin: 0;
+      }
+      .work-section {
+        margin-bottom: 72px;
+      }
+      .work-section-eyebrow {
+        font-family: var(--font-ui);
+        font-size: 0.65rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0 0 12px;
+      }
+      .work-section h2 {
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        font-weight: 600;
+        color: var(--accent-strong);
+        margin: 0 0 24px;
+        line-height: 1.2;
+      }
+      .work-section p {
+        color: rgba(248, 241, 222, 0.8);
+        line-height: 1.7;
+        margin: 0 0 16px;
+        max-width: 680px;
+      }
+      .engagement-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 24px;
+        margin-top: 32px;
+      }
+      .engagement-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .engagement-card-featured {
+        border-color: rgba(217, 90, 67, 0.4);
+        background: rgba(217, 90, 67, 0.04);
+      }
+      .engagement-tag {
+        font-family: var(--font-ui);
+        font-size: 0.6rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0;
+      }
+      .engagement-card h3 {
+        font-family: var(--font-display);
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--accent-strong);
+        margin: 0;
+        line-height: 1.2;
+      }
+      .engagement-card p {
+        color: rgba(248, 241, 222, 0.78);
+        font-size: 0.93rem;
+        line-height: 1.6;
+        margin: 0;
+        max-width: none;
+      }
+      .engagement-includes {
+        margin: 4px 0 0 1rem;
+        padding: 0;
+        color: rgba(248, 241, 222, 0.65);
+        font-size: 0.88rem;
+        line-height: 1.65;
+      }
+      .engagement-includes li { margin-bottom: 4px; }
+      .engagement-timeline {
+        font-size: 0.82rem;
+        color: var(--accent);
+        font-weight: 500;
+        margin-top: auto;
+        padding-top: 8px;
+      }
+      .process-steps {
+        display: grid;
+        gap: 0;
+        margin-top: 32px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .process-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 20px;
+        padding: 24px 28px;
+        border-bottom: 1px solid var(--line);
+        align-items: start;
+      }
+      .process-step:last-child { border-bottom: none; }
+      .step-number {
+        font-family: var(--font-ui);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 0.1em;
+        padding-top: 2px;
+      }
+      .step-body h4 {
+        font-family: var(--font-display);
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--accent-strong);
+        margin: 0 0 6px;
+      }
+      .step-body p {
+        color: rgba(248, 241, 222, 0.72);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        margin: 0;
+        max-width: none;
+      }
+      .not-right-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        margin-top: 28px;
+      }
+      .not-right-col h4 {
+        font-family: var(--font-ui);
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        margin: 0 0 14px;
+      }
+      .not-right-col.good h4 { color: var(--vital); }
+      .not-right-col.bad  h4 { color: var(--alert); }
+      .not-right-col ul {
+        margin: 0 0 0 1.1rem;
+        padding: 0;
+        color: rgba(248, 241, 222, 0.75);
+        font-size: 0.92rem;
+        line-height: 1.7;
+      }
+      .not-right-col li { margin-bottom: 6px; }
+      .work-cta {
+        background: rgba(230, 184, 77, 0.06);
+        border: 1px solid rgba(230, 184, 77, 0.2);
+        border-radius: 12px;
+        padding: 48px;
+        text-align: center;
+        margin-top: 48px;
+      }
+      .work-cta h2 {
+        font-family: var(--font-display);
+        font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+        color: var(--accent-strong);
+        margin: 0 0 14px;
+      }
+      .work-cta p {
+        color: rgba(248, 241, 222, 0.72);
+        line-height: 1.65;
+        max-width: 500px;
+        margin: 0 auto 28px;
+      }
+      .work-cta-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .work-divider {
+        border: none;
+        border-top: 1px solid var(--line);
+        margin: 64px 0;
+      }
+      @media (max-width: 640px) {
+        .not-right-grid { grid-template-columns: 1fr; gap: 24px; }
+        .work-cta { padding: 32px 20px; }
+        .engagement-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <div class="page-shell">
+      <nav class="site-nav" aria-label="Primary">
+        <a class="site-nav-brand" href="/">
+          <span class="site-nav-mark" aria-hidden="true"></span>
+          Latimer Woods
+        </a>
+        <div class="site-nav-links">
+          <a href="/stack/">Stack</a>
+          <a href="/status/">Status</a>
+          <a href="/founder/">Founder</a>
+        </div>
+      </nav>
+
+      <main id="main">
+        <div class="work-shell">
+
+          <header class="work-hero">
+            <p class="eyebrow">Engagements</p>
+            <h1>I take on a small number of engagements at a time. Here's how they work.</h1>
+            <p>Fixed scope. Production-grade delivery. No slide decks — you get running code, a deployed worker, and a runbook. Everything built on the same stack powering five live products at $9.11/month.</p>
+          </header>
+
+          <!-- ── Engagements ──────────────────────────────────────── -->
+          <section class="work-section">
+            <p class="work-section-eyebrow">What I build</p>
+            <h2>Three engagement types.</h2>
+            <p>Each is fixed-scope, priced by deliverable, and ends with something deployed and verified — not in staging, not "almost done."</p>
+
+            <div class="engagement-grid">
+              <article class="engagement-card engagement-card-featured">
+                <p class="engagement-tag">Most common</p>
+                <h3>Production Platform Build</h3>
+                <p>Your SaaS foundation, built correctly from the start. Cloudflare Workers backend, Neon Postgres via Hyperdrive, self-managed JWT auth, CI/CD pipeline with quality gates, Sentry monitoring — delivered as a running production system, not a template.</p>
+                <ul class="engagement-includes">
+                  <li>Workers + Hono API, strict TypeScript, ESM build</li>
+                  <li>Database schema, migrations, row-level security</li>
+                  <li>GitHub Actions CI: typecheck, lint, test, deploy, health-check</li>
+                  <li>Custom domain, verified end-to-end via <code>curl</code></li>
+                  <li>Ops runbook so you can own it after handoff</li>
+                </ul>
+                <p class="engagement-timeline">Typical delivery: 3–6 weeks</p>
+              </article>
+
+              <article class="engagement-card">
+                <p class="engagement-tag">Growing demand</p>
+                <h3>AI Pipeline Integration</h3>
+                <p>LLM features wired into your existing product. Multi-provider failover, streaming, tool calling, cost metering. The work is wiring and implementation — you get running code, not a strategy deck.</p>
+                <ul class="engagement-includes">
+                  <li>Anthropic → Grok → Groq fallover with per-provider cost tracking</li>
+                  <li>Streaming SSE, tool calling, and agentic loop scaffolding</li>
+                  <li>Fail-closed deploy preflight on AI Gateway</li>
+                  <li>Cost metering and budget caps wired before going live</li>
+                </ul>
+                <p class="engagement-timeline">Typical delivery: 2–4 weeks</p>
+              </article>
+
+              <article class="engagement-card">
+                <p class="engagement-tag">Niche but powerful</p>
+                <h3>AI Video Automation</h3>
+                <p>A pipeline that drops a produced video weekly from a template trigger — no manual production work. ElevenLabs narration, Remotion render, Cloudflare Stream delivery. Already running on Capricast.</p>
+                <ul class="engagement-includes">
+                  <li>LLM script generation per topic or schedule</li>
+                  <li>Professional narration via ElevenLabs, stored in R2</li>
+                  <li>Remotion + ffmpeg render on GitHub Actions</li>
+                  <li>Cloudflare Stream delivery with enriched metadata</li>
+                </ul>
+                <p class="engagement-timeline">Typical delivery: 3–5 weeks</p>
+              </article>
+            </div>
+          </section>
+
+          <hr class="work-divider" />
+
+          <!-- ── Process ──────────────────────────────────────────── -->
+          <section class="work-section">
+            <p class="work-section-eyebrow">How it works</p>
+            <h2>Straightforward from first contact to handoff.</h2>
+            <p>No retainer, no ongoing dependency unless you want one. Each engagement has a defined scope, a defined outcome, and ends when that outcome is deployed and working.</p>
+
+            <div class="process-steps">
+              <div class="process-step">
+                <span class="step-number">01</span>
+                <div class="step-body">
+                  <h4>Initial conversation</h4>
+                  <p>You describe what you're building and what's blocked. I tell you whether it's a fit, what I'd scope it to, and roughly what it would cost. No obligation, usually 30 minutes.</p>
+                </div>
+              </div>
+              <div class="process-step">
+                <span class="step-number">02</span>
+                <div class="step-body">
+                  <h4>Scoping document</h4>
+                  <p>I write a short document: deliverables list, what's in scope, what's out, timeline, and fixed price. You review it and decide. No surprises later.</p>
+                </div>
+              </div>
+              <div class="process-step">
+                <span class="step-number">03</span>
+                <div class="step-body">
+                  <h4>Build in the open</h4>
+                  <p>Work happens in a GitHub repo you own from day one. Every PR is visible, every deploy is verified. No black-box development, no "trust me it'll be done soon."</p>
+                </div>
+              </div>
+              <div class="process-step">
+                <span class="step-number">04</span>
+                <div class="step-body">
+                  <h4>Verified delivery</h4>
+                  <p>Done means <code>curl https://your-domain.com/health</code> returns 200 and you've walked through the running system with me. Not "CI is green" — actually working in production.</p>
+                </div>
+              </div>
+              <div class="process-step">
+                <span class="step-number">05</span>
+                <div class="step-body">
+                  <h4>Handoff with runbook</h4>
+                  <p>You get a runbook: how to deploy, how to rotate secrets, what to watch in Sentry, how to scale. The goal is that you can operate it without me after I leave.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <hr class="work-divider" />
+
+          <!-- ── Right fit ────────────────────────────────────────── -->
+          <section class="work-section">
+            <p class="work-section-eyebrow">Fit</p>
+            <h2>This works well for some projects. Not all of them.</h2>
+
+            <div class="not-right-grid">
+              <div class="not-right-col good">
+                <h4>Good fit</h4>
+                <ul>
+                  <li>Seed or pre-seed founders who need a production backend fast and cheap</li>
+                  <li>Indie builders replacing expensive AWS / Vercel setups</li>
+                  <li>Product teams adding AI features without bandwidth to do it correctly</li>
+                  <li>Content businesses wanting automated video without manual production</li>
+                  <li>Anyone who values clean, auditable, well-documented infrastructure over speed shortcuts</li>
+                </ul>
+              </div>
+              <div class="not-right-col bad">
+                <h4>Not a fit</h4>
+                <ul>
+                  <li>Projects requiring Node.js-specific runtimes or Docker-based deploys</li>
+                  <li>Large teams that need an embedded full-time employee</li>
+                  <li>Anyone looking for a quick prototype with no production intent</li>
+                  <li>Projects where "we'll figure out the architecture later" is the plan</li>
+                  <li>Anything with unclear scope and no fixed deliverable in mind</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <hr class="work-divider" />
+
+          <!-- ── Background ───────────────────────────────────────── -->
+          <section class="work-section">
+            <p class="work-section-eyebrow">Why trust the work</p>
+            <h2>25 years of building things that have to stay up.</h2>
+            <p>Senior Voice Engineer at Herc Rentals (Fortune 500) since 2018 — owning Cisco UC infrastructure across 700+ branches, authored 4 enterprise runbooks, incident authority on live production systems. Before that: federal VoIP at a Savannah River DOE site, disaster recovery at State Farm, contact-center infrastructure for 1,000+ user environments.</p>
+            <p>That background means: runbooks exist, rollback paths are tested, monitoring is wired before go-live, and when something breaks at 2am there's an escalation path. You get startup speed with the operational maturity of someone who's been on call at enterprise scale.</p>
+            <p>The Factory platform — 27 apps, 130 CI/CD workflows, $9.11/month — is the proof of concept for every engagement I take on.</p>
+            <p style="margin-top: 20px;">
+              <a href="/founder/" style="color: var(--accent); text-decoration: none;">Full background on the Founder page →</a>
+            </p>
+          </section>
+
+          <!-- ── CTA ─────────────────────────────────────────────── -->
+          <div class="work-cta">
+            <h2>Start with a conversation.</h2>
+            <p>Tell me what you're building. I'll tell you whether it's a fit and what I'd scope it to. No obligation, no pitch, just a straight answer.</p>
+            <div class="work-cta-actions">
+              <a class="button button-primary" href="mailto:aperry@latwoodtech.com">Email directly</a>
+              <a class="button button-secondary" href="/#contact">Use the contact form</a>
+            </div>
+            <p style="margin-top: 20px; font-size: 0.82rem; opacity: 0.55;">I respond within 24 hours.</p>
+          </div>
+
+        </div>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Latimer Woods</h3>
+            <p class="footer-text">Edge-first platforms for healing, media, governance, and infrastructure.</p>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Platforms</p>
+            <ul class="footer-links">
+              <li><a href="https://selfprime.net" target="_blank" rel="noreferrer">Prime Self</a></li>
+              <li><a href="https://capricast.com" target="_blank" rel="noreferrer">Capricast</a></li>
+              <li><a href="https://cypherofhealing.com" target="_blank" rel="noreferrer">Cypher of Healing</a></li>
+              <li><a href="https://apunlimited.com" target="_blank" rel="noreferrer">AP Unlimited</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Learn</p>
+            <ul class="footer-links">
+              <li><a href="/stack/">Stack & Architecture</a></li>
+              <li><a href="/founder/">Founder Profile</a></li>
+              <li><a href="/work/" aria-current="page">How I Work</a></li>
+              <li><a href="/status/">System Status</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Contact</p>
+            <p class="footer-availability">Available for platform and AI pipeline engagements.</p>
+            <ul class="footer-links">
+              <li><a href="mailto:aperry@latwoodtech.com">aperry@latwoodtech.com</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Latimer Woods Technology. <a href="/privacy.html">Privacy Policy</a>.</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>

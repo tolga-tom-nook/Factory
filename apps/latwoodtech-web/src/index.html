@@ -11,10 +11,7 @@
     <meta property="og:image" content="https://latwoodtech.com/assets/og-image.svg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Latimer Woods" />
-    <meta name="twitter:description" content="Technology for people who want more life, not more efficiency." />
-    <meta name="twitter:image" content="https://latwoodtech.com/assets/og-image.svg" />
+
     <meta name="theme-color" content="#05070a" />
     <link rel="canonical" href="https://latwoodtech.com/" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -55,6 +52,50 @@
       ]
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Latimer Woods Technology — Engineering Services",
+      "url": "https://latwoodtech.com/work/",
+      "provider": {
+        "@type": "Person",
+        "name": "Adrian L. Perry",
+        "url": "https://latwoodtech.com/founder/"
+      },
+      "areaServed": "Worldwide",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Engineering Engagements",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Production Platform Build",
+              "description": "Complete Cloudflare Workers SaaS foundation: backend, Neon Postgres, JWT auth, CI/CD, Sentry monitoring, deployed to production."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI Pipeline Integration",
+              "description": "Multi-provider LLM failover, streaming, tool calling, and cost metering wired into your existing product."
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "AI Video Automation",
+              "description": "Automated video production pipeline: ElevenLabs narration, Remotion render, Cloudflare Stream delivery — triggered weekly from a template."
+            }
+          }
+        ]
+      }
+    }
+    </script>
     <script type="module" src="app.js"></script>
   </head>
   <body>
@@ -67,7 +108,7 @@
         </a>
         <div class="site-nav-links">
           <a href="/stack/">Stack</a>
-          <a href="/status/">Status</a>
+          <a href="/work/">Work</a>
           <a href="/founder/">Founder</a>
         </div>
       </nav>
@@ -77,13 +118,18 @@
           <p class="eyebrow">Latimer Woods Technology</p>
           <h1>Technology should make us more human.</h1>
           <p class="hero-diff">Edge-first platforms. Zero technical debt. Human outcomes.</p>
+          <div class="hero-availability">
+            <span class="avail-dot" aria-hidden="true"></span>
+            <span class="avail-text">Open to engagements · 2026</span>
+            <a href="#services" class="avail-link">View services →</a>
+          </div>
           <p class="subtitle">
             We build systems where healing, media, governance, and infrastructure move as one deliberate experience.
-            Real products. Real rigor. 27 apps live. $9.11/month cost.
+            Real products. Real rigor. <strong data-hero-stat="apps">27</strong> apps live. $<strong data-hero-stat="cost">9.11</strong>/month infrastructure cost.
           </p>
           <div class="hero-actions">
-            <a class="button button-primary" href="#mission">Mission</a>
-            <a class="button button-secondary" href="#pulse">Factory Pulse</a>
+            <a class="button button-primary" href="#services">Work With Me</a>
+            <a class="button button-secondary" href="#pulse">Live Metrics</a>
           </div>
         </div>
         <div class="hero-visual">
@@ -137,20 +183,78 @@
           </div>
         </section>
 
+        <section id="services" class="section section-services">
+          <div class="section-heading">
+            <p class="section-eyebrow">Services</p>
+            <h2>What I build for you.</h2>
+          </div>
+          <p class="services-lead">
+            I take on a small number of engagements at a time. The right fit matters more than volume.
+            Everything below is built on the same stack and discipline as the 27 apps already in production.
+          </p>
+
+          <div class="services-grid">
+            <article class="service-card service-card-featured">
+              <p class="service-tag">Platform Build</p>
+              <h3>Production SaaS foundation, delivered.</h3>
+              <p>You get a production-grade Cloudflare Workers backend, Neon Postgres via Hyperdrive, self-managed JWT auth, CI/CD pipeline, Sentry monitoring, and a deployed worker — not a prototype. The same architecture running 27 apps at $9.11/month total infra cost.</p>
+              <ul class="service-points">
+                <li>Workers + Hono API, strict TypeScript, ESM-only build</li>
+                <li>Database, migrations, and row-level security from day one</li>
+                <li>GitHub Actions CI with deploy, health checks, and quality gates</li>
+                <li>Ops runbook so you can own it after handoff</li>
+              </ul>
+              <p class="service-fit">Best for: seed-stage founders and indie builders replacing expensive AWS/Vercel setups or starting fresh with no technical co-founder.</p>
+              <a class="button button-primary" href="#contact">Start a conversation</a>
+            </article>
+
+            <article class="service-card">
+              <p class="service-tag">AI Pipeline Integration</p>
+              <h3>LLM features wired into your product correctly.</h3>
+              <p>Multi-provider failover, streaming, tool calling, cost metering. You get running code — not a strategy deck. I've caught a 100× billing bug in production before a single invoice was generated. That's the lens I bring.</p>
+              <ul class="service-points">
+                <li>Anthropic → Grok → Groq fallover chain with per-provider cost tracking</li>
+                <li>Streaming SSE responses, tool calling, and agentic loop scaffolding</li>
+                <li>Fail-closed deploy preflight so a ghost gateway never silently degrades your product</li>
+              </ul>
+              <p class="service-fit">Best for: product teams that have an AI feature to ship but no bandwidth to build the infrastructure correctly.</p>
+              <a class="button button-secondary" href="#contact">Start a conversation</a>
+            </article>
+
+            <article class="service-card">
+              <p class="service-tag">AI Video Automation</p>
+              <h3>Script trigger → produced video. Weekly, automatically.</h3>
+              <p>ElevenLabs narration, Remotion render, ffmpeg encode, Cloudflare Stream delivery — wired end-to-end so a template trigger drops a finished video without manual production work. Already running in production on Capricast.</p>
+              <ul class="service-points">
+                <li>LLM headline and narration script generation per topic or schedule</li>
+                <li>Professional MP3 narration via ElevenLabs, stored in R2</li>
+                <li>Remotion/ffmpeg render pipeline on GitHub Actions, delivered to Stream</li>
+              </ul>
+              <p class="service-fit">Best for: content creators, course builders, and media brands that produce regular video and want it automated without sacrificing production quality.</p>
+              <a class="button button-secondary" href="#contact">Start a conversation</a>
+            </article>
+          </div>
+
+          <div class="services-credential">
+            <p class="section-eyebrow">Why the enterprise background matters</p>
+            <p>25+ years operating Fortune 500 UC platforms — 700+ branch migrations, disaster recovery, incident authority. That ops experience shapes every platform I build: runbooks exist, rollback paths are tested, and nothing ships without a health check. You get startup speed with enterprise operational discipline.</p>
+          </div>
+        </section>
+
         <section id="pulse" class="section section-pulse" aria-labelledby="pulse-title">
           <div class="section-heading pulse-heading">
             <div>
-              <p class="section-eyebrow">Factory Pulse</p>
-              <h2 id="pulse-title">Measured excellence, public proof, minimal risk surface.</h2>
+              <p class="section-eyebrow">Live Metrics</p>
+              <h2 id="pulse-title">Every number is public and verifiable on GitHub.</h2>
             </div>
             <p class="pulse-intro">
-              A public brief of readiness, velocity, and live systems with no operator paths exposed.
+              Real-time counts pulled hourly from the Factory repository. Click any stat to verify it yourself.
             </p>
           </div>
 
           <div class="pulse-shell" data-pulse-root>
             <div class="pulse-status-row">
-              <p class="pulse-status">Loading public operating picture…</p>
+              <p class="pulse-status">Loading metrics…</p>
               <p class="pulse-updated" data-pulse-updated>Awaiting feed</p>
             </div>
 
@@ -158,50 +262,50 @@
               <article class="pulse-kpi pulse-kpi-placeholder">
                 <span class="pulse-kpi-label">Merged PRs</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Shipped and reviewed across the platform</span>
+                <span class="pulse-kpi-context">Every PR reviewed, tested, and merged to main</span>
               </article>
               <article class="pulse-kpi pulse-kpi-placeholder">
                 <span class="pulse-kpi-label">Commits</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Public, auditable change history</span>
+                <span class="pulse-kpi-context">Public, auditable history — nothing force-pushed away</span>
               </article>
               <article class="pulse-kpi pulse-kpi-placeholder">
-                <span class="pulse-kpi-label">Deployed apps</span>
+                <span class="pulse-kpi-label">Deployed Apps</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Serverless surfaces in production</span>
+                <span class="pulse-kpi-context">Serverless Workers in production, each curl-verified</span>
               </article>
               <article class="pulse-kpi pulse-kpi-placeholder">
-                <span class="pulse-kpi-label">Shared packages</span>
+                <span class="pulse-kpi-label">Shared Packages</span>
                 <strong class="pulse-kpi-value">--</strong>
-                <span class="pulse-kpi-context">Reusable infrastructure modules</span>
+                <span class="pulse-kpi-context">Reusable modules — every new app ships with auth, payments, and observability already wired</span>
               </article>
             </div>
 
             <div class="pulse-grid">
               <section class="pulse-panel">
                 <div class="pulse-panel-header">
-                  <p class="card-label">Progress Tracking</p>
-                  <h3>What the public should know</h3>
+                  <p class="card-label">Deploy Discipline</p>
+                  <h3>CI green ≠ done. Curl 200 = done.</h3>
                 </div>
                 <ul class="pulse-list" data-pulse-story>
-                  <li>Performance, deploy discipline, and product maturity are tracked continuously.</li>
-                  <li>The public surface shows only curated proof points, never internal control paths.</li>
-                  <li>Operational depth lives in Admin Studio and authenticated workflows.</li>
+                  <li>Every deploy is verified by a live <code>curl</code> against the custom domain before CI marks success.</li>
+                  <li>Every PR goes through TypeScript strict, ESLint zero-warnings, 90%+ coverage, and a health-check gate.</li>
+                  <li>No <code>--no-verify</code>, no <code>@ts-ignore</code>, no suppressed warnings — issues are fixed at root cause.</li>
                 </ul>
               </section>
 
               <section class="pulse-panel">
                 <div class="pulse-panel-header">
-                  <p class="card-label">Risk Posture</p>
-                  <h3>Secure by design</h3>
+                  <p class="card-label">Operations</p>
+                  <h3>$9.11/month. 27 apps. Solo.</h3>
                 </div>
                 <div class="pulse-health" data-pulse-health>
-                  <span class="pulse-chip">Read-only</span>
-                  <span class="pulse-chip">No secrets</span>
-                  <span class="pulse-chip">No operator endpoints</span>
+                  <span class="pulse-chip" data-tone="good">27 apps live</span>
+                  <span class="pulse-chip" data-tone="good">$9.11/mo infra</span>
+                  <span class="pulse-chip">Zero vendor lock-in</span>
                 </div>
                 <p class="pulse-footnote" data-pulse-security>
-                  Same-origin, curated JSON. No auth, no request IDs, no internal infrastructure details.
+                  Cloudflare Workers free tier handles most traffic. Costs stay predictable at any scale because the architecture was designed that way from day one.
                 </p>
               </section>
             </div>
@@ -209,27 +313,45 @@
             <section class="pulse-panel pulse-panel-wide">
               <div class="pulse-panel-header">
                 <p class="card-label">Live Surfaces</p>
-                <h3>Public domains carrying the work</h3>
+                <h3>Five public domains, all running on the same platform</h3>
               </div>
               <div class="pulse-surfaces" data-pulse-surfaces>
                 <article class="surface-card">
                   <p class="surface-category">Flagship</p>
                   <strong>Prime Self</strong>
-                  <span>Public flagship surface</span>
+                  <span>Practitioner-first Human Design platform</span>
                   <a href="https://selfprime.net" target="_blank" rel="noreferrer">selfprime.net</a>
+                </article>
+                <article class="surface-card">
+                  <p class="surface-category">Creator Platform</p>
+                  <strong>Capricast</strong>
+                  <span>Premium video platform on the edge</span>
+                  <a href="https://capricast.com" target="_blank" rel="noreferrer">capricast.com</a>
+                </article>
+                <article class="surface-card">
+                  <p class="surface-category">Community</p>
+                  <strong>Cypher of Healing</strong>
+                  <span>Barber-led restoration and community platform</span>
+                  <a href="https://cypherofhealing.com" target="_blank" rel="noreferrer">cypherofhealing.com</a>
                 </article>
                 <article class="surface-card">
                   <p class="surface-category">Studio</p>
                   <strong>AP Unlimited</strong>
-                  <span>Operator-grade studio and governance</span>
+                  <span>Operator-grade governance and control surface</span>
                   <a href="https://apunlimited.com" target="_blank" rel="noreferrer">apunlimited.com</a>
+                </article>
+                <article class="surface-card">
+                  <p class="surface-category">Company</p>
+                  <strong>Latimer Woods</strong>
+                  <span>This site — the platform engineering home base</span>
+                  <a href="https://latwoodtech.com" target="_blank" rel="noreferrer">latwoodtech.com</a>
                 </article>
               </div>
             </section>
 
             <section class="pulse-panel pulse-panel-wide">
               <div class="pulse-panel-header">
-                <p class="card-label">Live Surfaces</p>
+                <p class="card-label">Liveness</p>
                 <h3>Brand surfaces, probed on every deploy</h3>
               </div>
               <div class="pulse-vectors" data-pulse-vectors>
@@ -240,6 +362,36 @@
                 </article>
               </div>
             </section>
+          </div>
+        </section>
+
+        <section class="section section-spotlight">
+          <div class="section-heading">
+            <p class="section-eyebrow">Engineering Judgment</p>
+            <h2>How we think when it matters.</h2>
+          </div>
+          <div class="spotlight-card">
+            <div class="spotlight-content">
+              <p class="spotlight-tag">Billing integrity · caught pre-production</p>
+              <h3 class="spotlight-problem">100× LLM cost billing bug — found and fixed before any invoice landed</h3>
+              <p class="spotlight-solution">The LLM metering layer computed costs in cents but applied spending caps in dollars — a 100× under-billing error that would have allowed completely unchecked AI spend. Caught during code review, fixed, and regression-tested before it ever reached production. The kind of problem that only surfaces when you own the full stack and treat every number as load-bearing.</p>
+              <a href="https://github.com/Latimer-Woods-Tech/Factory/pull/1324" class="button button-secondary" target="_blank" rel="noreferrer">View PR #1324 on GitHub →</a>
+            </div>
+            <aside class="spotlight-aside">
+              <p class="spotlight-aside-label">More decisions</p>
+              <a href="/founder/#judgment" class="spotlight-more-link">
+                AI Gateway ghost-401 preflight
+                <span class="spotlight-more-arrow">→</span>
+              </a>
+              <a href="/founder/#judgment" class="spotlight-more-link">
+                Secrets integrity convention
+                <span class="spotlight-more-arrow">→</span>
+              </a>
+              <a href="/founder/#judgment" class="spotlight-more-link">
+                Human-in-the-loop approval gate
+                <span class="spotlight-more-arrow">→</span>
+              </a>
+            </aside>
           </div>
         </section>
 
@@ -328,43 +480,44 @@
 
         <section id="roadmap" class="section section-roadmap">
           <div class="section-heading">
-            <p class="section-eyebrow">Roadmap</p>
-            <h2>What is in motion, what is next, and what is lining up behind it</h2>
+            <p class="section-eyebrow">What's Expanding</p>
+            <h2>Owned outright. No investors, no debt, no timeline pressure.</h2>
           </div>
+          <p class="roadmap-note">Every product below extends the Factory platform. All rights are fully retained — these ship on our terms, building toward a portfolio of products that compound in value.</p>
           <div class="grid roadmap-grid">
             <article class="card card-future roadmap-card roadmap-card-now">
               <p class="card-label">In motion</p>
               <h3>Xico City</h3>
-              <p>City-building experience now in staging validation and systems hardening.</p>
+              <p>City-building creative economy OS now in staging validation and systems hardening.</p>
               <span class="status-pill status-warning">Staging</span>
             </article>
 
             <article class="card card-future roadmap-card">
-              <p class="card-label">Next</p>
+              <p class="card-label">Building next</p>
               <h3>Wordis Bond</h3>
               <p>Community marketplace and relationship platform queued for focused buildout.</p>
-              <span class="status-pill status-muted">Queued</span>
+              <span class="status-pill status-muted">Building next</span>
             </article>
 
             <article class="card card-future roadmap-card">
-              <p class="card-label">Next</p>
+              <p class="card-label">Building next</p>
               <h3>iJustUs</h3>
               <p>Equitable booking and local services platform with clear operational potential.</p>
-              <span class="status-pill status-muted">Queued</span>
+              <span class="status-pill status-muted">Building next</span>
             </article>
 
             <article class="card card-future roadmap-card">
-              <p class="card-label">Pipeline</p>
+              <p class="card-label">In pipeline</p>
               <h3>The Calling</h3>
               <p>Creator system for coaching, events, and membership experiences.</p>
-              <span class="status-pill status-muted">Planned</span>
+              <span class="status-pill status-muted">In pipeline</span>
             </article>
 
             <article class="card card-future roadmap-card">
-              <p class="card-label">Pipeline</p>
+              <p class="card-label">In pipeline</p>
               <h3>Neighbor Aid</h3>
               <p>Local services and community-support platform aligned to practical everyday utility.</p>
-              <span class="status-pill status-muted">Planned</span>
+              <span class="status-pill status-muted">In pipeline</span>
             </article>
           </div>
         </section>
@@ -377,11 +530,10 @@
           <div class="contact-grid">
             <article class="contact-card contact-card-primary">
               <p class="card-label">Direct line</p>
-              <h3>Phone, email, and a real response path.</h3>
-              <p>Mobile call opens instantly. Contact form fan-out is wired for low-maintenance delivery through email and Slack-backed ops notifications.</p>
+              <h3>Email and a real response path.</h3>
+              <p>I respond directly. The contact form routes through Slack-backed ops notifications — every message lands in front of me, not a support queue.</p>
               <div class="contact-actions">
-                <a class="button button-primary" href="tel:+17062677235">Call 706-267-7235</a>
-                <a class="button button-secondary" href="mailto:aperry@latwoodtech.com">Email directly</a>
+                <a class="button button-primary" href="mailto:aperry@latwoodtech.com">Email directly</a>
               </div>
             </article>
 
@@ -396,32 +548,27 @@
                   <span>Email</span>
                   <input type="email" name="email" autocomplete="email" required maxlength="120" />
                 </label>
-                <label class="contact-field">
-                  <span>Phone</span>
-                  <input type="tel" name="phone" autocomplete="tel" maxlength="30" />
-                </label>
                 <label class="contact-field contact-field-wide">
                   <span>Message</span>
                   <textarea name="message" rows="5" required maxlength="2000"></textarea>
                 </label>
                 <input type="text" name="website" class="contact-honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
-                <p class="contact-consent">By providing your phone number and submitting this form, you consent to receive SMS messages from Latimer Woods Technology regarding your enquiry. Message and data rates may apply. Reply STOP to unsubscribe. <a href="/privacy.html">Privacy Policy</a>.</p>
                 <div class="contact-form-footer">
                   <button type="submit" class="button button-primary">Send message</button>
-                  <p class="contact-status" data-contact-status>Messages route through the Factory contact worker.</p>
+                  <p class="contact-status" data-contact-status>I respond within 24 hours.</p>
                 </div>
               </form>
             </article>
           </div>
         </section>
 
-        <section class="section section-footnote">
-          <p>
-            The journey is just beginning. We’re building something that matters, right here on the edge of the future. Let’s make something beautiful.
-          </p>
-          <p style="margin-top: 20px;">
-            <a href="/founder" style="color: var(--accent); text-decoration: none; font-size: 0.88rem; letter-spacing: 0.06em;">Founder profile →</a>
-          </p>
+        <section class="section section-footnote section-footnote-cta">
+          <h2>Ready to build something?</h2>
+          <p>I take on a small number of engagements at a time. Platform builds, AI pipeline integrations, and automated video pipelines — on the stack that already powers 5 live products.</p>
+          <div class="footnote-actions">
+            <a class="button button-primary" href="#contact">Start a conversation</a>
+            <a class="button button-secondary" href="/work/">How I work →</a>
+          </div>
         </section>
       </main>
 
@@ -444,6 +591,7 @@
             <p class="footer-label">Learn</p>
             <ul class="footer-links">
               <li><a href="/stack/">Stack & Architecture</a></li>
+              <li><a href="/work/">How I Work</a></li>
               <li><a href="/founder/">Founder Profile</a></li>
               <li><a href="/status/">System Status</a></li>
               <li><a href="https://github.com/Latimer-Woods-Tech" target="_blank" rel="noreferrer">GitHub</a></li>
@@ -451,9 +599,10 @@
           </div>
           <div class="footer-section">
             <p class="footer-label">Contact</p>
+            <p class="footer-availability">Available for platform and AI pipeline engagements.</p>
             <ul class="footer-links">
               <li><a href="mailto:aperry@latwoodtech.com">aperry@latwoodtech.com</a></li>
-              <li><a href="tel:+17062677235">(706) 267-7235</a></li>
+              <li><a href="/work/">Engagement details →</a></li>
             </ul>
           </div>
         </div>

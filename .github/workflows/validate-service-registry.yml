@@ -12,6 +12,7 @@ on:
       - 'docs/service-registry.yml'
       - '.github/workflows/deploy-*.yml'
       - '.github/workflows/validate-service-registry.yml'
+      - 'scripts/verify-service-registry-health.mjs'
       - 'scripts/validate-service-registry.mjs'
       - 'scripts/check-compatibility-date.mjs'
       - 'apps/*/wrangler.jsonc'
@@ -26,6 +27,7 @@ on:
       - 'docs/service-registry.yml'
       - '.github/workflows/deploy-*.yml'
       - '.github/workflows/validate-service-registry.yml'
+      - 'scripts/verify-service-registry-health.mjs'
       - 'scripts/validate-service-registry.mjs'
       - 'scripts/check-compatibility-date.mjs'
       - 'apps/*/wrangler.jsonc'
@@ -69,3 +71,12 @@ jobs:
 
       - name: Validate wrangler compatibility_date is normalized
         run: npm run validate:compatibility-date
+      # Health verification of the service registry's live rows. Runs only on
+      # push (main) + manual/scheduled events — never on pull_request — so a
+      # transient external outage can never block an unrelated registry edit.
+      # On main it surfaces real drift (a row marked `live` whose endpoint died).
+      - name: Verify live service-registry rows resolve
+        if: github.event_name != 'pull_request'
+        env:
+          HEALTH_PROBE_TIMEOUT_MS: '8000'
+        run: npm run verify:service-registry-health

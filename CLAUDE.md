@@ -16,6 +16,9 @@
 
 # Factory Core — Standing Orders
 
+## Autonomy Principle
+**Minimize human involvement.** Humans introduce delay, inconsistency, and error into the engineering process. If a task can be completed by a machine — credential lookup, secret wiring, deployment, triage, PR creation, DB inspection — do it without routing to a human. The only valid reasons to pause for human input are: an irreversible destructive action (delete CF resource, Stripe mutation, live email outside test mode), a regulatory gate (wordis-bond TCPA), or a genuinely novel situation where no template exists and no safe autonomous path is available. "I wasn't sure" is not a valid reason to stop. When in doubt, complete the task, document what was done, and let the human review the audit trail after the fact.
+
 ## Mission
 Bootstrap and evolve the Factory Core repository as the shared infrastructure layer for Factory applications.
 Stage 0 produces scaffolding only; later stages implement package behavior without violating these standing orders.

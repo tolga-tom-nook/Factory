@@ -51,7 +51,8 @@
     "VERTEX_PROJECT": "factory-495015",
     "VERTEX_LOCATION": "us-central1",
     "PER_RUN_CAP_CENTS": "500",
-    "FACTORY_CORE_API_URL": "https://core.latwoodtech.work"
+    "FACTORY_CORE_API_URL": "https://core.latwoodtech.work",
+    "FACTORY_CROSS_REPO_URL": "https://factory-cross-repo.latwoodtech.work"
   },
 
   "env": {
@@ -69,7 +70,8 @@
         "VERTEX_PROJECT": "factory-495015",
         "VERTEX_LOCATION": "us-central1",
         "PER_RUN_CAP_CENTS": "500",
-        "FACTORY_CORE_API_URL": "https://core.latwoodtech.work"
+        "FACTORY_CORE_API_URL": "https://core.latwoodtech.work",
+        "FACTORY_CROSS_REPO_URL": "https://factory-cross-repo.latwoodtech.work"
       },
       "durable_objects": {
         "bindings": [

@@ -71,8 +71,10 @@ jobs:
         run: |
           set -euo pipefail
           source scripts/fetch_gcp_secrets.sh
-          fetch_to_env SUPERVISOR_PUSH_KEY  SUPERVISOR_PUSH_KEY
-          fetch_to_env SUPERVISOR_API_KEY   SUPERVISOR_API_KEY
+          fetch_to_env SUPERVISOR_PUSH_KEY    SUPERVISOR_PUSH_KEY
+          fetch_to_env SUPERVISOR_API_KEY     SUPERVISOR_API_KEY
+          fetch_to_env SLACK_SIGNING_SECRET   SLACK_SIGNING_SECRET   || true
+          fetch_to_env SLACK_OWNER_USER_ID    SLACK_OWNER_USER_ID    || true
 
       - name: Build dependency packages
         run: |
@@ -123,10 +125,11 @@ jobs:
           SECRET_FACTORY_APP_INSTALLATION_ID: ${{ secrets.FACTORY_APP_INSTALLATION_ID }}
           SECRET_PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           SECRET_PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
-          SECRET_SLACK_SIGNING_SECRET: ${{ secrets.SLACK_SIGNING_SECRET }}
-          SECRET_SLACK_OWNER_USER_ID: ${{ secrets.SLACK_OWNER_USER_ID }}
+          SECRET_SLACK_SIGNING_SECRET: ${{ env.SLACK_SIGNING_SECRET }}
+          SECRET_SLACK_OWNER_USER_ID: ${{ env.SLACK_OWNER_USER_ID }}
           SECRET_SUPERVISOR_PUSH_KEY: ${{ env.SUPERVISOR_PUSH_KEY }}
           SECRET_SUPERVISOR_API_KEY: ${{ env.SUPERVISOR_API_KEY }}
+          SECRET_FACTORY_CROSS_REPO_TOKEN: ${{ secrets.FACTORY_CROSS_REPO_TOKEN }}
           TARGET_ENV: ${{ (github.event.inputs.env == 'production' || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && 'production' || 'staging' }}
         run: |
           # Only provision secrets that are actually set — skip empties with a warning.
@@ -156,6 +159,7 @@ jobs:
           put_secret SLACK_OWNER_USER_ID        "${SECRET_SLACK_OWNER_USER_ID}"
           put_secret SUPERVISOR_PUSH_KEY        "${SECRET_SUPERVISOR_PUSH_KEY}"
           put_secret SUPERVISOR_API_KEY         "${SECRET_SUPERVISOR_API_KEY}"
+          put_secret FACTORY_CROSS_REPO_TOKEN   "${SECRET_FACTORY_CROSS_REPO_TOKEN}"
 
       - name: Install Sentry CLI
         run: npm install -g @sentry/cli
@@ -186,7 +190,7 @@ jobs:
             exit 0
           fi
           if ! sentry-cli sourcemaps upload \
-            --project factory-supervisor \
+            --project node-cloudflare-workers \
             .sentry-dist/; then
             echo "::warning::Sentry sourcemap upload failed; continuing deployment"
           fi

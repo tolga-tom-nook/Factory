@@ -12,6 +12,7 @@ export const GENERATED_TARGETS = [
   { id: "cypher-healing.health", url: "https://api.cipherofhealing.com/health", contains: "ok" },
   { id: "coh.health", url: "https://api.cypherofhealing.com/health", contains: "ok" },
   { id: "factory-cross-repo.health", url: "https://factory-cross-repo.latwoodtech.work/health", contains: "ok" },
+  { id: "factory-agent-gateway.health", url: "https://factory-agent-gateway.adrper79.workers.dev/health", contains: "ok" },
   { id: "factory-supervisor.health", url: "https://supervisor.latwoodtech.work/health", contains: "ok" },
   { id: "lead-gen.health", url: "https://lead-gen.adrper79.workers.dev/health", contains: "ok" },
   { id: "factory-core-api.health", url: "https://core.latwoodtech.work/health", contains: "ok" },

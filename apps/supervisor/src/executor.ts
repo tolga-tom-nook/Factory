@@ -59,11 +59,24 @@ function resolveSlot(
     return userSlots[slotName];
   }
   if (typeof value === 'string' && value.startsWith('$s')) {
-    // $s1.field, $s2.nested.field, etc. — SUP-3.6
-    // Phase 1: not yet supported
-    throw new Error(`Cross-step references ($s<N>) not yet supported. Key: ${key}, value: ${value}`);
+    const match = value.match(/^\$s(\d+)\.(.+)$/);
+    if (!match) throw new Error(`Invalid cross-step reference. Key: ${key}, value: ${value}`);
+    const stepIndex = Number(match[1]) - 1;
+    const source = previousResults[stepIndex];
+    const resolved = readPath(source, match[2]!.split('.'));
+    if (resolved === undefined) throw new Error(`Cross-step reference not found. Key: ${key}, value: ${value}`);
+    return resolved;
   }
   return value;
+}
+
+function readPath(value: unknown, path: string[]): unknown {
+  let current = value;
+  for (const part of path) {
+    if (!current || typeof current !== 'object') return undefined;
+    current = (current as Record<string, unknown>)[part];
+  }
+  return current;
 }
 
 type TemplateStep = NonNullable<Template['steps']>[number];

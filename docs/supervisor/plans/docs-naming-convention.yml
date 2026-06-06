@@ -49,6 +49,7 @@ slots:
 steps:
   - id: s1
     tool: github.readFile
+    side_effects: read-external
     depends_on: null
     params:
       path: "$slots.parent_dir"
@@ -56,6 +57,7 @@ steps:
     intent: "Verify the parent directory exists before writing a new doc into it."
   - id: s2
     tool: github.readFile
+    side_effects: read-external
     depends_on: s1
     params:
       path: "$slots.target_path"
@@ -64,6 +66,7 @@ steps:
     intent: "Check whether the target doc already exists so the PR is an add vs. update."
   - id: s3
     tool: github.openPR
+    side_effects: write-external
     depends_on: s2
     params:
       branch: "$slots.branch_name"
@@ -83,6 +86,7 @@ steps:
     requires_human_review: true
   - id: s4
     tool: github.comment
+    side_effects: write-external
     depends_on: s3
     params:
       pr: "$s3.number"

@@ -120,6 +120,40 @@ def extract_tracker() -> dict[str, Any]:
         return {}
 
 
+def classify_tracker(tracker: dict[str, Any], now: datetime) -> tuple[bool, str]:
+    """Return (usable, reason) for completion-tracker data.
+
+    The completion tracker can fail by producing an all-zero snapshot. STATE.md
+    must not present that as live truth. A tracker is usable only when it has
+    row data and is fresh enough to trust as an operating signal.
+    """
+    if not tracker:
+        return False, "docs/completion-tracker.json not present"
+
+    generated_raw = str(tracker.get("generated_at") or "").strip()
+    rows = tracker.get("rows") or []
+    repo_weighted = tracker.get("repo_weighted") or {}
+
+    if not rows:
+        return False, f"snapshot has no rows (generated {generated_raw or '?'})"
+
+    if generated_raw:
+        try:
+            generated_at = datetime.fromisoformat(generated_raw.replace("Z", "+00:00"))
+            if generated_at.tzinfo is None:
+                generated_at = generated_at.replace(tzinfo=timezone.utc)
+            age_hours = (now.astimezone(timezone.utc) - generated_at.astimezone(timezone.utc)).total_seconds() / 3600
+            if age_hours > 48:
+                return False, f"snapshot is stale ({age_hours:.0f}h old, generated {generated_raw[:19]})"
+        except Exception:
+            return False, f"snapshot generated_at is unparsable ({generated_raw})"
+
+    if repo_weighted and all(float(value or 0) == 0 for value in repo_weighted.values()):
+        return False, f"snapshot reports all repo weights as 0 despite being present (generated {generated_raw[:19] or '?'})"
+
+    return True, "usable"
+
+
 def extract_conformance() -> str | None:
     """Read the per-repo summary table from docs/conformance/summary.md. Returns
     the table section as markdown, or None if missing."""
@@ -251,7 +285,8 @@ def render(now: datetime) -> str:
 
     lines.append("## Live numbers")
     lines.append("")
-    if tracker:
+    tracker_usable, tracker_reason = classify_tracker(tracker, now)
+    if tracker_usable:
         weighted = tracker.get("overall_weighted")
         known = tracker.get("overall_known")
         raw = tracker.get("overall_raw")
@@ -275,7 +310,10 @@ def render(now: datetime) -> str:
             lines.append(f"- Smoke red: {', '.join(smoke_red)}")
         lines.append("")
     else:
-        lines.append("**Completion:** `docs/completion-tracker.json` not present — aggregator hasn't landed today's snapshot yet.")
+        lines.append("**Completion:** not currently trusted.")
+        lines.append("")
+        lines.append(f"- Reason: {tracker_reason}.")
+        lines.append("- Action: repair `completion-tracker.yml` / `scripts/aggregate_completion.py`, or remove completion tracker from operating decisions until it emits non-empty fresh rows.")
         lines.append("")
 
     if conformance_block:

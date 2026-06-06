@@ -239,7 +239,7 @@ export const GENERATED_TEMPLATES: Template[] = [
           "path": "$slots.parent_dir",
           "ref": "main"
         },
-        "side_effects": "none"
+        "side_effects": "read-external"
       },
       {
         "tool": "github.readFile",
@@ -248,7 +248,7 @@ export const GENERATED_TEMPLATES: Template[] = [
           "ref": "main",
           "allow_missing": true
         },
-        "side_effects": "none"
+        "side_effects": "read-external"
       },
       {
         "tool": "github.openPR",
@@ -270,7 +270,7 @@ export const GENERATED_TEMPLATES: Template[] = [
             "tier-green"
           ]
         },
-        "side_effects": "none"
+        "side_effects": "write-external"
       },
       {
         "tool": "github.comment",
@@ -278,7 +278,7 @@ export const GENERATED_TEMPLATES: Template[] = [
           "pr": "$s3.number",
           "body": "Supervisor opened this docs PR from the linked issue. CI runs docs-lint + credential-scrub only; no code paths touched."
         },
-        "side_effects": "none"
+        "side_effects": "write-external"
       }
     ]
   },
