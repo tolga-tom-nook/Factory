@@ -25,7 +25,9 @@
     "docs:drift": "node scripts/docs/drift.mjs",
     "docs:health": "node scripts/docs/health.mjs",
     "docs:metadata": "node scripts/docs/validate-metadata.mjs",
-    "docs:self-check": "node scripts/docs/self-check.mjs"
+    "docs:self-check": "node scripts/docs/self-check.mjs",
+    "verify:service-registry-health": "node scripts/verify-service-registry-health.mjs",
+    "verify:service-registry-health:strict": "node scripts/verify-service-registry-health.mjs --require-state"
   },
   "devDependencies": {
     "@latimer-woods-tech/errors": "file:packages/errors",

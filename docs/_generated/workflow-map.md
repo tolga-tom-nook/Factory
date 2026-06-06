@@ -7,7 +7,7 @@ doc_type: diagram
 fidelity: generated
 title: "Factory Workflow Map"
 generator: npm run docs:diagrams
-last_generated: 2026-06-04
+last_generated: 2026-06-06
 source:
   - .github/workflows/*.yml
   - .github/workflows/REGISTRY.md
@@ -144,12 +144,15 @@ flowchart TB
   Other --> snapshot_pr_auto_merge_yml["snapshot-pr-auto-merge.yml"]
   Other --> studio_test_dispatch_yml["studio-test-dispatch.yml"]
   Automation --> supervisor_loop_yml["supervisor-loop.yml"]
+  Quality --> supervisor_readonly_smoke_yml["supervisor-readonly-smoke.yml"]
   Other --> supervisor_template_author_yml["supervisor-template-author.yml"]
   Automation --> sync_agent_labels_yml["sync-agent-labels.yml"]
   Automation --> sync_security_md_yml["sync-security-md.yml"]
+  Quality --> telnyx_path_smoke_yml["telnyx-path-smoke.yml"]
   Other --> track_kpis_yml["track-kpis.yml"]
   Other --> update_app_lockfiles_yml["update-app-lockfiles.yml"]
   Other --> update_stack_manifest_yml["update-stack-manifest.yml"]
+  Other --> upload_sybil_music_yml["upload-sybil-music.yml"]
   Quality --> validate_sentry_auth_token_yml["validate-sentry-auth-token.yml"]
   Quality --> validate_service_registry_yml["validate-service-registry.yml"]
   Other --> workflow_budget_check_yml["workflow-budget-check.yml"]

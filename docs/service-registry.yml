@@ -58,6 +58,7 @@ automation_denylist:
 workers:
   - id: prime-self
     name: prime-self                                       # legacy worker name retained in registry; live repo is HumanDesign
+    health_state: live
     repo: Latimer-Woods-Tech/HumanDesign
     url: https://api.selfprime.net                         # canonical public URL (branded custom domain)
     workers_dev_url: https://prime-self.adrper79.workers.dev  # internal/CF fallback; never hardcode in frontend
@@ -91,6 +92,7 @@ workers:
 
   - id: schedule-worker
     name: schedule-worker                                  # matches apps/schedule-worker/wrangler.jsonc `name`
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://schedule.latwoodtech.work                 # canonical custom domain (attached 2026-05-08)
     custom_domain: schedule.latwoodtech.work
@@ -126,6 +128,7 @@ workers:
 
   - id: video-cron
     name: video-cron                                       # matches apps/video-cron/wrangler.jsonc `name`
+    health_state: broken   # reclassified 2026-06-05: /health probe returned 530
     repo: Latimer-Woods-Tech/factory
     url: https://video-cron.latwoodtech.work               # canonical branded custom domain
     custom_domain: video-cron.latwoodtech.work
@@ -158,6 +161,7 @@ workers:
 
   - id: synthetic-monitor
     name: synthetic-monitor                                # matches apps/synthetic-monitor/wrangler.jsonc `name`
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://monitor.latwoodtech.work                  # canonical custom domain (attached 2026-05-08)
     custom_domain: monitor.latwoodtech.work
@@ -176,6 +180,7 @@ workers:
 
   - id: status-prober
     name: status-prober                                    # matches apps/status-prober/wrangler.jsonc `name`
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://status.latwoodtech.work                   # canonical custom domain
     workers_dev_url: https://status-prober.adrper79.workers.dev
@@ -208,6 +213,7 @@ workers:
 
   - id: admin-studio-staging
     name: admin-studio-staging                             # matches apps/admin-studio/wrangler.jsonc env.staging.name
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://api.admin.latimerwoods.dev                # canonical staging domain — latimerwoods.dev is the dev surface
     custom_domain: api.admin.latimerwoods.dev
@@ -264,6 +270,7 @@ workers:
 
   - id: admin-studio-production
     name: admin-studio-production                          # matches apps/admin-studio/wrangler.jsonc env.production.name
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://api.apunlimited.com                       # canonical branded prod API domain — used by admin-studio-ui prod build
     custom_domain: api.apunlimited.com
@@ -318,6 +325,7 @@ workers:
 
   - id: capricast-api-staging
     name: capricast-api-staging                                # wrangler.staging.toml name — ephemeral Neon branches fork from staging
+    health_state: live
     repo: Latimer-Woods-Tech/capricast
     url: https://api.capricast.latimerwoods.dev                # staging domain on Factory's developer surface
     workers_dev_url: https://capricast-api-staging.adrper79.workers.dev
@@ -333,6 +341,7 @@ workers:
 
   - id: capricast-api
     name: capricast-api                                        # matches wrangler.jsonc name in capricast repo
+    health_state: live
     legacy_names: [videoking, nichestream-api]                 # historical names before 2026-05-15 rename
     repo: Latimer-Woods-Tech/capricast
     url: https://api.capricast.com                             # canonical custom domain (branded)
@@ -356,6 +365,7 @@ workers:
 
   - id: cypher-healing
     name: cypher-healing                                       # matches wrangler.jsonc name
+    health_state: retired
     repo: Latimer-Woods-Tech/cypher-healing
     url: https://api.cipherofhealing.com                       # canonical custom domain (branded)
     workers_dev_url: https://cypher-healing.adrper79.workers.dev
@@ -379,6 +389,7 @@ workers:
 
   - id: coh
     name: cypher-of-healing-api                                # canonical worker name per coh/wrangler.jsonc (authoritative)
+    health_state: live
     repo: Latimer-Woods-Tech/coh
     url: https://api.cypherofhealing.com                       # primary API custom domain
     aliases:
@@ -474,6 +485,7 @@ workers:
 
   - id: factory-cross-repo
     name: factory-cross-repo
+    health_state: broken   # reclassified 2026-06-05: /health probe returned 530
     repo: Latimer-Woods-Tech/factory
     url: https://factory-cross-repo.latwoodtech.work
     workers_dev_url: https://factory-cross-repo.adrper79.workers.dev
@@ -497,6 +509,7 @@ workers:
 
   - id: factory-agent-gateway
     name: factory-agent-gateway                                # matches wrangler.jsonc name
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://factory-agent-gateway.adrper79.workers.dev     # workers.dev until branded domain DNS is added
     workers_dev_url: https://factory-agent-gateway.adrper79.workers.dev
@@ -527,6 +540,7 @@ workers:
 
   - id: factory-supervisor
     name: factory-supervisor                                   # matches wrangler.jsonc name
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://supervisor.latwoodtech.work                   # internal infra domain
     workers_dev_url: https://factory-supervisor.adrper79.workers.dev
@@ -571,6 +585,7 @@ workers:
 
   - id: lead-gen
     name: lead-gen
+    health_state: provisioned
     repo: Latimer-Woods-Tech/factory
     url: https://lead-gen.adrper79.workers.dev
     custom_domain: null
@@ -607,6 +622,7 @@ workers:
 
   - id: factory-core-api
     name: factory-core-api
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://core.latwoodtech.work
     workers_dev_url: https://factory-core-api.adrper79.workers.dev
@@ -627,6 +643,7 @@ workers:
       /v1/runs/mirror 200 with the push key (401 without).
   - id: factory-events-replay
     name: factory-events-replay
+    health_state: provisioned
     repo: Latimer-Woods-Tech/factory
     url: null
     workers_dev_url: null
@@ -644,6 +661,7 @@ workers:
       exists for ad-hoc checks only.
   - id: webhook-fanout
     name: webhook-fanout
+    health_state: provisioned
     repo: Latimer-Woods-Tech/factory
     url: https://webhooks.latwoodtech.work/stripe
     workers_dev_url: https://webhook-fanout.adrper79.workers.dev
@@ -681,6 +699,7 @@ workers:
 
   - id: daily-brief
     name: daily-brief
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://dbrief.latwoodtech.work
     custom_domain: dbrief.latwoodtech.work
@@ -719,6 +738,7 @@ workers:
 
   - id: linkedin-publisher
     name: linkedin-publisher-production                    # wrangler default = name + env suffix; production env has no explicit `name`
+    health_state: provisioned
     repo: Latimer-Woods-Tech/factory
     url: null                                              # production has workers_dev: false; cron-only, no public surface
     workers_dev_url: https://linkedin-publisher.adrper79.workers.dev   # dev env only
@@ -749,6 +769,7 @@ workers:
 
   - id: xico-city
     name: xico-city
+    health_state: live
     repo: Latimer-Woods-Tech/xico-city
     url: https://xicocity.com                                   # canonical custom domain (branded)
     workers_dev_url: https://xico-city.adrper79.workers.dev
@@ -791,6 +812,7 @@ workers:
 
   - id: xico-city-staging
     name: xico-city-staging
+    health_state: live
     repo: Latimer-Woods-Tech/xico-city
     url: https://staging.xicocity.com
     workers_dev_url: https://xico-city-staging.adrper79.workers.dev
@@ -827,6 +849,7 @@ workers:
 
   - id: qa-tools-worker
     name: qa-tools-worker
+    health_state: live
     repo: Latimer-Woods-Tech/factory
     url: https://api.qa.latimerwoods.dev
     workers_dev_url: https://qa-tools-worker.adrper79.workers.dev
@@ -873,6 +896,7 @@ workers:
 
   - id: marketing-supervisor
     name: marketing-supervisor
+    health_state: planned
     repo: Latimer-Woods-Tech/factory
     url: https://marketing.latwoodtech.work
     workers_dev_url: https://marketing-supervisor.adrper79.workers.dev
@@ -895,6 +919,7 @@ workers:
 
   - id: marketing-supervisor-staging
     name: marketing-supervisor-staging
+    health_state: planned
     repo: Latimer-Woods-Tech/factory
     url: https://marketing-supervisor-staging.adrper79.workers.dev
     workers_dev_url: https://marketing-supervisor-staging.adrper79.workers.dev
@@ -908,6 +933,7 @@ workers:
 
   - id: referrals
     name: referrals
+    health_state: planned
     repo: Latimer-Woods-Tech/factory
     url: https://referrals.latwoodtech.work
     workers_dev_url: https://referrals.adrper79.workers.dev
@@ -928,6 +954,7 @@ workers:
 
   - id: llm-rank-worker
     name: llm-rank-worker
+    health_state: planned
     repo: Latimer-Woods-Tech/factory
     url: https://llm-rank.latwoodtech.work
     workers_dev_url: https://llm-rank-worker.adrper79.workers.dev

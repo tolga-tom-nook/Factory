@@ -104,6 +104,24 @@ async function hydratePulse() {
 
 hydratePulse();
 
+async function hydrateHeroStats() {
+  try {
+    const res = await fetch('./data/founder-stats.json', { headers: { Accept: 'application/json' } });
+    if (!res.ok) return;
+    const stats = await res.json();
+    for (const el of document.querySelectorAll('[data-hero-stat="apps"]')) {
+      el.textContent = stats.deployedApps;
+    }
+    for (const el of document.querySelectorAll('[data-hero-stat="cost"]')) {
+      el.textContent = stats.monthlyCostUsd?.toFixed(2) ?? '9.11';
+    }
+  } catch {
+    /* fallback values already seeded in HTML */
+  }
+}
+
+hydrateHeroStats();
+
 function setContactStatus(element, message, tone = 'neutral') {
   if (!element) return;
   element.textContent = message;

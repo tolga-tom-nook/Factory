@@ -1,4 +1,4 @@
-/* Resume page hydration — live stats, last-shipped feed, CI badge.
+/* Founder page hydration — live stats, last-shipped feed, CI badge.
  * All fetches degrade gracefully; the page reads correctly from the
  * seeded founder-stats.json even if the GitHub API is unavailable. */
 

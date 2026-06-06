@@ -1,8 +1,13 @@
 name: Generate Founder Stats
 
-# Queries the GitHub API for live Factory metrics and commits
+# Queries the GitHub API for live Factory metrics and writes
 # founder-stats.json into apps/latwoodtech-web/src/data/ so the
-# /resume page always shows current numbers. The commit triggers
+# /resume page always shows current numbers.
+#
+# Direct pushes to main are blocked by branch protection, so this
+# workflow uses a stable same-day branch and opens (or updates) a
+# single auto-merge PR. Reruns update one PR instead of failing on
+# a protected-branch push. Merge of that PR triggers
 # deploy-latwoodtech-web.yml automatically.
 
 on:
@@ -19,6 +24,7 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   generate:
@@ -34,6 +40,7 @@ jobs:
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
+          fetch-depth: 0
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Collect stats from GitHub API
@@ -43,26 +50,19 @@ jobs:
         run: |
           set -e
 
-          # Merged PR count via search API (single request, returns total_count)
           MERGED_PRS=$(gh api "search/issues?q=repo:Latimer-Woods-Tech/Factory+is:pr+is:merged&per_page=1" \
             --jq '.total_count')
 
-          # Commit count via pagination: GET with per_page=1, parse Link header last page
           COMMIT_RESP=$(gh api "repos/Latimer-Woods-Tech/Factory/commits?per_page=1" -i 2>/dev/null || true)
           TOTAL_COMMITS=$(echo "$COMMIT_RESP" | grep -i '^link:' | \
             grep -oP 'page=\K[0-9]+(?=>; rel="last")' || echo "")
-          # If Link header absent (repo has ≤1 commit), fall back to 1
           TOTAL_COMMITS=${TOTAL_COMMITS:-1}
 
-          # Directory counts (authoritative from the repo itself)
           DEPLOYED_APPS=$(ls apps/ | wc -l | tr -d ' ')
           SHARED_PACKAGES=$(ls packages/ | wc -l | tr -d ' ')
           WORKFLOWS=$(ls .github/workflows/*.yml 2>/dev/null | wc -l | tr -d ' ')
 
-          # Org repo count
           ORG_REPOS=$(gh api "orgs/Latimer-Woods-Tech/repos?per_page=100" --jq 'length')
-
-          # Repo creation date (static but sourced live to be safe)
           REPO_CREATED=$(gh api "repos/Latimer-Woods-Tech/Factory" --jq '.created_at')
 
           echo "merged_prs=$MERGED_PRS"         >> "$GITHUB_OUTPUT"
@@ -88,9 +88,8 @@ jobs:
             "monthlyCostUsd": 9.11
           }
           JSON
-          # Strip leading spaces introduced by the heredoc indentation
           python3 -c "
-          import json, sys
+          import json
           with open('apps/latwoodtech-web/src/data/founder-stats.json') as f:
               data = json.load(f)
           with open('apps/latwoodtech-web/src/data/founder-stats.json', 'w') as f:
@@ -98,16 +97,55 @@ jobs:
               f.write('\n')
           "
 
-      - name: Commit if changed
+      - name: Open or update auto-merge PR if stats changed
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
+          set -euo pipefail
+          FILE=apps/latwoodtech-web/src/data/founder-stats.json
+          git add "$FILE"
+          if git diff --cached --quiet "$FILE"; then
+            echo "No change in founder-stats.json — skipping PR."
+            exit 0
+          fi
+
+          DATE=$(date -u +%F)
+          BRANCH="chore/founder-stats-$DATE"
+          TMP=$(mktemp)
+          cp "$FILE" "$TMP"
+
           git config user.name  "factory-cross-repo[bot]"
           git config user.email "factory-cross-repo[bot]@users.noreply.github.com"
-          git add apps/latwoodtech-web/src/data/founder-stats.json
-          if git diff --cached --quiet; then
-            echo "No change in founder-stats.json — skipping commit."
+
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
           else
-            git commit -m "chore(latwoodtech-web): update founder stats $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            git push
+            git checkout -b "$BRANCH"
+          fi
+
+          cp "$TMP" "$FILE"
+          git add "$FILE"
+          if git diff --cached --quiet "$FILE"; then
+            echo "Existing founder-stats snapshot PR already contains this content."
+            exit 0
+          fi
+
+          git commit -m "chore(latwoodtech-web): update founder stats ($DATE)"
+          git push --force-with-lease --set-upstream origin "$BRANCH"
+
+          BODY='Automated hourly founder-stats refresh from .github/workflows/generate-founder-stats.yml. Branch is intentionally stable per day so reruns update one PR instead of pushing to protected main. Merge triggers deploy-latwoodtech-web.yml.'
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Updating existing founder-stats PR #$EXISTING_PR for $DATE."
+            gh pr edit "$EXISTING_PR" --title "chore(latwoodtech-web): update founder stats ($DATE)" --body "$BODY"
+            gh pr merge --auto --squash "$EXISTING_PR" || true
+          else
+            gh pr create \
+              --title "chore(latwoodtech-web): update founder stats ($DATE)" \
+              --body "$BODY" \
+              --label automation \
+              --label auto-merge
+            NEW_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number')
+            gh pr merge --auto --squash "$NEW_PR" || true
           fi

@@ -1,0 +1,90 @@
+name: Smoke — Telnyx Path
+
+on:
+  schedule:
+    # Free path smoke every 15 minutes. This does not send SMS or MMS.
+    - cron: '*/15 * * * *'
+    # Live carrier smoke twice daily. This sends one billable SMS per run.
+    # 02:00 + 14:00 UTC ≈ evening + morning in US Eastern, with DST drift.
+    - cron: '0 2,14 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'path is free and read-only; live-sms sends one billable SMS'
+        required: true
+        default: 'path'
+        type: choice
+        options:
+          - path
+          - live-sms
+      recipient:
+        description: 'Optional E.164 recipient override for live-sms mode'
+        required: false
+        default: ''
+      from_number:
+        description: 'Telnyx sender number'
+        required: false
+        default: '+15045204977'
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  path:
+    name: Telnyx free path smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run free Telnyx path smoke
+        env:
+          SMOKE_MODE: 'path'
+          TELNYX_API_KEY: ${{ secrets.TELNYX_API_KEY }}
+          TELNYX_FROM_NUMBER: ${{ github.event.inputs.from_number || '+15045204977' }}
+          TELNYX_MESSAGING_PROFILE_ID: '40019cb4-6429-4a83-90ae-19c7447e85ab'
+          TELNYX_10DLC_BRAND_ID: '4b20019d-e5f8-5861-84ed-4d758d66ffda'
+          TELNYX_10DLC_CAMPAIGN_ID: '4b30019e-5c75-0540-96d2-9d680f1fe344'
+          TELNYX_TCR_CAMPAIGN_ID: 'CN8R8WX'
+          INBOUND_ORACLE_HEALTH_URL: 'https://inbound-oracle.latwoodtech.work/health'
+        run: node scripts/telnyx-path-smoke.mjs
+
+  live-sms:
+    name: Telnyx live carrier smoke
+    if: >-
+      (github.event_name == 'schedule' && github.event.schedule == '0 2,14 * * *') ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'live-sms')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Run live Telnyx SMS smoke
+        env:
+          SMOKE_MODE: 'live-sms'
+          TELNYX_API_KEY: ${{ secrets.TELNYX_API_KEY }}
+          TELNYX_FROM_NUMBER: ${{ github.event.inputs.from_number || '+15045204977' }}
+          TELNYX_LIVE_TEST_TO: ${{ github.event.inputs.recipient || secrets.TELNYX_LIVE_TEST_TO }}
+          TELNYX_MESSAGING_PROFILE_ID: '40019cb4-6429-4a83-90ae-19c7447e85ab'
+          TELNYX_10DLC_BRAND_ID: '4b20019d-e5f8-5861-84ed-4d758d66ffda'
+          TELNYX_10DLC_CAMPAIGN_ID: '4b30019e-5c75-0540-96d2-9d680f1fe344'
+          TELNYX_TCR_CAMPAIGN_ID: 'CN8R8WX'
+          INBOUND_ORACLE_HEALTH_URL: 'https://inbound-oracle.latwoodtech.work/health'
+        run: node scripts/telnyx-path-smoke.mjs

@@ -22,6 +22,7 @@ import {
 } from './tools/github';
 import { sendDigest } from './tools/pushover';
 import { getInstallationToken } from './tools/github-auth';
+import { registerCoreSupervisorTools } from './tools/core';
 
 /** Maximum issues processed in a single scheduled run. */
 const PER_RUN_ISSUE_CAP = 5;
@@ -34,8 +35,10 @@ const PER_RUN_ISSUE_CAP = 5;
  * enforced here as a defensive bound: the loop checks elapsed time before
  * each issue and exits early if the deadline is approached, rather than
  * relying solely on PER_RUN_ISSUE_CAP or individual AbortSignal timeouts.
+ * Set to match the lock TTL (10 min) — prior value of 25 s left < 18 s of
+ * usable time after GitHub token fetch + lock acquire.
  */
-const ALARM_SOFT_DEADLINE_MS = 25_000;
+const ALARM_SOFT_DEADLINE_MS = 600_000;
 
 /** Lock key used to prevent concurrent supervisor runs. */
 const LOCK_KEY = 'supervisor-run';
@@ -45,6 +48,13 @@ const LOCK_TTL_MS = 600_000;
 
 /** Phrase that marks an issue as ineligible for supervisor processing. */
 const LOCKOUT_PHRASE = 'wordis-bond';
+
+function summarizeSmokeResult(value: unknown): Record<string, unknown> {
+  if (Array.isArray(value)) return { type: 'array', count: value.length };
+  if (value === null) return { type: 'null' };
+  if (typeof value === 'object') return { type: 'object', keys: Object.keys(value as Record<string, unknown>).sort() };
+  return { type: typeof value };
+}
 
 interface PlanRecord {
   commentId: number;
@@ -61,6 +71,7 @@ export class SupervisorDO {
     this.state = state;
     this.env = env;
     this.tools = new ToolRegistry();
+    registerCoreSupervisorTools(this.tools, env);
   }
 
   async fetch(request: Request): Promise<Response> {
@@ -73,6 +84,8 @@ export class SupervisorDO {
           return await this.handleState();
         case 'GET /capabilities':
           return await this.handleCapabilities();
+        case 'GET /tools/read-only-smoke':
+          return await this.handleReadOnlySmoke();
         case 'POST /scheduled':
           return await this.handleScheduled();
         case 'POST /plan':
@@ -97,8 +110,13 @@ export class SupervisorDO {
   private handleHealth(): Response {
     return Response.json({
       ok: true,
-      phase: 'SUP-3.5',
+      phase: 'SUP-4',
       tools_registered: this.tools.list().length,
+      tool_names: this.tools.list().map((tool) => tool.name),
+      tool_side_effects: this.tools.list().reduce((counts, tool) => {
+        counts[tool.side_effects] = (counts[tool.side_effects] ?? 0) + 1;
+        return counts;
+      }, {} as Record<string, number>),
       app_count: GENERATED_CAPABILITIES.length,
       capability_count: GENERATED_CAPABILITIES.reduce((n, a) => n + a.capabilities.length, 0),
     });
@@ -118,6 +136,58 @@ export class SupervisorDO {
           capability_count: a.capabilities.length,
         })),
       },
+    });
+  }
+
+  private async handleReadOnlySmoke(): Promise<Response> {
+    const requiredTools = [
+      'supervisor.health.snapshot',
+      'registry.capabilities.list',
+      'template.list',
+      'state.lastRun.read',
+    ];
+    const invoked: Array<{ name: string; side_effects: string; ok: boolean; execution_ms: number; result_summary?: Record<string, unknown> }> = [];
+
+    for (const name of requiredTools) {
+      const tool = this.tools.get(name);
+      if (!tool) {
+        return Response.json({ ok: false, error: `required tool not registered: ${name}`, invoked }, { status: 500 });
+      }
+      if (tool.side_effects !== 'none') {
+        return Response.json({ ok: false, error: `tool is not readonly: ${name}`, side_effects: tool.side_effects, invoked }, { status: 500 });
+      }
+
+      const started = Date.now();
+      const result = await tool.invoke({ smoke: true });
+      const executionMs = Date.now() - started;
+      const resultSummary = result.ok ? summarizeSmokeResult(result.result) : undefined;
+      invoked.push({ name, side_effects: tool.side_effects, ok: result.ok, execution_ms: executionMs, result_summary: resultSummary });
+
+      if (!result.ok) {
+        return Response.json({ ok: false, error: result.error, failed_tool: name, invoked }, { status: 500 });
+      }
+    }
+
+    const registeredTools = this.tools.list();
+    const toolSideEffects = registeredTools.reduce((counts, tool) => {
+      counts[tool.side_effects] = (counts[tool.side_effects] ?? 0) + 1;
+      return counts;
+    }, {} as Record<string, number>);
+    const writeCapableTools = registeredTools
+      .filter((tool) => tool.side_effects === 'write-app' || tool.side_effects === 'write-external')
+      .map((tool) => tool.name);
+
+    return Response.json({
+      ok: true,
+      kind: 'supervisor-readonly-smoke',
+      tools_invoked: invoked.length,
+      invoked,
+      registered: {
+        tools_registered: registeredTools.length,
+        tool_names: registeredTools.map((tool) => tool.name),
+      },
+      tool_side_effects: toolSideEffects,
+      write_capable_tools: writeCapableTools,
     });
   }
 

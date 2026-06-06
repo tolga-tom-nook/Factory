@@ -1,126 +1,24 @@
 # Factory Ecosystem — Status
 
-> **Last updated:** 2026-05-02 · **Maintained by:** Factory Supervisor + @adrper79-dot
-> **Supersedes:** the auto-generated CI table that previously lived here.
-> This file is the single human-readable source of truth for project state.
-> Root-level `PHASE_*.md`, `STAGE_*.md`, `DELIVERY_*.md` etc. are stale delivery artifacts; see factory#61 for archival tracking.
+> **Status:** Retired as a current-state source on 2026-06-05.  
+> **Why:** This file preserved a May 2 snapshot while newer generated state lived elsewhere. Keeping it as “the single human-readable source of truth” created platform drift.  
+> **Current truth:** Use the generated [`docs/STATE.md`](./STATE.md), live GitHub Actions, [`docs/service-registry.yml`](./service-registry.yml), and the active platform gate issue.
 
----
+## Where to look now
 
-## Active Projects
-
-### 🔴 HumanDesign / selfprime · [selfprime.net](https://selfprime.net)
-
-**Repo:** `Latimer-Woods-Tech/HumanDesign`
-
-| Item | State |
+| Need | Source |
 |---|---|
-| Mobile rebuild | ✅ Merged to `main` |
-| Stripe funnel | 🔴 Broken — 12 portal sessions, 0 checkouts in 24h |
-| Sentry migration gaps | 🟡 2 open (`psn.shared_at`, param-count prepared-statement) |
-| Canary | 🟢 Green |
+| Current platform snapshot | [`docs/STATE.md`](./STATE.md) |
+| Platform completion work | [Factory Platform Completion Gate](https://github.com/Latimer-Woods-Tech/Factory/issues/1412) |
+| Worker/domain registry | [`docs/service-registry.yml`](./service-registry.yml) |
+| Workflow health | [Factory Actions](https://github.com/Latimer-Woods-Tech/Factory/actions) |
+| Known platform gaps | [`docs/GAP_REGISTER.md`](./GAP_REGISTER.md) |
+| Roadmap stage | [`docs/ROADMAP.md`](./ROADMAP.md) |
 
-**Finishing gate:** Walk funnel with real test card; confirm one live conversion. **Human-led this weekend.**
+## Historical note
 
----
+The previous contents of this file were a 2026-05-02 hand-maintained ecosystem snapshot. That snapshot is intentionally no longer treated as current state. If historical context is needed, recover it from git history rather than reusing it as an operating document.
 
-### 🟡 VideoKing / capricast · [capricast.com](https://capricast.com)
+## Policy
 
-**Repo:** `Latimer-Woods-Tech/capricast`
-
-| Item | State |
-|---|---|
-| VK-1 through VK-6 | ✅ Done |
-| VK-7 (replace deploy.yml + add ci.yml) | 🟡 Pending — Red-tier, human PR required |
-| VK-11 | 🟡 Pending |
-
-**Finishing gate:** Ship VK-7 → call factory `_app-deploy.yml`. VK-8/9/10/11 via supervisor (week 5+).
-
----
-
-### 🟢 xico-city / DJMEXXICO · [xicocity.com](https://xicocity.com)
-
-**Repo:** `Latimer-Woods-Tech/xico-city`
-
-| Item | State |
-|---|---|
-| CI | 🟢 Green |
-| Cloud Run audio processor | 🟢 Live |
-| Canonical docs | 🟢 v1 + v3 |
-| Real artist onboarding | 🟡 Not yet validated end-to-end |
-
-**Finishing gate:** Real artist onboarding loop. Human-led; supervisor monitors.
-
----
-
-### ⏸ focusbro · [focusbro.com](https://focusbro.com)
-
-**Repo:** *(separate account)*
-
-| Item | State |
-|---|---|
-| App | Mainly complete |
-| Google AdWords acceptance | 🟡 Pending external review |
-
-**Status:** Not a factory migration candidate until AdWords clears. Standby.
-
----
-
-### ⛔ wordis-bond · [wordis-bond.com](https://wordis-bond.com)
-
-**Repo:** `Latimer-Woods-Tech/wordis-bond` · **MECHANICALLY LOCKED FROM SUPERVISOR**
-
-| Item | State |
-|---|---|
-| Engine | Ready |
-| FDCPA/TCPA compliance review | 🔴 Blocking — decision required |
-
-**Next step:** Compliance decision: de-risk, license, or shelve. Human-led.
-
----
-
-### 🟡 factory / apunlimited · [apunlimited.com](https://apunlimited.com)
-
-**Repo:** `Latimer-Woods-Tech/factory`
-
-| Item | State |
-|---|---|
-| Phase 5 | ✅ Done |
-| Supervisor substrate | ~70% built |
-| Open reds on `main` | 3 |
-| Phase-1 supervisor (live) | 🟡 Running — templates unblessed, plan-approval required per run |
-
-**Finishing gate:** Close MA-0 + SYN-0, ship supervisor scaffold, wire AI Gateway.
-
----
-
-## Out of scope
-
-`neighbor-aid`, `ijustus`, `cypher-healing`, `the-calling`, `xpelevator` — not active factory migration candidates.
-
----
-
-## Supervisor & Template Status
-
-| Item | State |
-|---|---|
-| Phase-1 supervisor | 🟡 Live-run mode. Templates unblessed. Plan-approval required. |
-| Template library | 6 templates in `docs/supervisor/plans/`. **0 blessed.** |
-| Reusable workflows | `_app-ci.yml`, `_app-deploy.yml`, `_post-deploy-verify.yml` shipped. |
-| LockDO | Not yet deployed (Week 3 target). |
-| AI Gateway | Not yet wired. |
-
----
-
-## Infrastructure snapshot
-
-| Resource | Count |
-|---|---|
-| Cloudflare Workers | 19 (post Apr-30 cleanup) |
-| R2 buckets | 6 |
-| Hyperdrive configs | 10 |
-| Neon databases | 10 |
-
----
-
-*To update this file, open a PR or file an issue labeled `documentation`. Auto-generated CI table deprecated — see factory#61.*
+Do not add live status tables here. Current-state claims must be generated from executable sources or backed by live links. If `docs/STATE.md` is stale, fix the generator or the auto-merge path, not this file.

@@ -161,9 +161,7 @@ describe('executePlan', () => {
         expect(receipt.step_index).toBe(i);
       });
     });
-  });
-
-  describe('mutation cap enforcement (global)', () => {
+  
     it('fails at step 26 when exceeding global cap', async () => {
       // Create registry with enough apps to avoid per-app cap
       const registry = new ToolRegistry();

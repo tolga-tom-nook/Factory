@@ -66,15 +66,40 @@ jobs:
             exit 0
           fi
           DATE=$(date -u +%F)
-          BRANCH="chore/state-snapshot-$DATE-$(date -u +%H%M)"
+          BRANCH="chore/state-snapshot-$DATE"
+          STATE_TMP=$(mktemp)
+          cp docs/STATE.md "$STATE_TMP"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$BRANCH"
-          git commit -m "chore(state): auto-update STATE.md ($DATE)"
-          git push --set-upstream origin "$BRANCH"
-          gh pr create \
-            --title "chore(state): auto-update STATE.md ($DATE)" \
-            --body "Automated daily \`STATE.md\` refresh from \`scripts/generate_state.py\`. Single canonical \"what's true right now\" snapshot for agents + humans." \
-            --label automation \
-            --label documentation \
-            --label auto-merge
+
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
+            git fetch origin "$BRANCH"
+            git checkout -B "$BRANCH" "origin/$BRANCH"
+          else
+            git checkout -b "$BRANCH"
+          fi
+
+          cp "$STATE_TMP" docs/STATE.md
+          git add docs/STATE.md
+          if git diff --cached --quiet docs/STATE.md; then
+            echo "Existing STATE.md snapshot PR already contains this content."
+          else
+            git commit -m "chore(state): auto-update STATE.md ($DATE)"
+            git push --force-with-lease --set-upstream origin "$BRANCH"
+          fi
+
+          EXISTING_PR=$(gh pr list --head "$BRANCH" --state open --json number --jq '.[0].number' 2>/dev/null || true)
+          if [ -n "$EXISTING_PR" ]; then
+            echo "Updating existing STATE.md PR #$EXISTING_PR for $DATE."
+            gh pr edit "$EXISTING_PR" \
+              --title "chore(state): auto-update STATE.md ($DATE)" \
+              --body "Automated daily `STATE.md` refresh from `scripts/generate_state.py`. Single canonical "what's true right now" snapshot for agents + humans. This branch is intentionally stable per day so reruns update one PR instead of opening timestamped duplicates."
+            gh pr merge --auto --squash "$EXISTING_PR" || true
+          else
+            gh pr create \
+              --title "chore(state): auto-update STATE.md ($DATE)" \
+              --body "Automated daily `STATE.md` refresh from `scripts/generate_state.py`. Single canonical "what's true right now" snapshot for agents + humans. This branch is intentionally stable per day so reruns update one PR instead of opening timestamped duplicates." \
+              --label automation \
+              --label documentation \
+              --label auto-merge
+          fi

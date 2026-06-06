@@ -197,13 +197,13 @@ No long-lived PATs in CI. The GitHub App is the source of truth.
 
 ### Factory main required checks
 
-The `factory` repo now treats these as merge-gating checks on `main`:
+The `factory` repo protects `main` with the active repository ruleset named `main`, targeting `~DEFAULT_BRANCH`. It requires pull requests, CODEOWNERS review, stale-review dismissal, review-thread resolution, linear history, blocks branch deletion and non-fast-forward pushes, and requires these merge-gating check contexts:
 
-- `CI / validate`
-- `CodeQL Security Analysis / Analyze (javascript)`
-- `Dependency Review / dependency-review`
+- `validate`
+- `Analyze (javascript)`
+- `dependency-review`
 
-If you rename or split any of those workflows/jobs, update branch protection and the drift guard in the same change. Otherwise you will create a silent merge blocker.
+Those are the raw GitHub check-run context names. UI labels may display as `CI / validate`, `CodeQL Security Analysis / Analyze (javascript)`, and `Dependency Review / dependency-review`. If you rename or split any of those workflows/jobs, update the repository ruleset and `policy-drift-guard.yml` in the same change. Otherwise you will create either a silent merge blocker or a false policy-drift page.
 
 ### Dependency bot ownership
 
@@ -327,7 +327,7 @@ For DB-touching changes, see `docs/runbooks/incident-response.md`.
 
 ## Drift watch
 
-The `factory-status-dashboard.yml` cron job checks every consumer repo's CI is using the reusable. Any inline CI gets flagged in `docs/STATUS.md` and should be migrated.
+The `factory-status-dashboard.yml` cron job checks every consumer repo's CI is using the reusable. Any inline CI gets flagged in `docs/STATE.md` and should be migrated.
 
 ---
 

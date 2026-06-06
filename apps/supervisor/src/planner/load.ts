@@ -41,6 +41,9 @@ export interface Template {
   tier: 'green' | 'yellow' | 'red';
   description: string;
   trigger_keywords?: string[];
+  slot_names?: string[];
+  slot_validators?: Record<string, string>;
+  slot_defaults?: Record<string, unknown>;
   triggers?: TemplateTriggers;
   steps?: Array<{
     tool: string;

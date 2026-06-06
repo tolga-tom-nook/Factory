@@ -1,0 +1,68 @@
+name: Smoke — Supervisor Readonly Tools
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'Supervisor readonly smoke endpoint'
+        required: false
+        default: 'https://supervisor.latwoodtech.work/tools/read-only-smoke'
+      run_green_docs_pr:
+        description: 'Manual only: execute docs-naming-convention and open the first controlled Green PR'
+        required: false
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+      green_description:
+        description: 'Concrete semicolon-delimited docs template slots'
+        required: false
+        default: 'docs: add smoke doc; path: docs/supervisor/aos-green-smoke.md; branch: supervisor/docs/aos-green-smoke; commit_message: docs(supervisor): add aos green smoke doc; content: # AOS Green Smoke'
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
+  readonly-smoke:
+    name: Invoke protected readonly supervisor tools
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          credentials_json: ${{ secrets.VERTEX_SA_KEY }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
+
+      - name: Fetch supervisor API key from GCP Secret Manager
+        run: |
+          set -euo pipefail
+          source scripts/fetch_gcp_secrets.sh
+          fetch_to_env SUPERVISOR_API_KEY SUPERVISOR_API_KEY
+
+      - name: Run readonly supervisor smoke
+        env:
+          SUPERVISOR_READONLY_SMOKE_URL: ${{ github.event.inputs.url || 'https://supervisor.latwoodtech.work/tools/read-only-smoke' }}
+          SUPERVISOR_GREEN_PLAN_DESCRIPTION: "${{ github.event.inputs.green_description || 'docs: add smoke doc; path: docs/supervisor/aos-green-smoke.md; branch: supervisor/docs/aos-green-smoke; commit_message: docs(supervisor): add aos green smoke doc; content: # AOS Green Smoke' }}"
+          SUPERVISOR_EXPECTED_GREEN_TEMPLATE_ID: 'docs-naming-convention'
+          SUPERVISOR_EXPECTED_WRITE_TOOLS: 'github.addLabel,github.comment,github.openPR'
+          SUPERVISOR_EXPECTED_GREEN_PLAN_EFFECTS: 'github.readFile=read-external,github.openPR=write-external,github.comment=write-external'
+          SUPERVISOR_RUN_GREEN_TEMPLATE: ${{ github.event.inputs.run_green_docs_pr || 'false' }}
+        run: node scripts/supervisor-readonly-smoke.mjs

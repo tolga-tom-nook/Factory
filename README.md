@@ -169,12 +169,12 @@ factory/
 
 ## Status snapshot
 
-The hourly `factory-status-dashboard.yml` workflow generates `docs/STATUS.md` with the live build state of every repo. If that file is stale, the workflow has been failing — check `.github/workflows/factory-status-dashboard.yml` runs.
+`docs/STATUS.md` is retired as a current-state source. Use `docs/STATE.md` for the generated platform snapshot, `docs/service-registry.yml` for worker/domain truth, and GitHub Actions for live workflow state. If `docs/STATE.md` is stale, fix `generate-state.yml` / `scripts/generate_state.py` rather than hand-editing status tables.
 
 Quick one-liners:
 - Org-level Actions secrets: `gh api /orgs/Latimer-Woods-Tech/actions/secrets`
 - Reusable workflow live test: see [`docs/CI_CD.md`](docs/CI_CD.md)
-- Open PRs across the ecosystem: see `docs/STATUS.md`
+- Open PRs across the ecosystem: see `docs/STATE.md` and the GitHub PR list
 
 ---
 
