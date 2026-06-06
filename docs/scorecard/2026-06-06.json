@@ -1,0 +1,162 @@
+{
+  "date": "2026-06-06",
+  "generated": "2026-06-06T09:35:08.191824+00:00",
+  "apps": [
+    {
+      "repo_key": "HD",
+      "repo_name": "HumanDesign",
+      "composite": 35.3,
+      "dimensions": [
+        {
+          "key": "conformance",
+          "weight": 0.6,
+          "score": 53.0,
+          "detail": "cohesion 53/100"
+        },
+        {
+          "key": "completion",
+          "weight": 0.3,
+          "score": 0.0,
+          "detail": "completion 0%"
+        },
+        {
+          "key": "reliability",
+          "weight": 0.1,
+          "score": null,
+          "detail": "awaiting per-app Sentry user.id emission (#723)"
+        }
+      ]
+    },
+    {
+      "repo_key": "CC",
+      "repo_name": "capricast",
+      "composite": 28.0,
+      "dimensions": [
+        {
+          "key": "conformance",
+          "weight": 0.6,
+          "score": 42.0,
+          "detail": "cohesion 42/100"
+        },
+        {
+          "key": "completion",
+          "weight": 0.3,
+          "score": 0.0,
+          "detail": "completion 0%"
+        },
+        {
+          "key": "reliability",
+          "weight": 0.1,
+          "score": null,
+          "detail": "awaiting per-app Sentry user.id emission (#723)"
+        }
+      ]
+    },
+    {
+      "repo_key": "FA",
+      "repo_name": "factory-admin-studio",
+      "composite": 41.3,
+      "dimensions": [
+        {
+          "key": "conformance",
+          "weight": 0.6,
+          "score": 62.0,
+          "detail": "cohesion 62/100"
+        },
+        {
+          "key": "completion",
+          "weight": 0.3,
+          "score": 0.0,
+          "detail": "completion 0%"
+        },
+        {
+          "key": "reliability",
+          "weight": 0.1,
+          "score": null,
+          "detail": "awaiting per-app Sentry user.id emission (#723)"
+        }
+      ]
+    },
+    {
+      "repo_key": "CH",
+      "repo_name": "cypher-healing",
+      "composite": 32.7,
+      "dimensions": [
+        {
+          "key": "conformance",
+          "weight": 0.6,
+          "score": 49.0,
+          "detail": "cohesion 49/100"
+        },
+        {
+          "key": "completion",
+          "weight": 0.3,
+          "score": 0.0,
+          "detail": "completion 0%"
+        },
+        {
+          "key": "reliability",
+          "weight": 0.1,
+          "score": null,
+          "detail": "awaiting per-app Sentry user.id emission (#723)"
+        }
+      ]
+    },
+    {
+      "repo_key": "XC",
+      "repo_name": "xico-city",
+      "composite": 34.0,
+      "dimensions": [
+        {
+          "key": "conformance",
+          "weight": 0.6,
+          "score": 51.0,
+          "detail": "cohesion 51/100"
+        },
+        {
+          "key": "completion",
+          "weight": 0.3,
+          "score": 0.0,
+          "detail": "completion 0%"
+        },
+        {
+          "key": "reliability",
+          "weight": 0.1,
+          "score": null,
+          "detail": "awaiting per-app Sentry user.id emission (#723)"
+        }
+      ]
+    }
+  ],
+  "org": {
+    "repo_key": "ORG",
+    "repo_name": "Latimer-Woods-Tech (portfolio)",
+    "composite": 67.0,
+    "dimensions": [
+      {
+        "key": "conformance",
+        "weight": 0.4,
+        "score": 51.4,
+        "detail": "avg cohesion across 5 apps"
+      },
+      {
+        "key": "cost",
+        "weight": 0.2,
+        "score": 98.3,
+        "detail": "worst-cap utilisation 3%"
+      },
+      {
+        "key": "mrr",
+        "weight": 0.2,
+        "score": null,
+        "detail": "MRR is 0 \u2014 Stage 2 not yet generating recurring"
+      },
+      {
+        "key": "reliability",
+        "weight": 0.2,
+        "score": null,
+        "detail": "awaiting Sentry user-facing error rate (#723)"
+      }
+    ]
+  }
+}
