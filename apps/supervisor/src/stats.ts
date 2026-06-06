@@ -34,7 +34,7 @@ function toStats(row: TemplateStatsRow): TemplateStats {
     attempted: row.runs_attempted,
     merged: row.runs_merged,
     reverted: row.runs_reverted,
-    blessed: row.blessed_at !== null,
+    blessed: row.blessed_at !== null && row.demoted_at === null,
     demoted: row.demoted_at !== null,
     lastRunAt: row.last_run_at,
   };
@@ -62,7 +62,7 @@ export async function isTemplateBlessed(
 ): Promise<boolean> {
   const stats = await getTemplateStats(db, templateId, version);
   if (!stats) return false;
-  return stats.blessed;
+  return stats.blessed && !stats.demoted;
 }
 
 /**
@@ -125,9 +125,10 @@ export async function recordRun(
     updated.runs_reverted / updated.runs_attempted > DEMOTE_REVERT_RATE
   ) {
     await db
-      .prepare(`UPDATE template_stats SET demoted_at = ? WHERE template_id = ? AND template_version = ?`)
+      .prepare(`UPDATE template_stats SET blessed_at = NULL, demoted_at = ? WHERE template_id = ? AND template_version = ?`)
       .bind(now, templateId, version)
       .run();
+    updated.blessed_at = null;
     updated.demoted_at = now;
   }
 

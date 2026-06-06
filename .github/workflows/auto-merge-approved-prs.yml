@@ -67,4 +67,36 @@ jobs:
             exit 0
           fi
 
+          # ADR-0005 is not a branch-protection-required check on every path yet,
+          # so this workflow must fail closed before enabling auto-merge. Without
+          # this, a PR can merge after approval even when the diff-size guard failed.
+          diff_guard=""
+          for _ in $(seq 1 30); do
+            diff_guard=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json statusCheckRollup --jq '
+              [.statusCheckRollup[]?
+                | select(.name == "PR diff-size guard (ADR-0005)")
+                | (.conclusion // .status // "UNKNOWN")
+              ] | last // "MISSING"
+            ')
+            case "$diff_guard" in
+              SUCCESS)
+                echo "Diff-size guard passed."
+                break
+                ;;
+              FAILURE|ERROR|CANCELLED|TIMED_OUT|ACTION_REQUIRED)
+                echo "Diff-size guard failed (conclusion=$diff_guard); refusing to enable auto-merge."
+                exit 1
+                ;;
+              *)
+                echo "Diff-size guard not complete yet (state=$diff_guard); waiting."
+                sleep 10
+                ;;
+            esac
+          done
+
+          if [ "$diff_guard" != "SUCCESS" ]; then
+            echo "Diff-size guard did not reach SUCCESS; refusing to enable auto-merge."
+            exit 1
+          fi
+
           gh pr merge "$PR_NUMBER" --repo "$REPO" --auto --squash --delete-branch

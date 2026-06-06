@@ -64,7 +64,7 @@
         "tool": "github.comment",
         "slots": {
           "issue": "$slots.issue_number",
-          "body": "## Branch-protection promotion: signal quality report\n\n**Check:** `$slots.check_name`\n**Repo / branch:** `$slots.target_repo` / `$slots.target_branch`\n**Observation window:** $slots.observation_days days\n\n| Metric | Value | Threshold | Pass? |\n|---|---|---|---|\n| Total runs | $s2.total_runs | > 0 | $s2.total_runs > 0 |\n| False-positive rate | $s2.fp_rate% | < 5% | $s2.fp_rate < 5 |\n| Observation days elapsed | $s2.days_elapsed | \u2265 $slots.observation_days | $s2.days_elapsed >= $slots.observation_days |\n\nCurrent required checks: `$s1.required_contexts`\n\nSupervisor will open a promotion PR only when all three conditions are met and a CODEOWNER reacts \u2705 on this comment.\n"
+          "body": "## Branch-protection promotion: signal quality report\n\n**Check:** `$slots.check_name`\n**Repo / branch:** `$slots.target_repo` / `$slots.target_branch`\n**Observation window:** $slots.observation_days days\n\n| Metric | Value | Threshold | Pass? |\n|---|---|---|---|\n| Total runs | $s2.total_runs | > 0 | $s2.total_runs > 0 |\n| False-positive rate | $s2.fp_rate% | < 5% | $s2.fp_rate < 5 |\n| Observation days elapsed | $s2.days_elapsed | ≥ $slots.observation_days | $s2.days_elapsed >= $slots.observation_days |\n\nCurrent required checks: `$s1.required_contexts`\n\nSupervisor will open a promotion PR only when all three conditions are met and a CODEOWNER reacts ✅ on this comment.\n"
         },
         "side_effects": "none"
       },
@@ -417,7 +417,7 @@
     "slot_descriptions": {},
     "step_intents": [
       "Confirm rule 1 (wordis-bond UI off-limits) before proceeding. Engine-layer files only; abort if source_file path looks like a UI/frontend asset.",
-      "Post plan comment and wait for CODEOWNER \u2705 before any file mutation.",
+      "Post plan comment and wait for CODEOWNER ✅ before any file mutation.",
       "Open draft PR with the extracted handler. Yellow tier requires CODEOWNER review before merge."
     ],
     "pr_files": [],
@@ -435,7 +435,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "Supervisor plan for **$slots.wb_ticket**\n\n**Source (wordis-bond engine):** `$slots.source_file`\n**Target (Factory package):** `$slots.target_file`\n**Contract:** `$slots.export_contract`\n**Package:** `@latimer-woods-tech/$slots.target_package`\n\nPlanned execution (after CODEOWNER \u2705):\n1. Audit source file for TCPA/FDCPA/PII compliance code \u2014 abort and re-classify Red if any found.\n2. Copy clean code to target path; rewrite imports to use `@latimer-woods-tech/errors` and `@latimer-woods-tech/logger`.\n3. Verify no `process.env`, no Node.js built-ins, no `Buffer`, no `require()` (Hard Constraints).\n4. Write unit tests (\u22655 cases) and one integration test fixture.\n5. Run `npm run typecheck && npm test && npm run lint`.\n6. Open draft PR targeting `main` with scope `($slots.target_package)`; tag CODEOWNER.\n\n@adrper79-dot \u2014 React \u2705 to proceed, or comment with changes needed.\n\n_FRIDGE rule 1: this template never touches wordis-bond UI/frontend files. Only `wordis-bond/src/{handlers,workers,lib}/**` is in scope._"
+          "body": "Supervisor plan for **$slots.wb_ticket**\n\n**Source (wordis-bond engine):** `$slots.source_file`\n**Target (Factory package):** `$slots.target_file`\n**Contract:** `$slots.export_contract`\n**Package:** `@latimer-woods-tech/$slots.target_package`\n\nPlanned execution (after CODEOWNER ✅):\n1. Audit source file for TCPA/FDCPA/PII compliance code — abort and re-classify Red if any found.\n2. Copy clean code to target path; rewrite imports to use `@latimer-woods-tech/errors` and `@latimer-woods-tech/logger`.\n3. Verify no `process.env`, no Node.js built-ins, no `Buffer`, no `require()` (Hard Constraints).\n4. Write unit tests (≥5 cases) and one integration test fixture.\n5. Run `npm run typecheck && npm test && npm run lint`.\n6. Open draft PR targeting `main` with scope `($slots.target_package)`; tag CODEOWNER.\n\n@adrper79-dot — React ✅ to proceed, or comment with changes needed.\n\n_FRIDGE rule 1: this template never touches wordis-bond UI/frontend files. Only `wordis-bond/src/{handlers,workers,lib}/**` is in scope._"
         },
         "side_effects": "none"
       },
@@ -446,7 +446,7 @@
           "base": "main",
           "head": "supervisor/wb-extract-$slots.wb_ticket",
           "title": "feat($slots.target_package): extract `$slots.source_file` into Factory ($slots.wb_ticket)",
-          "body": "Closes #$triggers.issue_number\n\nExtracts engine handler from wordis-bond into `$slots.target_file`.\n\n**Contract:** `$slots.export_contract`\n**Source:** wordis-bond engine \u2014 `$slots.source_file`\n**FRIDGE rule 1:** wordis-bond UI layer untouched. Engine-only extraction.\n\n## Acceptance gate\n- TypeScript strict passes\n- \u22655 unit tests + 1 integration test\n- No `process.env`, no Node built-ins, no `Buffer`, no `require()`\n- Uses `@latimer-woods-tech/errors` and `@latimer-woods-tech/logger`\n\nDraft for CODEOWNER review per Yellow-tier policy.",
+          "body": "Closes #$triggers.issue_number\n\nExtracts engine handler from wordis-bond into `$slots.target_file`.\n\n**Contract:** `$slots.export_contract`\n**Source:** wordis-bond engine — `$slots.source_file`\n**FRIDGE rule 1:** wordis-bond UI layer untouched. Engine-only extraction.\n\n## Acceptance gate\n- TypeScript strict passes\n- ≥5 unit tests + 1 integration test\n- No `process.env`, no Node built-ins, no `Buffer`, no `require()`\n- Uses `@latimer-woods-tech/errors` and `@latimer-woods-tech/logger`\n\nDraft for CODEOWNER review per Yellow-tier policy.",
           "draft": true
         },
         "side_effects": "none"
@@ -456,7 +456,7 @@
   {
     "id": "feat-call-room-implementation",
     "tier": "green",
-    "description": "Sprint 2 calling/live-broadcast feature work in capricast: DirectCallRoom Durable Object for 1:1 video calls, LiveBroadcastRoom DO for live-stream chat, and Cloudflare Stream Live Inputs Go-Live flow. Scaffolds a Durable Object class, Hono routes wiring it up, and a Vitest test file. Green tier \u2014 the scaffold lands as a non-draft PR; a CODEOWNER must add the DO binding to wrangler.jsonc and review WHIP/WHEP/CF Calls integration before merge. Yellow would only post a plan comment and would not actually scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
+    "description": "Sprint 2 calling/live-broadcast feature work in capricast: DirectCallRoom Durable Object for 1:1 video calls, LiveBroadcastRoom DO for live-stream chat, and Cloudflare Stream Live Inputs Go-Live flow. Scaffolds a Durable Object class, Hono routes wiring it up, and a Vitest test file. Green tier — the scaffold lands as a non-draft PR; a CODEOWNER must add the DO binding to wrangler.jsonc and review WHIP/WHEP/CF Calls integration before merge. Yellow would only post a plan comment and would not actually scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
     "trigger_keywords": [
       "call",
       "calls",
@@ -516,11 +516,11 @@
       "feature_slug": "direct-call-room",
       "do_class_name": "DirectCallRoom",
       "do_file_path": "apps/worker/src/durable-objects/DirectCallRoom.ts",
-      "do_content": "// Supervisor scaffold \u2014 replace with the call/live-room behavior\n// described in the source issue. The CODEOWNER must wire the DO\n// into wrangler.jsonc bindings before this code runs in production.\nimport { DurableObject } from \"cloudflare:workers\";\nimport type { Env } from \"../env\";\n\nexport class CallRoomScaffold extends DurableObject<Env> {\n  // TODO(supervisor-scaffold): replace with real state.\n  async fetch(_request: Request): Promise<Response> {\n    return new Response(JSON.stringify({ status: \"scaffold\" }), {\n      headers: { \"content-type\": \"application/json\" },\n    });\n  }\n}\n",
+      "do_content": "// Supervisor scaffold — replace with the call/live-room behavior\n// described in the source issue. The CODEOWNER must wire the DO\n// into wrangler.jsonc bindings before this code runs in production.\nimport { DurableObject } from \"cloudflare:workers\";\nimport type { Env } from \"../env\";\n\nexport class CallRoomScaffold extends DurableObject<Env> {\n  // TODO(supervisor-scaffold): replace with real state.\n  async fetch(_request: Request): Promise<Response> {\n    return new Response(JSON.stringify({ status: \"scaffold\" }), {\n      headers: { \"content-type\": \"application/json\" },\n    });\n  }\n}\n",
       "route_file_path": "apps/worker/src/routes/calls.ts",
-      "route_content": "// Supervisor scaffold \u2014 replace with HTTP handlers that proxy into the\n// call-room DO. CODEOWNER must add the CALL_ROOM binding to wrangler\n// and the corresponding env type before this route works end-to-end.\nimport { Hono } from \"hono\";\nimport type { Env } from \"../env\";\n\nconst router = new Hono<{ Bindings: Env }>();\nrouter.get(\"/\", (c) => c.json({ status: \"scaffold\", todo: \"implement\" }));\nexport default router;\n",
+      "route_content": "// Supervisor scaffold — replace with HTTP handlers that proxy into the\n// call-room DO. CODEOWNER must add the CALL_ROOM binding to wrangler\n// and the corresponding env type before this route works end-to-end.\nimport { Hono } from \"hono\";\nimport type { Env } from \"../env\";\n\nconst router = new Hono<{ Bindings: Env }>();\nrouter.get(\"/\", (c) => c.json({ status: \"scaffold\", todo: \"implement\" }));\nexport default router;\n",
       "test_file_path": "apps/worker/src/durable-objects/__tests__/DirectCallRoom.test.ts",
-      "test_content": "import { describe, it } from \"vitest\";\n// TODO(supervisor-scaffold): import the DO class and exercise the\n// happy path described in the source issue (initiate, accept, hangup,\n// or Go Live).\ndescribe(\"call-room scaffold\", () => {\n  it.todo(\"happy path \u2014 replace with real assertions\");\n});\n",
+      "test_content": "import { describe, it } from \"vitest\";\n// TODO(supervisor-scaffold): import the DO class and exercise the\n// happy path described in the source issue (initiate, accept, hangup,\n// or Go Live).\ndescribe(\"call-room scaffold\", () => {\n  it.todo(\"happy path — replace with real assertions\");\n});\n",
       "branch_name": "supervisor/feat-call-room/scaffold",
       "commit_message": "feat(calls): scaffold Durable Object, routes, and test (cap#0)"
     },
@@ -528,13 +528,13 @@
       "feature_slug": "Short kebab-case identifier derived from the issue title. Examples: direct-call-room, live-broadcast-room, live-inputs, conference-recording.",
       "do_class_name": "Durable Object class name in PascalCase. Should reflect the room type: DirectCallRoom for 1:1 calls, LiveBroadcastRoom for live, ConferenceRoom for multi-party. Examples: DirectCallRoom, LiveBroadcastRoom, ConferenceRoom.",
       "do_file_path": "Path to the Durable Object class file under apps/worker/src/durable-objects/. Filename in PascalCase matching do_class_name (e.g. DirectCallRoom.ts, LiveBroadcastRoom.ts).",
-      "do_content": "Full TypeScript source for a Durable Object class. SYNTHESIZE from the issue body. Class extends DurableObject<Env> from 'cloudflare:workers'. Implements at least one fetch(request) handler that routes by URL/method. Manages state via this.ctx.storage (for persistent state) and instance fields (for hot state). For call rooms: track participant set, signaling state, hibernation hooks (extends DurableObject base for WS hibernation). For live broadcast: track viewer count, chat history, presence. Wire Cloudflare Calls API where appropriate (CALLS_APP_ID/CALLS_APP_TOKEN env). Wire @lwt/logger. Do not produce a placeholder \u2014 the issue body has the verbs and state model.",
+      "do_content": "Full TypeScript source for a Durable Object class. SYNTHESIZE from the issue body. Class extends DurableObject<Env> from 'cloudflare:workers'. Implements at least one fetch(request) handler that routes by URL/method. Manages state via this.ctx.storage (for persistent state) and instance fields (for hot state). For call rooms: track participant set, signaling state, hibernation hooks (extends DurableObject base for WS hibernation). For live broadcast: track viewer count, chat history, presence. Wire Cloudflare Calls API where appropriate (CALLS_APP_ID/CALLS_APP_TOKEN env). Wire @lwt/logger. Do not produce a placeholder — the issue body has the verbs and state model.",
       "route_file_path": "Path to the Hono route file that wires the DO to HTTP endpoints. Kebab-case under apps/worker/src/routes/ (e.g. calls.ts, live.ts, conferences.ts).",
       "route_content": "Full TypeScript source for the Hono route module that exposes the DO over HTTP. SYNTHESIZE from the issue body. Imports: hono, Env. Export a default Hono router. Each handler obtains a DO stub via c.env.<BINDING_NAME>.get(c.env.<BINDING_NAME>.idFromName(...)) and forwards the request via stub.fetch(). Handlers should cover the verbs described (e.g. POST /calls/initiate, POST /calls/accept, POST /calls/hangup, POST /live/start, GET /live/:id). Validate input, return appropriate status codes.",
       "test_file_path": "Vitest test file path under apps/worker/src/durable-objects/__tests__/. PascalCase mirroring the DO class (e.g. DirectCallRoom.test.ts).",
-      "test_content": "Vitest test module exercising the DO. SYNTHESIZE from the issue body. Use @cloudflare/vitest-pool-workers to construct a DO stub. Cover the happy path verbs described (initiate\u2192accept\u2192hangup, or start\u2192view\u2192stop). Include at least one state-mutation assertion (e.g. participant added, viewer count incremented) and one failure assertion (e.g. cannot accept call that's already hung up). Aim for \u22653 it() blocks.",
+      "test_content": "Vitest test module exercising the DO. SYNTHESIZE from the issue body. Use @cloudflare/vitest-pool-workers to construct a DO stub. Cover the happy path verbs described (initiate→accept→hangup, or start→view→stop). Include at least one state-mutation assertion (e.g. participant added, viewer count incremented) and one failure assertion (e.g. cannot accept call that's already hung up). Aim for ≥3 it() blocks.",
       "branch_name": "Git branch name. Prefer supervisor/feat-call-room/<feature_slug>. Conventional feat/<feature_slug> is also accepted.",
-      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope reflects the feature (e.g. feat(calls): ..., feat(live): ..., feat(conference): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present \u2014 the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` \u2014 the runtime substitutes the real number. Example: `feat(calls): add DirectCallRoom DO and 1:1 video-call endpoints (cap#63)`."
+      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope reflects the feature (e.g. feat(calls): ..., feat(live): ..., feat(conference): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present — the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` — the runtime substitutes the real number. Example: `feat(calls): add DirectCallRoom DO and 1:1 video-call endpoints (cap#63)`."
     },
     "step_intents": [
       "Confirm the durable-objects directory exists in the capricast worker and read existing DOs so the new class does not collide with one already on main.",
@@ -580,7 +580,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor plan \u2014 `feat-call-room-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nDurable Object class: `$slots.do_class_name`\nDO file: `$slots.do_file_path`\nRoute file: `$slots.route_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds three files derived from the issue body:\n1. A Durable Object class extending the WebSocket Hibernation API base for the call/broadcast room state machine.\n2. A Hono route module wiring HTTP endpoints (`/calls/initiate`, `/calls/accept`, `/live/start`, etc.) to the DO via stub.\n3. A Vitest test file under `__tests__/` exercising the DO's happy path.\n\n\ud83d\udfe2 Green tier \u2014 scaffold lands as a non-draft PR. A CODEOWNER must:\n- Add the DO binding to `wrangler.jsonc` (the supervisor cannot mutate wrangler config).\n- Review the WHIP/WHEP and CF Calls integration (these touch external SDKs).\n- Confirm the migration block matches the existing wrangler `migrations[]` numbering.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor plan — `feat-call-room-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nDurable Object class: `$slots.do_class_name`\nDO file: `$slots.do_file_path`\nRoute file: `$slots.route_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds three files derived from the issue body:\n1. A Durable Object class extending the WebSocket Hibernation API base for the call/broadcast room state machine.\n2. A Hono route module wiring HTTP endpoints (`/calls/initiate`, `/calls/accept`, `/live/start`, etc.) to the DO via stub.\n3. A Vitest test file under `__tests__/` exercising the DO's happy path.\n\n🟢 Green tier — scaffold lands as a non-draft PR. A CODEOWNER must:\n- Add the DO binding to `wrangler.jsonc` (the supervisor cannot mutate wrangler config).\n- Review the WHIP/WHEP and CF Calls integration (these touch external SDKs).\n- Confirm the migration block matches the existing wrangler `migrations[]` numbering.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -606,7 +606,7 @@
               "content": "$slots.test_content"
             }
           ],
-          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-call-room-implementation`).\n\n**Scaffolds:**\n- Durable Object: `$slots.do_file_path` (class `$slots.do_class_name`)\n- Hono routes: `$slots.route_file_path`\n- Vitest test: `$slots.test_file_path`\n\n\ud83d\udfe2 Green tier \u2014 scaffold only. A CODEOWNER must:\n1. Add the DO binding + migration entry to `apps/worker/wrangler.jsonc`.\n2. Review WHIP/WHEP and Cloudflare Calls/Stream integration.\n3. Fill in additional handlers/tests for the full call flow.\n\nPlan comment: see source issue for details.\n",
+          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-call-room-implementation`).\n\n**Scaffolds:**\n- Durable Object: `$slots.do_file_path` (class `$slots.do_class_name`)\n- Hono routes: `$slots.route_file_path`\n- Vitest test: `$slots.test_file_path`\n\n🟢 Green tier — scaffold only. A CODEOWNER must:\n1. Add the DO binding + migration entry to `apps/worker/wrangler.jsonc`.\n2. Review WHIP/WHEP and Cloudflare Calls/Stream integration.\n3. Fill in additional handlers/tests for the full call flow.\n\nPlan comment: see source issue for details.\n",
           "labels": [
             "enhancement",
             "sprint:2",
@@ -673,7 +673,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "Supervisor plan for `$slots.workflow_name`\n\n**Trigger events:** `$slots.trigger_events`\n**Description:** $slots.description\n\nDrafting workflow YAML following Factory conventions. Will open a draft PR.\n\n@adrper79-dot \u2014 React \u2705 to proceed, or comment with changes needed."
+          "body": "Supervisor plan for `$slots.workflow_name`\n\n**Trigger events:** `$slots.trigger_events`\n**Description:** $slots.description\n\nDrafting workflow YAML following Factory conventions. Will open a draft PR.\n\n@adrper79-dot — React ✅ to proceed, or comment with changes needed."
         },
         "side_effects": "none"
       },
@@ -694,7 +694,7 @@
   {
     "id": "feat-conversations-implementation",
     "tier": "green",
-    "description": "Sprint 2 conversations/messaging feature work in capricast (compose/edit/delete/reactions/typing/read-receipts, R2 attachments). Scaffolds a Hono route file under apps/worker/src/routes/, a Drizzle migration adding required columns, and a Vitest test file. Green tier \u2014 the scaffold lands as a non-draft PR; a CODEOWNER reviews handler logic + migration numbering before merge. Yellow would only post a plan comment and would not actually scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
+    "description": "Sprint 2 conversations/messaging feature work in capricast (compose/edit/delete/reactions/typing/read-receipts, R2 attachments). Scaffolds a Hono route file under apps/worker/src/routes/, a Drizzle migration adding required columns, and a Vitest test file. Green tier — the scaffold lands as a non-draft PR; a CODEOWNER reviews handler logic + migration numbering before merge. Yellow would only post a plan comment and would not actually scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
     "trigger_keywords": [
       "conversations",
       "messages",
@@ -749,24 +749,24 @@
     "slot_defaults": {
       "feature_slug": "conversations",
       "route_file_path": "apps/worker/src/routes/conversations.ts",
-      "route_content": "// Supervisor scaffold \u2014 review the issue body and replace this\n// with real handler logic. Tests in the colocated __tests__/ dir\n// will fail until the handlers are wired.\nimport { Hono } from \"hono\";\nimport type { Env } from \"../env\";\n\nconst router = new Hono<{ Bindings: Env }>();\n\n// TODO(supervisor-scaffold): replace with handlers derived from the\n// acceptance criteria in the source issue. The route file path was\n// chosen by the supervisor; rename if a different module fits better.\nrouter.get(\"/\", (c) => c.json({ status: \"scaffold\", todo: \"implement\" }));\n\nexport default router;\n",
+      "route_content": "// Supervisor scaffold — review the issue body and replace this\n// with real handler logic. Tests in the colocated __tests__/ dir\n// will fail until the handlers are wired.\nimport { Hono } from \"hono\";\nimport type { Env } from \"../env\";\n\nconst router = new Hono<{ Bindings: Env }>();\n\n// TODO(supervisor-scaffold): replace with handlers derived from the\n// acceptance criteria in the source issue. The route file path was\n// chosen by the supervisor; rename if a different module fits better.\nrouter.get(\"/\", (c) => c.json({ status: \"scaffold\", todo: \"implement\" }));\n\nexport default router;\n",
       "migration_file_path": "workers/src/db/migrations/0017_conversations.sql",
-      "migration_content": "-- Supervisor scaffold \u2014 replace with the tables/columns described\n-- in the source issue's acceptance criteria. CODEOWNER must also\n-- re-verify the migration number against existing migrations on main\n-- (the supervisor cannot atomically reserve a number).\n\n-- TODO(supervisor-scaffold): replace this no-op with the real DDL.\nSELECT 1;\n-- ROLLBACK: SELECT 1;\n",
+      "migration_content": "-- Supervisor scaffold — replace with the tables/columns described\n-- in the source issue's acceptance criteria. CODEOWNER must also\n-- re-verify the migration number against existing migrations on main\n-- (the supervisor cannot atomically reserve a number).\n\n-- TODO(supervisor-scaffold): replace this no-op with the real DDL.\nSELECT 1;\n-- ROLLBACK: SELECT 1;\n",
       "test_file_path": "apps/worker/src/routes/__tests__/conversations.test.ts",
-      "test_content": "import { describe, it, expect } from \"vitest\";\n// TODO(supervisor-scaffold): import the route under test and\n// exercise the verbs described in the source issue.\ndescribe(\"conversations scaffold\", () => {\n  it.todo(\"happy path \u2014 replace with real assertions\");\n});\n",
+      "test_content": "import { describe, it, expect } from \"vitest\";\n// TODO(supervisor-scaffold): import the route under test and\n// exercise the verbs described in the source issue.\ndescribe(\"conversations scaffold\", () => {\n  it.todo(\"happy path — replace with real assertions\");\n});\n",
       "branch_name": "supervisor/feat-conversations/scaffold",
       "commit_message": "feat(conversations): scaffold route, migration, and test (cap#0)"
     },
     "slot_descriptions": {
-      "feature_slug": "Short kebab-case identifier derived from the issue title \u2014 used in branch names and filenames. Examples: conversations, message-attachments, inbox-ui, web-push-vapid.",
+      "feature_slug": "Short kebab-case identifier derived from the issue title — used in branch names and filenames. Examples: conversations, message-attachments, inbox-ui, web-push-vapid.",
       "route_file_path": "Path to a new Hono route file under the capricast worker app. Pick a kebab-case filename that reflects the feature (e.g. apps/worker/src/routes/conversations.ts, apps/worker/src/routes/inbox.ts, apps/worker/src/routes/messages.ts).",
-      "route_content": "Full TypeScript source for the Hono route module. SYNTHESIZE this from the issue body \u2014 extract the HTTP verbs, paths, and behaviors described in the acceptance criteria and produce a real Hono router file. Imports: hono, Env type from ../env. Export a default Hono router with at least one handler matching the verbs in the issue (e.g. POST /:id/messages for compose, PATCH /:id/messages/:msgId for edit, DELETE for delete, POST /:id/reactions, etc.). Use Drizzle queries via the c.env.DB Hyperdrive binding. Wire @lwt/logger and @lwt/errors per Platform Standards. Return JSON responses with proper status codes (201 create, 204 delete, 400 validation, 401 auth, 404 not found). Tests will verify the contract \u2014 do not produce a stub.",
-      "migration_file_path": "Drizzle SQL migration filename. Format NNNN_<snake_case_description>.sql where NNNN is a 3-4 digit sequence number. Pick a number \u2265 0017 to stay clear of existing migrations on main; the CODEOWNER will reconcile if it collides with a parallel PR. Snake-case description should reflect the feature (e.g. 0017_conversations_tables.sql, 0018_message_attachments.sql).",
-      "migration_content": "SQL DDL \u2014 SYNTHESIZE from the issue body. Identify the tables/columns the issue requires and produce CREATE TABLE / ALTER TABLE statements. Follow Platform Standards \u00a76 (Expand \u2192 Contract): additive-only changes; include a `-- ROLLBACK:` comment with the inverse statement. For new tables include sensible defaults (created_at, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), proper FK constraints REFERENCES \u2026, and indexes on commonly-queried columns. For ALTER TABLE additions, use DEFAULT values and NOT NULL only when safe. Do not produce a SELECT 1 placeholder \u2014 the issue body has enough information.",
+      "route_content": "Full TypeScript source for the Hono route module. SYNTHESIZE this from the issue body — extract the HTTP verbs, paths, and behaviors described in the acceptance criteria and produce a real Hono router file. Imports: hono, Env type from ../env. Export a default Hono router with at least one handler matching the verbs in the issue (e.g. POST /:id/messages for compose, PATCH /:id/messages/:msgId for edit, DELETE for delete, POST /:id/reactions, etc.). Use Drizzle queries via the c.env.DB Hyperdrive binding. Wire @lwt/logger and @lwt/errors per Platform Standards. Return JSON responses with proper status codes (201 create, 204 delete, 400 validation, 401 auth, 404 not found). Tests will verify the contract — do not produce a stub.",
+      "migration_file_path": "Drizzle SQL migration filename. Format NNNN_<snake_case_description>.sql where NNNN is a 3-4 digit sequence number. Pick a number ≥ 0017 to stay clear of existing migrations on main; the CODEOWNER will reconcile if it collides with a parallel PR. Snake-case description should reflect the feature (e.g. 0017_conversations_tables.sql, 0018_message_attachments.sql).",
+      "migration_content": "SQL DDL — SYNTHESIZE from the issue body. Identify the tables/columns the issue requires and produce CREATE TABLE / ALTER TABLE statements. Follow Platform Standards §6 (Expand → Contract): additive-only changes; include a `-- ROLLBACK:` comment with the inverse statement. For new tables include sensible defaults (created_at, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP), proper FK constraints REFERENCES …, and indexes on commonly-queried columns. For ALTER TABLE additions, use DEFAULT values and NOT NULL only when safe. Do not produce a SELECT 1 placeholder — the issue body has enough information.",
       "test_file_path": "Vitest test file path under apps/worker/src/routes/__tests__/. Filename should mirror the route module being tested (e.g. conversations.test.ts for conversations.ts). Tests run via @cloudflare/vitest-pool-workers.",
-      "test_content": "Vitest test module \u2014 SYNTHESIZE assertions for the route handlers described in the issue. Use describe + multiple it() blocks covering: happy path (verb+path returns 2xx with expected body shape), validation failures (400 on bad input), auth failures (401 unauthenticated), and at least one edge case from the acceptance criteria. Use @cloudflare/vitest-pool-workers to construct request/response. Import the router under test from ../<route_file>. Use unstable_dev or env-fetcher patterns as needed. Aim for \u22653 it() blocks.",
+      "test_content": "Vitest test module — SYNTHESIZE assertions for the route handlers described in the issue. Use describe + multiple it() blocks covering: happy path (verb+path returns 2xx with expected body shape), validation failures (400 on bad input), auth failures (401 unauthenticated), and at least one edge case from the acceptance criteria. Use @cloudflare/vitest-pool-workers to construct request/response. Import the router under test from ../<route_file>. Use unstable_dev or env-fetcher patterns as needed. Aim for ≥3 it() blocks.",
       "branch_name": "Git branch name. Use the supervisor-prefixed form supervisor/feat-conversations/<feature_slug> for new supervisor work. The conventional feat/<feature_slug> form is also accepted but supervisor-prefixed is preferred so the bot's PRs are visually grouped.",
-      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope should reflect the feature (e.g. feat(conversations): ..., feat(inbox): ..., feat(moderation): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present \u2014 the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` \u2014 the runtime substitutes the real number. Example: `feat(conversations): add edit/delete/reactions to message composer (cap#77)`."
+      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope should reflect the feature (e.g. feat(conversations): ..., feat(inbox): ..., feat(moderation): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present — the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` — the runtime substitutes the real number. Example: `feat(conversations): add edit/delete/reactions to message composer (cap#77)`."
     },
     "step_intents": [
       "Confirm the routes directory exists in the capricast worker before scaffolding a new route file into it.",
@@ -812,7 +812,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor plan \u2014 `feat-conversations-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nRoute file: `$slots.route_file_path`\nMigration: `$slots.migration_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds three files derived from the issue body:\n1. A Hono route module wired into `apps/worker/src/routes/` covering the verbs described in the acceptance criteria.\n2. A Drizzle migration adding the columns/tables described in the issue (e.g. `conversations`, `conversation_members`, `messages`, `message_attachments`).\n3. A Vitest test file at `apps/worker/src/routes/__tests__/` exercising the happy path.\n\n\ud83d\udfe2 Green tier \u2014 the scaffold lands as a non-draft PR. The supervisor cannot implement business logic; the scaffold is a starting point and tests/handlers may need filling in. A CODEOWNER review is still required before merge.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor plan — `feat-conversations-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nRoute file: `$slots.route_file_path`\nMigration: `$slots.migration_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds three files derived from the issue body:\n1. A Hono route module wired into `apps/worker/src/routes/` covering the verbs described in the acceptance criteria.\n2. A Drizzle migration adding the columns/tables described in the issue (e.g. `conversations`, `conversation_members`, `messages`, `message_attachments`).\n3. A Vitest test file at `apps/worker/src/routes/__tests__/` exercising the happy path.\n\n🟢 Green tier — the scaffold lands as a non-draft PR. The supervisor cannot implement business logic; the scaffold is a starting point and tests/handlers may need filling in. A CODEOWNER review is still required before merge.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -838,7 +838,7 @@
               "content": "$slots.test_content"
             }
           ],
-          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-conversations-implementation`).\n\n**Scaffolds:**\n- Hono route: `$slots.route_file_path`\n- Drizzle migration: `$slots.migration_file_path`\n- Vitest test: `$slots.test_file_path`\n\n\ud83d\udfe2 Green tier \u2014 scaffold only. A CODEOWNER must:\n1. Review handler logic and add business rules.\n2. Verify migration numbering does not collide with PRs already in flight.\n3. Fill in additional test cases for failure paths.\n\nPlan comment: see source issue for details.\n",
+          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-conversations-implementation`).\n\n**Scaffolds:**\n- Hono route: `$slots.route_file_path`\n- Drizzle migration: `$slots.migration_file_path`\n- Vitest test: `$slots.test_file_path`\n\n🟢 Green tier — scaffold only. A CODEOWNER must:\n1. Review handler logic and add business rules.\n2. Verify migration numbering does not collide with PRs already in flight.\n3. Fill in additional test cases for failure paths.\n\nPlan comment: see source issue for details.\n",
           "labels": [
             "enhancement",
             "sprint:2",
@@ -854,7 +854,7 @@
   {
     "id": "feat-editor-effect-implementation",
     "tier": "green",
-    "description": "Sprint 4 advanced editor effect modules in capricast: 12 LUT-shader filters (WebGL), beauty smoothing (MediaPipe + WebGL bilateral), greenscreen (MediaPipe selfie segmentation), AR face stickers (MediaPipe FaceLandmarker), voiceover, 6 voice FX (Web Audio), music drawer (Pixabay/Jamendo), beat detection + snap-to-beat, client-side render (WebCodecs + ffmpeg-wasm fallback), server render (RenderQueue DO + Cloud Run), render-path switchover heuristic, Stream upload pipeline, templates (duet/stitch/transformation), open editor from feed. Scaffolds a pure-function effect module under apps/web/src/effects/ + a colocated `node --test` test file. Green tier \u2014 the scaffold lands as a non-draft PR; a CODEOWNER reviews the WebGL/MediaPipe/WebAudio/WebCodecs wiring + (for #100) the DO binding before merge. Yellow would only post a plan comment and would not scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
+    "description": "Sprint 4 advanced editor effect modules in capricast: 12 LUT-shader filters (WebGL), beauty smoothing (MediaPipe + WebGL bilateral), greenscreen (MediaPipe selfie segmentation), AR face stickers (MediaPipe FaceLandmarker), voiceover, 6 voice FX (Web Audio), music drawer (Pixabay/Jamendo), beat detection + snap-to-beat, client-side render (WebCodecs + ffmpeg-wasm fallback), server render (RenderQueue DO + Cloud Run), render-path switchover heuristic, Stream upload pipeline, templates (duet/stitch/transformation), open editor from feed. Scaffolds a pure-function effect module under apps/web/src/effects/ + a colocated `node --test` test file. Green tier — the scaffold lands as a non-draft PR; a CODEOWNER reviews the WebGL/MediaPipe/WebAudio/WebCodecs wiring + (for #100) the DO binding before merge. Yellow would only post a plan comment and would not scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
     "trigger_keywords": [
       "lut",
       "shader",
@@ -888,7 +888,7 @@
         "enhancement",
         "sprint:4"
       ],
-      "title_pattern": "(LUT.?shader|LUT filter|WebGL filter|Beauty smoothing|MediaPipe|Greenscreen|background replace|selfie segmentation|AR face sticker|FaceLandmarker|Voiceover|voice FX|chipmunk|robot|telephone|hall reverb|autotune|Music drawer|Pixabay|Jamendo|Beat detection|onset|snap.?to.?beat|Client.?side render|WebCodecs|ffmpeg|@ffmpeg/ffmpeg|Server render \u2014|RenderQueue|Cloud Run Remotion|Render.?path switchover|Editor \u2192 Cloudflare Stream|Templates? \u2014 duet|duet, stitch|stitch, transformation|Open editor from /feed|use.?this.?sound)",
+      "title_pattern": "(LUT.?shader|LUT filter|WebGL filter|Beauty smoothing|MediaPipe|Greenscreen|background replace|selfie segmentation|AR face sticker|FaceLandmarker|Voiceover|voice FX|chipmunk|robot|telephone|hall reverb|autotune|Music drawer|Pixabay|Jamendo|Beat detection|onset|snap.?to.?beat|Client.?side render|WebCodecs|ffmpeg|@ffmpeg/ffmpeg|Server render —|RenderQueue|Cloud Run Remotion|Render.?path switchover|Editor → Cloudflare Stream|Templates? — duet|duet, stitch|stitch, transformation|Open editor from /feed|use.?this.?sound)",
       "body_patterns": [
         "(LUT cubes?|WebGL fragment shader|bilateral blur|ImageSegmenter|FaceLandmarker|face.?mesh|landmark indices|chroma composite|Web Audio API|AudioWorkletNode|onset detector|ConvolverNode|PhaseVocoder|Pixabay Music API|Jamendo|VideoEncoder|AudioEncoder|WebCodecs|mp4.?muxer|@ffmpeg/ffmpeg|RenderQueue|Remotion 4|Cloud Run Remotion|estimate client.?render|effects_complexity|duet template|stitch template|Use this sound|action rail on .?/feed)"
       ]
@@ -914,25 +914,25 @@
     "slot_defaults": {
       "feature_slug": "editor-effect",
       "effect_file_path": "apps/web/src/effects/editor-effect.ts",
-      "effect_content": "// Supervisor scaffold \u2014 review the issue body and replace this with\n// the real effect implementation. Tests in __tests__/ will fail until\n// the algorithm and types from the source issue are wired.\n\n// TODO(supervisor-scaffold): replace with the real effect signature\n// implied by the source issue (LUT, MediaPipe, WebAudio, WebCodecs,\n// render-path heuristic, etc.). Module must be browser-safe.\n\nexport function editorEffect(input: unknown): { applied: boolean; input: unknown } {\n  return { applied: false, input };\n}\n",
+      "effect_content": "// Supervisor scaffold — review the issue body and replace this with\n// the real effect implementation. Tests in __tests__/ will fail until\n// the algorithm and types from the source issue are wired.\n\n// TODO(supervisor-scaffold): replace with the real effect signature\n// implied by the source issue (LUT, MediaPipe, WebAudio, WebCodecs,\n// render-path heuristic, etc.). Module must be browser-safe.\n\nexport function editorEffect(input: unknown): { applied: boolean; input: unknown } {\n  return { applied: false, input };\n}\n",
       "test_file_path": "apps/web/src/effects/__tests__/editor-effect.test.ts",
-      "test_content": "import { test } from \"node:test\";\nimport assert from \"node:assert/strict\";\nimport { editorEffect } from \"../editor-effect\";\n\n// TODO(supervisor-scaffold): replace with real assertions tied to the\n// acceptance criteria in the source issue. CODEOWNER must also review\n// any WebGL / MediaPipe / WebAudio / WebCodecs feature-detection paths\n// before this module ships.\ntest(\"editorEffect scaffold \u2014 returns expected shape\", () => {\n  const out = editorEffect({ probe: 1 });\n  assert.equal(out.applied, false);\n  assert.deepEqual(out.input, { probe: 1 });\n});\n",
+      "test_content": "import { test } from \"node:test\";\nimport assert from \"node:assert/strict\";\nimport { editorEffect } from \"../editor-effect\";\n\n// TODO(supervisor-scaffold): replace with real assertions tied to the\n// acceptance criteria in the source issue. CODEOWNER must also review\n// any WebGL / MediaPipe / WebAudio / WebCodecs feature-detection paths\n// before this module ships.\ntest(\"editorEffect scaffold — returns expected shape\", () => {\n  const out = editorEffect({ probe: 1 });\n  assert.equal(out.applied, false);\n  assert.deepEqual(out.input, { probe: 1 });\n});\n",
       "branch_name": "supervisor/feat-editor-effect/scaffold",
       "commit_message": "feat(editor): scaffold effect module and test (cap#0)"
     },
     "slot_descriptions": {
-      "feature_slug": "Short kebab-case identifier derived from the issue title \u2014 used in branch names and module filenames. Examples: lut-filters, beauty-smoothing, greenscreen, ar-face-stickers, voiceover, voice-fx, music-drawer, beat-detection, client-render, server-render, render-path-heuristic, stream-upload, templates, open-from-feed.",
-      "effect_file_path": "Path to a new TypeScript effect module under apps/web/src/effects/. Kebab-case filename reflecting the effect (e.g. lut-filters.ts, beauty-smoothing.ts, greenscreen.ts, ar-face-stickers.ts, voice-fx.ts, beat-detection.ts, client-render.ts, server-render.ts, render-path.ts). Effect modules are pure-function-style \u2014 exports take an input frame/audio/timeline and return a transformed result; they do not own React state.",
-      "effect_content": "Full TypeScript source for a pure-function effect module. SYNTHESIZE from the issue body \u2014 read the algorithm described (LUT lookup, WebGL bilateral blur, MediaPipe segmentation mask, FaceLandmarker anchored quads, WebAudio ConvolverNode FX, AudioWorkletNode onset detector, WebCodecs encoder pipeline, ffmpeg-wasm fallback, Cloud Run dispatch, cost-function heuristic, Stream direct-upload, duet/stitch template composition) and produce a real module. Export at least one named function whose signature matches the effect's role (e.g. `export function applyLut(frame, lutCube, intensity)`, `export async function detectBeats(audioBuffer)`, `export async function renderClient(timeline, clips)`, `export function chooseRenderPath(timeline, device)`). Re-use EditTimeline types from @capricast/types where appropriate. Module must be browser-safe (no node:* imports); Workers-safe is NOT a requirement here because the editor effects run in the user's browser. For #99 (WebCodecs render) include feature-detection of `VideoEncoder`/`AudioEncoder`. For #100 (RenderQueue DO) the module returns the upload payload + GCP endpoint shape but the actual Durable Object lives in apps/worker (CODEOWNER must port it). For #101 (render-path heuristic) the cost function should mirror the formula in the issue body. Tests in __tests__/ verify the contract \u2014 do not produce a stub.",
-      "test_file_path": "Test file path colocated under apps/web/src/effects/__tests__/. Kebab-case filename mirroring the effect module (e.g. lut-filters.test.ts, beat-detection.test.ts, render-path.test.ts). Tests use `node --test` (Node 20+ built-in) \u2014 zero new dependencies. Pure-function effects compose well with node --test because they do not need a DOM.",
-      "test_content": "`node --test` test module \u2014 SYNTHESIZE assertions for the effect described in the issue. Use `import { test } from 'node:test'` and `import assert from 'node:assert/strict'`. Cover: (1) happy path \u2014 input shaped to the issue's acceptance criteria produces the expected output shape (LUT applied, beats detected, render path chosen correctly), (2) failure / degraded path (e.g. unsupported feature \u2192 returns null, malformed input \u2192 throws TypeError), (3) at least one numeric correctness assertion derived from the issue (e.g. intensity 0 returns unchanged frame, beat count > 0 on a synthetic kick pattern, render-path heuristic chooses 'server' when clip total > 2 min). Stub WebGL/MediaPipe/WebAudio/WebCodecs only as far as needed to exercise the pure logic \u2014 heavy GPU/MediaPipe paths can be wrapped in a feature-detection branch that is exercised separately. Aim for \u22653 test() blocks. Do not produce test.todo() stubs.",
+      "feature_slug": "Short kebab-case identifier derived from the issue title — used in branch names and module filenames. Examples: lut-filters, beauty-smoothing, greenscreen, ar-face-stickers, voiceover, voice-fx, music-drawer, beat-detection, client-render, server-render, render-path-heuristic, stream-upload, templates, open-from-feed.",
+      "effect_file_path": "Path to a new TypeScript effect module under apps/web/src/effects/. Kebab-case filename reflecting the effect (e.g. lut-filters.ts, beauty-smoothing.ts, greenscreen.ts, ar-face-stickers.ts, voice-fx.ts, beat-detection.ts, client-render.ts, server-render.ts, render-path.ts). Effect modules are pure-function-style — exports take an input frame/audio/timeline and return a transformed result; they do not own React state.",
+      "effect_content": "Full TypeScript source for a pure-function effect module. SYNTHESIZE from the issue body — read the algorithm described (LUT lookup, WebGL bilateral blur, MediaPipe segmentation mask, FaceLandmarker anchored quads, WebAudio ConvolverNode FX, AudioWorkletNode onset detector, WebCodecs encoder pipeline, ffmpeg-wasm fallback, Cloud Run dispatch, cost-function heuristic, Stream direct-upload, duet/stitch template composition) and produce a real module. Export at least one named function whose signature matches the effect's role (e.g. `export function applyLut(frame, lutCube, intensity)`, `export async function detectBeats(audioBuffer)`, `export async function renderClient(timeline, clips)`, `export function chooseRenderPath(timeline, device)`). Re-use EditTimeline types from @capricast/types where appropriate. Module must be browser-safe (no node:* imports); Workers-safe is NOT a requirement here because the editor effects run in the user's browser. For #99 (WebCodecs render) include feature-detection of `VideoEncoder`/`AudioEncoder`. For #100 (RenderQueue DO) the module returns the upload payload + GCP endpoint shape but the actual Durable Object lives in apps/worker (CODEOWNER must port it). For #101 (render-path heuristic) the cost function should mirror the formula in the issue body. Tests in __tests__/ verify the contract — do not produce a stub.",
+      "test_file_path": "Test file path colocated under apps/web/src/effects/__tests__/. Kebab-case filename mirroring the effect module (e.g. lut-filters.test.ts, beat-detection.test.ts, render-path.test.ts). Tests use `node --test` (Node 20+ built-in) — zero new dependencies. Pure-function effects compose well with node --test because they do not need a DOM.",
+      "test_content": "`node --test` test module — SYNTHESIZE assertions for the effect described in the issue. Use `import { test } from 'node:test'` and `import assert from 'node:assert/strict'`. Cover: (1) happy path — input shaped to the issue's acceptance criteria produces the expected output shape (LUT applied, beats detected, render path chosen correctly), (2) failure / degraded path (e.g. unsupported feature → returns null, malformed input → throws TypeError), (3) at least one numeric correctness assertion derived from the issue (e.g. intensity 0 returns unchanged frame, beat count > 0 on a synthetic kick pattern, render-path heuristic chooses 'server' when clip total > 2 min). Stub WebGL/MediaPipe/WebAudio/WebCodecs only as far as needed to exercise the pure logic — heavy GPU/MediaPipe paths can be wrapped in a feature-detection branch that is exercised separately. Aim for ≥3 test() blocks. Do not produce test.todo() stubs.",
       "branch_name": "Git branch name. Prefer supervisor/feat-editor-effect/<feature_slug> so the bot's PRs are visually grouped. The conventional feat/<feature_slug> form is also accepted because the LLM keeps producing it.",
-      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope should reflect the effect (e.g. feat(editor): ..., feat(effects): ..., feat(render): ..., feat(audio): ..., feat(filters): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present \u2014 the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` \u2014 the runtime substitutes the real number. Example: `feat(filters): add 12 LUT-shader filter presets with intensity slider (cap#88)`."
+      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope should reflect the effect (e.g. feat(editor): ..., feat(effects): ..., feat(render): ..., feat(audio): ..., feat(filters): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present — the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` — the runtime substitutes the real number. Example: `feat(filters): add 12 LUT-shader filter presets with intensity slider (cap#88)`."
     },
     "step_intents": [
-      "Confirm the apps/web/src directory exists. The effects/ subdirectory does not exist on main yet \u2014 the supervisor will create it as the convention for browser-side editor effect modules. If apps/web/src is missing entirely the CODEOWNER must scaffold capricast's apps/web manually first.",
+      "Confirm the apps/web/src directory exists. The effects/ subdirectory does not exist on main yet — the supervisor will create it as the convention for browser-side editor effect modules. If apps/web/src is missing entirely the CODEOWNER must scaffold capricast's apps/web manually first.",
       "Read the shared @capricast/types package so the CODEOWNER can confirm whether the EditTimeline shape referenced in the effect module already exists or needs to be added (Sprint 3 #82 introduces it).",
-      "Post a plan comment so the human reviewer sees the two file paths, which effect surfaces span web\u2194worker, and what manual follow-up is required before merge.",
+      "Post a plan comment so the human reviewer sees the two file paths, which effect surfaces span web↔worker, and what manual follow-up is required before merge.",
       "Open a real (non-draft, non-empty) PR with the two scaffolded files so CI runs and a CODEOWNER can review."
     ],
     "pr_files": [
@@ -969,7 +969,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor plan \u2014 `feat-editor-effect-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nEffect module: `$slots.effect_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds two files derived from the issue body:\n1. A browser-safe TypeScript effect module under `apps/web/src/effects/` implementing the algorithm described (LUT, MediaPipe, WebAudio, WebCodecs, render-path heuristic, etc.).\n2. A colocated `node --test` test file exercising the pure logic \u2014 no new test dependencies.\n\n\ud83d\udfe2 Green tier \u2014 the scaffold lands as a non-draft PR. The supervisor cannot implement business logic; the scaffold is a starting point and tests/handlers may need filling in. A CODEOWNER must:\n- Review the WebGL / MediaPipe / WebAudio / WebCodecs wiring for correctness against the issue's acceptance criteria.\n- For #100 (Server render \u2014 RenderQueue DO) port the Durable Object skeleton into `apps/worker/src/durable-objects/` \u2014 the effect module here only describes the upload payload + Cloud Run dispatch shape.\n- For #99 (Client render) confirm the WebCodecs feature-detection branch falls back to ffmpeg-wasm correctly.\n- For #101 (render-path heuristic) tune the cost-function constants once real PostHog data lands.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor plan — `feat-editor-effect-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nEffect module: `$slots.effect_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds two files derived from the issue body:\n1. A browser-safe TypeScript effect module under `apps/web/src/effects/` implementing the algorithm described (LUT, MediaPipe, WebAudio, WebCodecs, render-path heuristic, etc.).\n2. A colocated `node --test` test file exercising the pure logic — no new test dependencies.\n\n🟢 Green tier — the scaffold lands as a non-draft PR. The supervisor cannot implement business logic; the scaffold is a starting point and tests/handlers may need filling in. A CODEOWNER must:\n- Review the WebGL / MediaPipe / WebAudio / WebCodecs wiring for correctness against the issue's acceptance criteria.\n- For #100 (Server render — RenderQueue DO) port the Durable Object skeleton into `apps/worker/src/durable-objects/` — the effect module here only describes the upload payload + Cloud Run dispatch shape.\n- For #99 (Client render) confirm the WebCodecs feature-detection branch falls back to ffmpeg-wasm correctly.\n- For #101 (render-path heuristic) tune the cost-function constants once real PostHog data lands.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -991,7 +991,7 @@
               "content": "$slots.test_content"
             }
           ],
-          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-editor-effect-implementation`).\n\n**Scaffolds:**\n- Effect module: `$slots.effect_file_path`\n- `node --test` test: `$slots.test_file_path`\n\n\ud83d\udfe2 Green tier \u2014 scaffold only. A CODEOWNER must:\n1. Review the WebGL / MediaPipe / WebAudio / WebCodecs wiring against the issue's acceptance criteria.\n2. For server-render issues (#100), port the Durable Object skeleton into `apps/worker/src/durable-objects/RenderQueue.ts` and add the binding to `apps/worker/wrangler.jsonc`.\n3. For client-render issues (#99), confirm the WebCodecs \u2192 ffmpeg-wasm fallback covers Safari < 17.\n4. For render-path heuristic (#101), tune constants once PostHog telemetry confirms real client render times.\n\nPlan comment: see source issue for details.\n",
+          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-editor-effect-implementation`).\n\n**Scaffolds:**\n- Effect module: `$slots.effect_file_path`\n- `node --test` test: `$slots.test_file_path`\n\n🟢 Green tier — scaffold only. A CODEOWNER must:\n1. Review the WebGL / MediaPipe / WebAudio / WebCodecs wiring against the issue's acceptance criteria.\n2. For server-render issues (#100), port the Durable Object skeleton into `apps/worker/src/durable-objects/RenderQueue.ts` and add the binding to `apps/worker/wrangler.jsonc`.\n3. For client-render issues (#99), confirm the WebCodecs → ffmpeg-wasm fallback covers Safari < 17.\n4. For render-path heuristic (#101), tune constants once PostHog telemetry confirms real client render times.\n\nPlan comment: see source issue for details.\n",
           "labels": [
             "enhancement",
             "sprint:4",
@@ -1007,7 +1007,7 @@
   {
     "id": "feat-editor-web-implementation",
     "tier": "green",
-    "description": "Sprint 3 mobile-editor web UI feature work in capricast: EditTimeline JSON schema, camera screen with multi-clip record, timeline scrubber with thumbnails, trim/split/reorder/speed presets, text overlays, sticker pack, drafts (IndexedDB + R2 sync), auto-captions (Workers AI Whisper), and caption styles. Scaffolds a React component under apps/web/src/app/edit/components/, a Vitest test file alongside it, and an optional Hono route for draft sync. Green tier \u2014 the scaffold lands as a non-draft PR; a CODEOWNER must wire vitest+jsdom into apps/web devDependencies (web app currently has no in-app unit runner) and review the editor wiring before merge. Yellow would only post a plan comment and would not scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
+    "description": "Sprint 3 mobile-editor web UI feature work in capricast: EditTimeline JSON schema, camera screen with multi-clip record, timeline scrubber with thumbnails, trim/split/reorder/speed presets, text overlays, sticker pack, drafts (IndexedDB + R2 sync), auto-captions (Workers AI Whisper), and caption styles. Scaffolds a React component under apps/web/src/app/edit/components/, a Vitest test file alongside it, and an optional Hono route for draft sync. Green tier — the scaffold lands as a non-draft PR; a CODEOWNER must wire vitest+jsdom into apps/web devDependencies (web app currently has no in-app unit runner) and review the editor wiring before merge. Yellow would only post a plan comment and would not scaffold anything; Green is required for executeGreen() to run and produce a non-empty PR.",
     "trigger_keywords": [
       "edittimeline",
       "editor",
@@ -1065,25 +1065,25 @@
       "feature_slug": "editor-component",
       "component_name": "EditorComponent",
       "component_file_path": "apps/web/src/app/edit/components/EditorComponent.tsx",
-      "component_content": "// Supervisor scaffold \u2014 review the issue body and replace this with\n// the real editor component. Tests in __tests__/ will fail until the\n// UI primitives, state, and acceptance criteria are implemented.\n\"use client\";\n\nimport { useState } from \"react\";\n\ntype Props = {\n  // TODO(supervisor-scaffold): replace with the prop shape implied by\n  // the source issue (EditTimeline ref, callbacks, etc.).\n  className?: string;\n};\n\nexport default function EditorComponent({ className }: Props) {\n  const [ready, setReady] = useState(false);\n  return (\n    <section className={className} data-testid=\"editor-component-scaffold\">\n      <button\n        type=\"button\"\n        onClick={() => setReady(true)}\n        className=\"rounded bg-black px-3 py-2 text-sm text-white\"\n      >\n        {ready ? \"ready\" : \"scaffold\"}\n      </button>\n    </section>\n  );\n}\n",
+      "component_content": "// Supervisor scaffold — review the issue body and replace this with\n// the real editor component. Tests in __tests__/ will fail until the\n// UI primitives, state, and acceptance criteria are implemented.\n\"use client\";\n\nimport { useState } from \"react\";\n\ntype Props = {\n  // TODO(supervisor-scaffold): replace with the prop shape implied by\n  // the source issue (EditTimeline ref, callbacks, etc.).\n  className?: string;\n};\n\nexport default function EditorComponent({ className }: Props) {\n  const [ready, setReady] = useState(false);\n  return (\n    <section className={className} data-testid=\"editor-component-scaffold\">\n      <button\n        type=\"button\"\n        onClick={() => setReady(true)}\n        className=\"rounded bg-black px-3 py-2 text-sm text-white\"\n      >\n        {ready ? \"ready\" : \"scaffold\"}\n      </button>\n    </section>\n  );\n}\n",
       "test_file_path": "apps/web/src/app/edit/components/__tests__/EditorComponent.test.tsx",
-      "test_content": "import { describe, it, expect } from \"vitest\";\nimport { render } from \"@testing-library/react\";\nimport EditorComponent from \"../EditorComponent\";\n\n// TODO(supervisor-scaffold): replace with real assertions tied to the\n// acceptance criteria in the source issue. The CODEOWNER must also\n// wire vitest + @testing-library/react + jsdom into apps/web/package.json\n// \u2014 the web app currently has no in-app unit runner.\ndescribe(\"EditorComponent scaffold\", () => {\n  it(\"renders the scaffold marker\", () => {\n    const { getByTestId } = render(<EditorComponent />);\n    expect(getByTestId(\"editor-component-scaffold\")).toBeTruthy();\n  });\n});\n",
+      "test_content": "import { describe, it, expect } from \"vitest\";\nimport { render } from \"@testing-library/react\";\nimport EditorComponent from \"../EditorComponent\";\n\n// TODO(supervisor-scaffold): replace with real assertions tied to the\n// acceptance criteria in the source issue. The CODEOWNER must also\n// wire vitest + @testing-library/react + jsdom into apps/web/package.json\n// — the web app currently has no in-app unit runner.\ndescribe(\"EditorComponent scaffold\", () => {\n  it(\"renders the scaffold marker\", () => {\n    const { getByTestId } = render(<EditorComponent />);\n    expect(getByTestId(\"editor-component-scaffold\")).toBeTruthy();\n  });\n});\n",
       "branch_name": "supervisor/feat-editor-web/scaffold",
       "commit_message": "feat(editor): scaffold web component and test (cap#0)"
     },
     "slot_descriptions": {
-      "feature_slug": "Short kebab-case identifier derived from the issue title \u2014 used in branch names and component filenames. Examples: edit-timeline-schema, camera-screen, timeline-scrubber, trim-split-reorder, text-overlays, sticker-pack, drafts-sync, auto-captions, caption-styles.",
+      "feature_slug": "Short kebab-case identifier derived from the issue title — used in branch names and component filenames. Examples: edit-timeline-schema, camera-screen, timeline-scrubber, trim-split-reorder, text-overlays, sticker-pack, drafts-sync, auto-captions, caption-styles.",
       "component_name": "React component name in PascalCase. Should reflect the editor surface. Examples: EditTimelineSchema, CameraScreen, TimelineScrubber, ClipEditor, TextOverlayPanel, StickerDrawer, DraftsSync, AutoCaptions, CaptionStylePicker.",
-      "component_file_path": "Path to a new React component file under apps/web/src/app/edit/components/. PascalCase filename matching component_name (e.g. CameraScreen.tsx, TimelineScrubber.tsx). The /edit route does not exist on main yet \u2014 scaffolding under apps/web/src/app/edit/components/ creates the convention; the CODEOWNER may move it during review if a different module layout fits the editor's IA.",
-      "component_content": "Full TypeScript source for a React 19 + Next.js 15 client component. SYNTHESIZE from the issue body \u2014 extract the UI primitives, state, and events described in the acceptance criteria and produce a real component. Use 'use client' at top for browser-only APIs (getUserMedia, IndexedDB, WebAudio, MediaPipe, WebGL). Import React hooks (useState, useEffect, useRef, useCallback) as needed. Use Tailwind utility classes (the project already uses tailwindcss 3.4 + tailwind-merge + clsx). Use lucide-react for icons (already a dependency). Reuse shared types from @capricast/types when modelling EditTimeline / clips / overlays. Wire posthog-js capture() calls for non-trivial creator actions (recordStarted, clipTrimmed, captionApplied, etc.) \u2014 analytics is required per the BlerdArt spec. Component must default-export the component. Tests in the colocated __tests__/ dir verify the contract \u2014 do not produce a stub.",
-      "test_file_path": "Vitest test file path colocated under apps/web/src/app/edit/components/__tests__/. PascalCase filename mirroring the component (e.g. CameraScreen.test.tsx). NOTE: apps/web currently has no vitest config or @testing-library \u2014 the CODEOWNER must add vitest + @testing-library/react + jsdom to apps/web/package.json devDependencies and create a vitest.config.ts during review. Same model as the call-room template requiring wrangler.jsonc edits.",
-      "test_content": "Vitest + @testing-library/react test module \u2014 SYNTHESIZE assertions for the React component described in the issue. Cover: (1) renders without crashing with minimal props, (2) primary user interaction described in the acceptance criteria (e.g. clicking record starts capture, dragging trim handle updates timeline state, applying a caption style updates the preview), (3) at least one negative/edge case (e.g. record button disabled while permissions pending, no clips \u2192 empty state). Use describe + it() blocks. Mock browser-only APIs (navigator.mediaDevices, IndexedDB, WebGL) via vi.mock or jsdom stubs as needed. Aim for \u22653 it() blocks. Import the default export of the component and exercise it via render() + fireEvent or userEvent. Do not produce it.todo() stubs.",
+      "component_file_path": "Path to a new React component file under apps/web/src/app/edit/components/. PascalCase filename matching component_name (e.g. CameraScreen.tsx, TimelineScrubber.tsx). The /edit route does not exist on main yet — scaffolding under apps/web/src/app/edit/components/ creates the convention; the CODEOWNER may move it during review if a different module layout fits the editor's IA.",
+      "component_content": "Full TypeScript source for a React 19 + Next.js 15 client component. SYNTHESIZE from the issue body — extract the UI primitives, state, and events described in the acceptance criteria and produce a real component. Use 'use client' at top for browser-only APIs (getUserMedia, IndexedDB, WebAudio, MediaPipe, WebGL). Import React hooks (useState, useEffect, useRef, useCallback) as needed. Use Tailwind utility classes (the project already uses tailwindcss 3.4 + tailwind-merge + clsx). Use lucide-react for icons (already a dependency). Reuse shared types from @capricast/types when modelling EditTimeline / clips / overlays. Wire posthog-js capture() calls for non-trivial creator actions (recordStarted, clipTrimmed, captionApplied, etc.) — analytics is required per the BlerdArt spec. Component must default-export the component. Tests in the colocated __tests__/ dir verify the contract — do not produce a stub.",
+      "test_file_path": "Vitest test file path colocated under apps/web/src/app/edit/components/__tests__/. PascalCase filename mirroring the component (e.g. CameraScreen.test.tsx). NOTE: apps/web currently has no vitest config or @testing-library — the CODEOWNER must add vitest + @testing-library/react + jsdom to apps/web/package.json devDependencies and create a vitest.config.ts during review. Same model as the call-room template requiring wrangler.jsonc edits.",
+      "test_content": "Vitest + @testing-library/react test module — SYNTHESIZE assertions for the React component described in the issue. Cover: (1) renders without crashing with minimal props, (2) primary user interaction described in the acceptance criteria (e.g. clicking record starts capture, dragging trim handle updates timeline state, applying a caption style updates the preview), (3) at least one negative/edge case (e.g. record button disabled while permissions pending, no clips → empty state). Use describe + it() blocks. Mock browser-only APIs (navigator.mediaDevices, IndexedDB, WebGL) via vi.mock or jsdom stubs as needed. Aim for ≥3 it() blocks. Import the default export of the component and exercise it via render() + fireEvent or userEvent. Do not produce it.todo() stubs.",
       "branch_name": "Git branch name. Prefer supervisor/feat-editor-web/<feature_slug> so the bot's PRs are visually grouped. The conventional feat/<feature_slug> form is also accepted because the LLM keeps producing it.",
-      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope should reflect the editor surface (e.g. feat(editor): ..., feat(camera): ..., feat(timeline): ..., feat(captions): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present \u2014 the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` \u2014 the runtime substitutes the real number. Example: `feat(camera): add multi-clip record with countdown and flip (cap#83)`."
+      "commit_message": "Conventional Commits message for the squash-merge AND the PR title. Format MUST be: `feat(<scope>): <verb-phrase derived from issue title> (cap#<source-issue-number>)`. Scope should reflect the editor surface (e.g. feat(editor): ..., feat(camera): ..., feat(timeline): ..., feat(captions): ...). The verb-phrase is a single-sentence imperative summary derived from the issue title. The `(cap#NNN)` suffix MUST be present — the supervisor's dedup loop and human reviewers use it to trace the PR back to its source issue at a glance. If you don't know the source-issue number, leave the literal placeholder `(cap#0)` — the runtime substitutes the real number. Example: `feat(camera): add multi-clip record with countdown and flip (cap#83)`."
     },
     "step_intents": [
-      "Confirm the apps/web/src/app directory exists. The /edit subdirectory does not exist on main yet \u2014 the supervisor will create it. If the parent app router directory is missing entirely the CODEOWNER must scaffold capricast's apps/web manually first.",
-      "Read apps/web/package.json so the CODEOWNER reviewer can confirm which vitest + testing-library packages they need to add \u2014 the web app currently has none.",
+      "Confirm the apps/web/src/app directory exists. The /edit subdirectory does not exist on main yet — the supervisor will create it. If the parent app router directory is missing entirely the CODEOWNER must scaffold capricast's apps/web manually first.",
+      "Read apps/web/package.json so the CODEOWNER reviewer can confirm which vitest + testing-library packages they need to add — the web app currently has none.",
       "Post a plan comment so the human reviewer sees the two file paths, the test-infra gap they need to close, and the convention this PR introduces before the PR lands.",
       "Open a real (non-draft, non-empty) PR with the two scaffolded files so CI runs and a CODEOWNER can review."
     ],
@@ -1121,7 +1121,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor plan \u2014 `feat-editor-web-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nComponent: `$slots.component_name`\nComponent file: `$slots.component_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds two files derived from the issue body:\n1. A React 19 / Next.js 15 client component under `apps/web/src/app/edit/components/` covering the editor surface described in the acceptance criteria.\n2. A colocated Vitest + @testing-library/react test file exercising the component contract.\n\n\ud83d\udfe2 Green tier \u2014 the scaffold lands as a non-draft PR. The supervisor cannot implement business logic; the scaffold is a starting point and tests/handlers may need filling in. A CODEOWNER must:\n- Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, and `jsdom` to `apps/web/package.json` devDependencies (the web app currently has no in-app unit runner) and create `apps/web/vitest.config.ts`.\n- Move the component file if a different module layout fits the editor's IA \u2014 `apps/web/src/app/edit/` does not exist on main yet, this PR creates the convention.\n- Review the React + Tailwind wiring for the editor surface.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor plan — `feat-editor-web-implementation` for `capricast`**\n\nFeature slug: `$slots.feature_slug`\nComponent: `$slots.component_name`\nComponent file: `$slots.component_file_path`\nTest: `$slots.test_file_path`\n\nThis template scaffolds two files derived from the issue body:\n1. A React 19 / Next.js 15 client component under `apps/web/src/app/edit/components/` covering the editor surface described in the acceptance criteria.\n2. A colocated Vitest + @testing-library/react test file exercising the component contract.\n\n🟢 Green tier — the scaffold lands as a non-draft PR. The supervisor cannot implement business logic; the scaffold is a starting point and tests/handlers may need filling in. A CODEOWNER must:\n- Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, and `jsdom` to `apps/web/package.json` devDependencies (the web app currently has no in-app unit runner) and create `apps/web/vitest.config.ts`.\n- Move the component file if a different module layout fits the editor's IA — `apps/web/src/app/edit/` does not exist on main yet, this PR creates the convention.\n- Review the React + Tailwind wiring for the editor surface.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -1143,7 +1143,7 @@
               "content": "$slots.test_content"
             }
           ],
-          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-editor-web-implementation`).\n\n**Scaffolds:**\n- React component: `$slots.component_file_path` (component `$slots.component_name`)\n- Vitest test: `$slots.test_file_path`\n\n\ud83d\udfe2 Green tier \u2014 scaffold only. A CODEOWNER must:\n1. Add `vitest` + `@testing-library/react` + `@testing-library/jest-dom` + `jsdom` to `apps/web/package.json` and create `apps/web/vitest.config.ts` \u2014 the web app currently has no in-app unit runner.\n2. Review the React + Tailwind wiring and fill in any handlers the supervisor could not synthesize from the issue body.\n3. Confirm the chosen path under `apps/web/src/app/edit/components/` fits the editor's eventual information architecture.\n\nPlan comment: see source issue for details.\n",
+          "body": "Closes #$triggers.issue_number\n\nAuto-drafted by Factory Supervisor (`feat-editor-web-implementation`).\n\n**Scaffolds:**\n- React component: `$slots.component_file_path` (component `$slots.component_name`)\n- Vitest test: `$slots.test_file_path`\n\n🟢 Green tier — scaffold only. A CODEOWNER must:\n1. Add `vitest` + `@testing-library/react` + `@testing-library/jest-dom` + `jsdom` to `apps/web/package.json` and create `apps/web/vitest.config.ts` — the web app currently has no in-app unit runner.\n2. Review the React + Tailwind wiring and fill in any handlers the supervisor could not synthesize from the issue body.\n3. Confirm the chosen path under `apps/web/src/app/edit/components/` fits the editor's eventual information architecture.\n\nPlan comment: see source issue for details.\n",
           "labels": [
             "enhancement",
             "sprint:3",
@@ -1203,7 +1203,7 @@
     "step_intents": [
       "Read the workflow coordination guide to confirm naming conventions and approval patterns before adding a new workflow.",
       "Check whether a flaky-detector workflow already exists to avoid duplicate creation.",
-      "Post a plan summary for CODEOWNER confirmation before drafting the PR. Yellow-tier requires human \u2705.",
+      "Post a plan summary for CODEOWNER confirmation before drafting the PR. Yellow-tier requires human ✅.",
       "Open a draft PR containing the new flaky-detector workflow YAML.",
       "Leave reviewer-facing provenance note on the PR."
     ],
@@ -1233,7 +1233,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "**Supervisor \u2014 flaky check detector plan (YELLOW tier)**\n\nWorkflow name: `$slots.workflow_name`\nReport schedule (cron): `$slots.report_schedule`\n\nThis plan adds a new `.github/workflows/$slots.workflow_name.yml` that:\n1. On `workflow_run` completion events, records checks that failed then passed on re-run.\n2. On a weekly schedule (`$slots.report_schedule` UTC), opens a GitHub issue listing\n   flaky check names, frequency counts, and recommended remediation.\n\nNo production code paths are modified. Will open a draft PR for review.\n\nReact \u2705 to proceed, or comment with adjustments needed.\n"
+          "body": "**Supervisor — flaky check detector plan (YELLOW tier)**\n\nWorkflow name: `$slots.workflow_name`\nReport schedule (cron): `$slots.report_schedule`\n\nThis plan adds a new `.github/workflows/$slots.workflow_name.yml` that:\n1. On `workflow_run` completion events, records checks that failed then passed on re-run.\n2. On a weekly schedule (`$slots.report_schedule` UTC), opens a GitHub issue listing\n   flaky check names, frequency counts, and recommended remediation.\n\nNo production code paths are modified. Will open a draft PR for review.\n\nReact ✅ to proceed, or comment with adjustments needed.\n"
         },
         "side_effects": "none"
       },
@@ -1245,7 +1245,7 @@
           "head": "$slots.branch_name",
           "title": "$slots.commit_message",
           "draft": true,
-          "body": "Closes #$triggers.issue_number\n\nAdds `.github/workflows/$slots.workflow_name.yml` \u2014 flaky check detector.\n\n**Behaviour:**\n- Listens on `workflow_run` events; records check names that fail then pass on re-run.\n- Weekly cron (`$slots.report_schedule`) opens a GitHub issue with the remediation report.\n\nNo runtime code changed. Only `.github/workflows/$slots.workflow_name.yml` added.\n\nYellow-tier: human review required before merge. Draft until approved.\n",
+          "body": "Closes #$triggers.issue_number\n\nAdds `.github/workflows/$slots.workflow_name.yml` — flaky check detector.\n\n**Behaviour:**\n- Listens on `workflow_run` events; records check names that fail then pass on re-run.\n- Weekly cron (`$slots.report_schedule`) opens a GitHub issue with the remediation report.\n\nNo runtime code changed. Only `.github/workflows/$slots.workflow_name.yml` added.\n\nYellow-tier: human review required before merge. Draft until approved.\n",
           "labels": [
             "engineering",
             "hardening",
@@ -1315,8 +1315,8 @@
     "step_intents": [
       "Read the workflow coordination guide to confirm naming conventions for the new lock workflow.",
       "Check whether a memory-lock workflow already exists to avoid duplicate creation.",
-      "Post the plan for CODEOWNER confirmation. Yellow-tier \u2014 human \u2705 required before file creation.",
-      "Open a draft PR adding the memory-lock workflow. Low blast radius \u2014 only CI is affected.",
+      "Post the plan for CODEOWNER confirmation. Yellow-tier — human ✅ required before file creation.",
+      "Open a draft PR adding the memory-lock workflow. Low blast radius — only CI is affected.",
       "Leave reviewer-facing provenance note on the PR."
     ],
     "pr_files": [],
@@ -1345,7 +1345,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "**Supervisor \u2014 memory single-writer policy plan (YELLOW tier)**\n\nMemory path glob: `$slots.memory_path_glob`\nWorkflow name: `$slots.workflow_name`\n\nThis plan adds `.github/workflows/$slots.workflow_name.yml` that:\n1. Triggers on `pull_request` events touching `$slots.memory_path_glob`.\n2. Checks that no other open PR is simultaneously modifying paths matching\n   `$slots.memory_path_glob`.\n3. Fails the check (blocks merge) if a concurrent memory-file edit is detected,\n   linking to the conflicting PR for resolution.\n\nNo runtime code is changed. Only the new CI workflow file is added.\n\nReact \u2705 to confirm, or comment with adjustments needed.\n"
+          "body": "**Supervisor — memory single-writer policy plan (YELLOW tier)**\n\nMemory path glob: `$slots.memory_path_glob`\nWorkflow name: `$slots.workflow_name`\n\nThis plan adds `.github/workflows/$slots.workflow_name.yml` that:\n1. Triggers on `pull_request` events touching `$slots.memory_path_glob`.\n2. Checks that no other open PR is simultaneously modifying paths matching\n   `$slots.memory_path_glob`.\n3. Fails the check (blocks merge) if a concurrent memory-file edit is detected,\n   linking to the conflicting PR for resolution.\n\nNo runtime code is changed. Only the new CI workflow file is added.\n\nReact ✅ to confirm, or comment with adjustments needed.\n"
         },
         "side_effects": "none"
       },
@@ -1357,7 +1357,7 @@
           "head": "$slots.branch_name",
           "title": "$slots.commit_message",
           "draft": true,
-          "body": "Closes #$triggers.issue_number\n\nAdds `.github/workflows/$slots.workflow_name.yml` \u2014 memory single-writer lock.\n\n**Policy enforced:**\n- On any PR touching `$slots.memory_path_glob`, fail CI if another open PR\n  is simultaneously modifying a file matching the same glob.\n- Prevents concurrent memory/*.md edits from diverging or overwriting each other.\n\nNo runtime code touched. Only `.github/workflows/$slots.workflow_name.yml` added.\n\nYellow-tier: human review required before merge. Draft until approved.\n",
+          "body": "Closes #$triggers.issue_number\n\nAdds `.github/workflows/$slots.workflow_name.yml` — memory single-writer lock.\n\n**Policy enforced:**\n- On any PR touching `$slots.memory_path_glob`, fail CI if another open PR\n  is simultaneously modifying a file matching the same glob.\n- Prevents concurrent memory/*.md edits from diverging or overwriting each other.\n\nNo runtime code touched. Only `.github/workflows/$slots.workflow_name.yml` added.\n\nYellow-tier: human review required before merge. Draft until approved.\n",
           "labels": [
             "engineering",
             "hardening",
@@ -1424,7 +1424,7 @@
     "step_intents": [
       "Read the existing CODEOWNERS file to understand current reviewer assignments before proposing additions.",
       "Read the existing labeler workflow (if present) to determine whether reviewer-hint rules already exist for these paths.",
-      "Post plan for CODEOWNER confirmation. Red-tier \u2014 always requires explicit human \u2705 before file creation.",
+      "Post plan for CODEOWNER confirmation. Red-tier — always requires explicit human ✅ before file creation.",
       "Open a DRAFT PR with the reviewer-hint changes. Draft prevents accidental merge on a red-tier change.",
       "Leave reviewer-facing provenance note on the PR."
     ],
@@ -1454,7 +1454,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "**Supervisor \u2014 reviewer-class hints plan (RED tier)**\n\nSensitive paths: `$slots.sensitive_paths`\nReviewer class: `$slots.reviewer_class`\nChange target: `$slots.change_target`\n\nThis is a **red-tier** plan because CODEOWNERS and labeler workflows gate all\nsensitive-path PRs. The supervisor will open a **draft PR** adding the reviewer\nhints; no auto-merge is permitted.\n\nExisting CODEOWNERS + labeler captured in steps s1/s2.\n\nReact \u2705 to confirm the plan before the PR is drafted.\n"
+          "body": "**Supervisor — reviewer-class hints plan (RED tier)**\n\nSensitive paths: `$slots.sensitive_paths`\nReviewer class: `$slots.reviewer_class`\nChange target: `$slots.change_target`\n\nThis is a **red-tier** plan because CODEOWNERS and labeler workflows gate all\nsensitive-path PRs. The supervisor will open a **draft PR** adding the reviewer\nhints; no auto-merge is permitted.\n\nExisting CODEOWNERS + labeler captured in steps s1/s2.\n\nReact ✅ to confirm the plan before the PR is drafted.\n"
         },
         "side_effects": "none"
       },
@@ -1539,7 +1539,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor diagnosis \u2014 analytics whitelist gap in `$slots.affected_app`**\n\nMissing event name(s): `$slots.missing_event_names`\nHandler file: `$slots.handler_file`\n\nCurrent whitelist excerpt (from $s1):\n```\n$s1.excerpt\n```\n\n**Fix:** Add `$slots.missing_event_names` to the `PUBLIC_SHELL_EVENT_NAMES` set in `$slots.handler_file`. No client changes required \u2014 the client payload shape is correct.\n\nA draft PR will be opened to add the missing event names.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor diagnosis — analytics whitelist gap in `$slots.affected_app`**\n\nMissing event name(s): `$slots.missing_event_names`\nHandler file: `$slots.handler_file`\n\nCurrent whitelist excerpt (from $s1):\n```\n$s1.excerpt\n```\n\n**Fix:** Add `$slots.missing_event_names` to the `PUBLIC_SHELL_EVENT_NAMES` set in `$slots.handler_file`. No client changes required — the client payload shape is correct.\n\nA draft PR will be opened to add the missing event names.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -1598,7 +1598,7 @@
       "Read the billing handler to understand the stripe_customer_id lookup path and verify whether a fallback chain exists.",
       "Post a structured triage comment with the root cause, fix pattern, and reference to the handler file.",
       "Mark issue as triaged and flag it for human attention before any code changes land.",
-      "Open a draft PR implementing the fallback chain. Red-tier \u2014 requires explicit CODEOWNER approval before merge."
+      "Open a draft PR implementing the fallback chain. Red-tier — requires explicit CODEOWNER approval before merge."
     ],
     "pr_files": [],
     "steps": [
@@ -1621,7 +1621,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor triage \u2014 billing portal 400 in `$slots.affected_app`**\n\nSentry: $slots.sentry_issue_id\nError: $s1.exception_type \u2014 $s1.exception_value\nAffected user context: $s1.user\n\n**Root cause (pattern):** `handlePortal` short-circuits with HTTP 400 when `users.stripe_customer_id` is `null`. This happens when:\n- The Stripe `customer.created` webhook was missed or raced with session creation\n- The user was created before the webhook backfill logic was deployed (legacy accounts)\n\n**Fix pattern (from HumanDesign PR #152):**\nReplace the hard `if (!user.stripe_customer_id) return 400` guard with a three-step fallback:\n1. `users.stripe_customer_id` (primary)\n2. `subscriptions.stripe_customer_id` (webhook-written)\n3. `ensureCustomer()` \u2014 create/retrieve from Stripe API and backfill the `users` row\n\n**Handler state:** see $s2 for current implementation.\n\nA draft PR implementing the fallback chain will be opened for human review. This is a Red-tier action \u2014 Stripe billing code requires CODEOWNER approval before merge.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor triage — billing portal 400 in `$slots.affected_app`**\n\nSentry: $slots.sentry_issue_id\nError: $s1.exception_type — $s1.exception_value\nAffected user context: $s1.user\n\n**Root cause (pattern):** `handlePortal` short-circuits with HTTP 400 when `users.stripe_customer_id` is `null`. This happens when:\n- The Stripe `customer.created` webhook was missed or raced with session creation\n- The user was created before the webhook backfill logic was deployed (legacy accounts)\n\n**Fix pattern (from HumanDesign PR #152):**\nReplace the hard `if (!user.stripe_customer_id) return 400` guard with a three-step fallback:\n1. `users.stripe_customer_id` (primary)\n2. `subscriptions.stripe_customer_id` (webhook-written)\n3. `ensureCustomer()` — create/retrieve from Stripe API and backfill the `users` row\n\n**Handler state:** see $s2 for current implementation.\n\nA draft PR implementing the fallback chain will be opened for human review. This is a Red-tier action — Stripe billing code requires CODEOWNER approval before merge.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -1643,7 +1643,7 @@
           "base": "main",
           "head": "supervisor/billing-portal-400-$slots.affected_app",
           "title": "fix(billing): resolve portal 400 when stripe_customer_id is null",
-          "body": "Closes #$triggers.issue_number\n\n**Root cause:** `handlePortal` returned HTTP 400 for paid users whose `stripe_customer_id` was `null` in the `users` table \u2014 typically caused by a missed or raced Stripe webhook.\n\n**Fix:** Implements a three-step fallback chain:\n1. `users.stripe_customer_id`\n2. `subscriptions.stripe_customer_id` (webhook-written)\n3. `ensureCustomer()` \u2014 create/retrieve from Stripe and backfill\n\nPattern source: HumanDesign PR #152.\nSentry: $slots.sentry_issue_id\nDiagnosis: see issue comment $s3.comment_url\n\n**Red-tier notice:** Touches Stripe billing code. CODEOWNER review required before merge.\n",
+          "body": "Closes #$triggers.issue_number\n\n**Root cause:** `handlePortal` returned HTTP 400 for paid users whose `stripe_customer_id` was `null` in the `users` table — typically caused by a missed or raced Stripe webhook.\n\n**Fix:** Implements a three-step fallback chain:\n1. `users.stripe_customer_id`\n2. `subscriptions.stripe_customer_id` (webhook-written)\n3. `ensureCustomer()` — create/retrieve from Stripe and backfill\n\nPattern source: HumanDesign PR #152.\nSentry: $slots.sentry_issue_id\nDiagnosis: see issue comment $s3.comment_url\n\n**Red-tier notice:** Touches Stripe billing code. CODEOWNER review required before merge.\n",
           "draft": true
         },
         "side_effects": "none"
@@ -1706,7 +1706,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor diagnosis \u2014 CI package auth failure in `$slots.affected_repo`**\n\nFailing workflow: `$slots.failing_workflow_path`\nFailure mode: `$slots.failure_mode`\n\n**Root cause (pattern from HumanDesign PRs #133\u2013#136):**\n`npm ci` on `@latimer-woods-tech/*` private packages fails with E401 when:\n1. `NODE_AUTH_TOKEN` is not set on the install step, OR\n2. The workflow `permissions` block is missing `packages: read`, OR\n3. The token fallback uses `secrets.GITHUB_TOKEN` instead of `github.token` (wrong context)\n\n**Required fix pattern:**\n```yaml\npermissions:\n  packages: read   # \u2190 add this\n\nsteps:\n  - name: Install\n    run: npm ci\n    env:\n      NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN || github.token }}  # \u2190 github.token not secrets.GITHUB_TOKEN\n```\n\nCurrent workflow state: $s1.excerpt\n\nA draft PR will apply the fix to `$slots.failing_workflow_path`.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor diagnosis — CI package auth failure in `$slots.affected_repo`**\n\nFailing workflow: `$slots.failing_workflow_path`\nFailure mode: `$slots.failure_mode`\n\n**Root cause (pattern from HumanDesign PRs #133–#136):**\n`npm ci` on `@latimer-woods-tech/*` private packages fails with E401 when:\n1. `NODE_AUTH_TOKEN` is not set on the install step, OR\n2. The workflow `permissions` block is missing `packages: read`, OR\n3. The token fallback uses `secrets.GITHUB_TOKEN` instead of `github.token` (wrong context)\n\n**Required fix pattern:**\n```yaml\npermissions:\n  packages: read   # ← add this\n\nsteps:\n  - name: Install\n    run: npm ci\n    env:\n      NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN || github.token }}  # ← github.token not secrets.GITHUB_TOKEN\n```\n\nCurrent workflow state: $s1.excerpt\n\nA draft PR will apply the fix to `$slots.failing_workflow_path`.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -1717,7 +1717,7 @@
           "base": "main",
           "head": "supervisor/ci-package-auth-$slots.affected_repo",
           "title": "fix(ci): add packages:read and NODE_AUTH_TOKEN to $slots.failing_workflow_path",
-          "body": "Closes #$triggers.issue_number\n\n**Root cause:** `npm ci` fails with E401 for `@latimer-woods-tech/*` packages in `$slots.failing_workflow_path` due to `$slots.failure_mode`.\n\n**Fix:**\n- Adds `packages: read` to workflow/job `permissions`\n- Sets `NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN || github.token }}` on the install step\n- Corrects fallback from `secrets.GITHUB_TOKEN` to `github.token` if applicable\n\nPattern source: HumanDesign PRs #133\u2013#136.\nDiagnosis: $s2.comment_url\n",
+          "body": "Closes #$triggers.issue_number\n\n**Root cause:** `npm ci` fails with E401 for `@latimer-woods-tech/*` packages in `$slots.failing_workflow_path` due to `$slots.failure_mode`.\n\n**Fix:**\n- Adds `packages: read` to workflow/job `permissions`\n- Sets `NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN || github.token }}` on the install step\n- Corrects fallback from `secrets.GITHUB_TOKEN` to `github.token` if applicable\n\nPattern source: HumanDesign PRs #133–#136.\nDiagnosis: $s2.comment_url\n",
           "draft": true
         },
         "side_effects": "none"
@@ -1784,7 +1784,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor diagnosis \u2014 stale CSP hash in `$slots.affected_app`**\n\nFile: `$slots.headers_file`\nOld hash (stale): `$slots.old_hash`\nNew hash (browser-reported): `$slots.new_hash`\n\n**Root cause:** An inline script was updated (e.g. FOUC theme/density script) but the corresponding `sha256-*` hash in `Content-Security-Policy` was not updated.\n\n**Fix:** Replace `$slots.old_hash` with `$slots.new_hash` in `$slots.headers_file`. Single-line change.\n\nCurrent _headers excerpt:\n```\n$s1.excerpt\n```\n\nOpening a draft PR with the single-line hash swap.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor diagnosis — stale CSP hash in `$slots.affected_app`**\n\nFile: `$slots.headers_file`\nOld hash (stale): `$slots.old_hash`\nNew hash (browser-reported): `$slots.new_hash`\n\n**Root cause:** An inline script was updated (e.g. FOUC theme/density script) but the corresponding `sha256-*` hash in `Content-Security-Policy` was not updated.\n\n**Fix:** Replace `$slots.old_hash` with `$slots.new_hash` in `$slots.headers_file`. Single-line change.\n\nCurrent _headers excerpt:\n```\n$s1.excerpt\n```\n\nOpening a draft PR with the single-line hash swap.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -1795,7 +1795,7 @@
           "base": "main",
           "head": "supervisor/csp-hash-$slots.affected_app",
           "title": "fix(csp): update inline-script sha256 hash in _headers",
-          "body": "Closes #$triggers.issue_number\n\n**Root cause:** Stale CSP hash after inline-script change (e.g. FOUC script updated in a recent PR but `_headers` not updated).\n\n**Fix:** Replaces `$slots.old_hash` with `$slots.new_hash` in `$slots.headers_file`. Single-line, no logic changes.\n\n**Risk:** Green \u2014 static Cloudflare Pages headers file only.\n\nDiagnosis: $s2.comment_url\nPattern source: HumanDesign PR #74.\n",
+          "body": "Closes #$triggers.issue_number\n\n**Root cause:** Stale CSP hash after inline-script change (e.g. FOUC script updated in a recent PR but `_headers` not updated).\n\n**Fix:** Replaces `$slots.old_hash` with `$slots.new_hash` in `$slots.headers_file`. Single-line, no logic changes.\n\n**Risk:** Green — static Cloudflare Pages headers file only.\n\nDiagnosis: $s2.comment_url\nPattern source: HumanDesign PR #74.\n",
           "draft": false
         },
         "side_effects": "none"
@@ -1805,7 +1805,7 @@
   {
     "id": "fix-mobile-layout",
     "tier": "yellow",
-    "description": "Mobile viewport layout regression \u2014 typically a CSS grid/flex issue at \u2264768px or \u2264390px causing elements to overflow, stack incorrectly, or become unreachable by touch.",
+    "description": "Mobile viewport layout regression — typically a CSS grid/flex issue at ≤768px or ≤390px causing elements to overflow, stack incorrectly, or become unreachable by touch.",
     "trigger_keywords": [
       "mobile",
       "viewport",
@@ -1862,7 +1862,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor diagnosis \u2014 mobile layout regression in `$slots.affected_app`**\n\nBreakpoint: `$slots.breakpoint`\nCSS file: `$slots.css_file`\nIssue kind: `$slots.layout_issue_kind`\n\n**Known fix patterns (from HumanDesign PRs #150, #125, #119, #56):**\n- `grid-overflow`: add `min-width: 0` to the 1fr grid child; add `max-height` cap on media-child wraps at narrow widths\n- `nav-links-reachable-offscreen`: add `visibility: hidden` to the closed off-screen drawer; add `overflow-x: hidden` on the page root at `\u2264$slots.breakpoint`\n- `hero-column-blowout`: set `order: 2` (not `order: -1`) so video renders below text; add `width: 100%` on the video wrap\n- `tap-target-too-small`: wrap `<input>` in a 44\u00d744px `<span>` overlay (WCAG 2.5.5); see PR #119 pattern\n- `horizontal-scroll`: add `overflow-x: hidden` to the nearest scrollable ancestor\n\nCSS file excerpt (current state):\n```css\n$s1.excerpt\n```\n\nA draft PR will be opened with the minimal targeted fix at `$slots.breakpoint`.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor diagnosis — mobile layout regression in `$slots.affected_app`**\n\nBreakpoint: `$slots.breakpoint`\nCSS file: `$slots.css_file`\nIssue kind: `$slots.layout_issue_kind`\n\n**Known fix patterns (from HumanDesign PRs #150, #125, #119, #56):**\n- `grid-overflow`: add `min-width: 0` to the 1fr grid child; add `max-height` cap on media-child wraps at narrow widths\n- `nav-links-reachable-offscreen`: add `visibility: hidden` to the closed off-screen drawer; add `overflow-x: hidden` on the page root at `≤$slots.breakpoint`\n- `hero-column-blowout`: set `order: 2` (not `order: -1`) so video renders below text; add `width: 100%` on the video wrap\n- `tap-target-too-small`: wrap `<input>` in a 44×44px `<span>` overlay (WCAG 2.5.5); see PR #119 pattern\n- `horizontal-scroll`: add `overflow-x: hidden` to the nearest scrollable ancestor\n\nCSS file excerpt (current state):\n```css\n$s1.excerpt\n```\n\nA draft PR will be opened with the minimal targeted fix at `$slots.breakpoint`.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -1873,7 +1873,7 @@
           "base": "main",
           "head": "supervisor/mobile-layout-$slots.affected_app",
           "title": "fix(mobile): resolve $slots.layout_issue_kind at $slots.breakpoint",
-          "body": "Closes #$triggers.issue_number\n\n**Root cause:** CSS layout regression at `$slots.breakpoint` \u2014 `$slots.layout_issue_kind` in `$slots.css_file`.\n\n**Fix:** Targeted CSS-only change at the `@media (max-width: $slots.breakpoint)` breakpoint. No JS or markup changes (unless nav toggle requires it).\n\nPattern source: HumanDesign PRs #150, #125, #119.\nDiagnosis: see issue comment $s2.comment_url\n\n**Test plan:**\n- [ ] Resize browser to `$slots.breakpoint` \u2014 verify the layout issue is resolved\n- [ ] Resize to >768px \u2014 confirm desktop layout is unaffected\n- [ ] CI green on deploy-frontend workflow\n",
+          "body": "Closes #$triggers.issue_number\n\n**Root cause:** CSS layout regression at `$slots.breakpoint` — `$slots.layout_issue_kind` in `$slots.css_file`.\n\n**Fix:** Targeted CSS-only change at the `@media (max-width: $slots.breakpoint)` breakpoint. No JS or markup changes (unless nav toggle requires it).\n\nPattern source: HumanDesign PRs #150, #125, #119.\nDiagnosis: see issue comment $s2.comment_url\n\n**Test plan:**\n- [ ] Resize browser to `$slots.breakpoint` — verify the layout issue is resolved\n- [ ] Resize to >768px — confirm desktop layout is unaffected\n- [ ] CI green on deploy-frontend workflow\n",
           "draft": true
         },
         "side_effects": "none"
@@ -1947,7 +1947,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor triage \u2014 Stripe price ID failure in `$slots.affected_app`**\n\nSentry: $slots.sentry_issue_id\nError: $s1.exception_value\nRejected price ID: extracted from $s1.exception_value\nSecret name: `$slots.secret_name`\nEnvironment: `$slots.environment`\n\n**Root cause (pattern from factory PR #347, HumanDesign):**\n`createCheckoutSession` received an empty, placeholder (`price_xxxxxxxxxxxxx`), or test-mode price ID when the Worker is running in live mode. This is a **config/secrets gap**, not a deleted Stripe price.\n\n**Verification steps (human action required):**\n1. Check the Stripe Dashboard \u2192 Products in the correct mode (live vs. test) for the price ID from the error.\n2. Run: `wrangler secret list --name <worker-name>` and verify `$slots.secret_name` is set.\n3. If missing or wrong: `wrangler secret put $slots.secret_name` and paste the correct `price_*` ID from Stripe.\n4. Deploy and verify `/health` returns 200, then retry checkout.\n\nwrangler.jsonc state: $s2.excerpt\n\n**Supervisor cannot write Worker secrets** (FRIDGE rule 8). Human action required.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor triage — Stripe price ID failure in `$slots.affected_app`**\n\nSentry: $slots.sentry_issue_id\nError: $s1.exception_value\nRejected price ID: extracted from $s1.exception_value\nSecret name: `$slots.secret_name`\nEnvironment: `$slots.environment`\n\n**Root cause (pattern from factory PR #347, HumanDesign):**\n`createCheckoutSession` received an empty, placeholder (`price_xxxxxxxxxxxxx`), or test-mode price ID when the Worker is running in live mode. This is a **config/secrets gap**, not a deleted Stripe price.\n\n**Verification steps (human action required):**\n1. Check the Stripe Dashboard → Products in the correct mode (live vs. test) for the price ID from the error.\n2. Run: `wrangler secret list --name <worker-name>` and verify `$slots.secret_name` is set.\n3. If missing or wrong: `wrangler secret put $slots.secret_name` and paste the correct `price_*` ID from Stripe.\n4. Deploy and verify `/health` returns 200, then retry checkout.\n\nwrangler.jsonc state: $s2.excerpt\n\n**Supervisor cannot write Worker secrets** (FRIDGE rule 8). Human action required.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -2044,7 +2044,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "**Supervisor \u2014 branch-protection hardening plan (RED tier)**\n\nPhase: `$slots.phase`\nTarget check: `$slots.target_check`\n\nThis is a **red-tier** plan. The supervisor will open a **draft PR** updating\nthe branch-protection runbook and/or the `apply-sec-hardening.yml` workflow.\nNo ruleset is applied automatically \u2014 a CODEOWNER must merge and trigger\nthe promotion manually.\n\nExisting hardening workflow snapshot captured in step s2.\n\nReact \u2705 to confirm the plan before the PR is drafted.\n"
+          "body": "**Supervisor — branch-protection hardening plan (RED tier)**\n\nPhase: `$slots.phase`\nTarget check: `$slots.target_check`\n\nThis is a **red-tier** plan. The supervisor will open a **draft PR** updating\nthe branch-protection runbook and/or the `apply-sec-hardening.yml` workflow.\nNo ruleset is applied automatically — a CODEOWNER must merge and trigger\nthe promotion manually.\n\nExisting hardening workflow snapshot captured in step s2.\n\nReact ✅ to confirm the plan before the PR is drafted.\n"
         },
         "side_effects": "none"
       },
@@ -2070,7 +2070,7 @@
         "tool": "github.comment",
         "slots": {
           "pr": "$s4.number",
-          "body": "Supervisor drafted this branch-protection hardening PR (red tier).\n- Only `docs/` or `.github/workflows/` files are touched \u2014 no rulesets applied.\n- Human CODEOWNER must verify signal quality before approving.\n- Source issue: #$triggers.issue_number (parent: #270)\n"
+          "body": "Supervisor drafted this branch-protection hardening PR (red tier).\n- Only `docs/` or `.github/workflows/` files are touched — no rulesets applied.\n- Human CODEOWNER must verify signal quality before approving.\n- Source issue: #$triggers.issue_number (parent: #270)\n"
         },
         "side_effects": "none"
       }
@@ -2230,7 +2230,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor plan \u2014 governance hardening for `$slots.target_repo`**\n\nHardening kind: `$slots.hardening_kind`\nTarget file: `$slots.target_file`\n\n**Known patterns:**\n- `branch-protection`: add required-status-checks + dismiss-stale-reviews (factory PR #280 playbook)\n- `label-addition`: add label to `.github/labels.yml` and sync via label-sync workflow\n- `readme-update` / `claude-md-update`: propagate canonical standing orders from factory to app repo\n- `agent-protocol-propagation`: copy `.github/AGENT_PROTOCOL.md` + issue template from factory canonical (HumanDesign PR #122 pattern)\n- `workflow-permission`: tighten `permissions:` block on a specific workflow (principle of least privilege)\n\nCurrent file state: $s2.excerpt\n\nA draft PR will implement the change. Green-tier \u2014 no destructive mutations, docs/config only.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor plan — governance hardening for `$slots.target_repo`**\n\nHardening kind: `$slots.hardening_kind`\nTarget file: `$slots.target_file`\n\n**Known patterns:**\n- `branch-protection`: add required-status-checks + dismiss-stale-reviews (factory PR #280 playbook)\n- `label-addition`: add label to `.github/labels.yml` and sync via label-sync workflow\n- `readme-update` / `claude-md-update`: propagate canonical standing orders from factory to app repo\n- `agent-protocol-propagation`: copy `.github/AGENT_PROTOCOL.md` + issue template from factory canonical (HumanDesign PR #122 pattern)\n- `workflow-permission`: tighten `permissions:` block on a specific workflow (principle of least privilege)\n\nCurrent file state: $s2.excerpt\n\nA draft PR will implement the change. Green-tier — no destructive mutations, docs/config only.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -2313,7 +2313,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor \u2014 migration drift runbook for `$slots.affected_app`**\n\nMissing: `$slots.missing_item`\nMigration scan result: $s1.matches\n\n**Root cause:** A migration that creates `$slots.missing_item` was merged to the repo but was not applied to the production Neon database.\n\n**Fix (human action required):**\n1. Connect to the production Neon branch for `$slots.affected_app` (see `docs/runbooks/database.md`).\n2. Run: `npm run migrate` from the app's `workers/` directory with `DATABASE_URL` set to the production connection string.\n3. Verify: query `SELECT column_name FROM information_schema.columns WHERE table_name = '<table>'` to confirm the column exists.\n4. Monitor Sentry for 15 min post-apply to confirm the error stops.\n\nThe supervisor cannot write to production databases (FRIDGE rule 8 \u2014 irreversible action). A CODEOWNER must execute this runbook.\n\nIf the migration is not in the repo (migration was never authored), file a new `bug` issue tagged `supervisor:approved-source` for the DB migration gap fix template.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor — migration drift runbook for `$slots.affected_app`**\n\nMissing: `$slots.missing_item`\nMigration scan result: $s1.matches\n\n**Root cause:** A migration that creates `$slots.missing_item` was merged to the repo but was not applied to the production Neon database.\n\n**Fix (human action required):**\n1. Connect to the production Neon branch for `$slots.affected_app` (see `docs/runbooks/database.md`).\n2. Run: `npm run migrate` from the app's `workers/` directory with `DATABASE_URL` set to the production connection string.\n3. Verify: query `SELECT column_name FROM information_schema.columns WHERE table_name = '<table>'` to confirm the column exists.\n4. Monitor Sentry for 15 min post-apply to confirm the error stops.\n\nThe supervisor cannot write to production databases (FRIDGE rule 8 — irreversible action). A CODEOWNER must execute this runbook.\n\nIf the migration is not in the repo (migration was never authored), file a new `bug` issue tagged `supervisor:approved-source` for the DB migration gap fix template.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -2441,7 +2441,7 @@
     "step_intents": [
       "Read the transfer runbook to understand the pre-archive checklist criteria used to evaluate legacy repos.",
       "Read the service registry to enumerate known Factory-managed repos and distinguish them from legacy repos.",
-      "Post the audit plan for CODEOWNER confirmation. Yellow-tier requires human \u2705 before proceeding.",
+      "Post the audit plan for CODEOWNER confirmation. Yellow-tier requires human ✅ before proceeding.",
       "Open a draft PR adding the governance audit report doc. Read-only findings; no mutations.",
       "Leave reviewer-facing provenance note on the PR."
     ],
@@ -2471,7 +2471,7 @@
         "tool": "github.comment",
         "slots": {
           "issue_ref": "$triggers.issue_number",
-          "body": "**Supervisor \u2014 repo governance audit (YELLOW tier)**\n\nAudit scope: `$slots.audit_scope`\n\nThe supervisor will produce a structured audit report covering:\n- Merge settings drift (`squashMergeAllowed`, `rebaseMergeAllowed`, `deleteBranchOnMerge`)\n- Repos missing descriptions\n- Public repos without `SECURITY.md`\n- Legacy repos (`coh`, `The_Calling`, `focusbro`) \u2014 archive candidates\n\n**No repos will be archived or mutated automatically.**\nAll findings are report-only. Mutations require explicit human action per FRIDGE rule 8.\n\nWill open a draft PR adding `docs/governance/repo-audit-$(date +%Y-%m).md`.\nReact \u2705 to proceed.\n"
+          "body": "**Supervisor — repo governance audit (YELLOW tier)**\n\nAudit scope: `$slots.audit_scope`\n\nThe supervisor will produce a structured audit report covering:\n- Merge settings drift (`squashMergeAllowed`, `rebaseMergeAllowed`, `deleteBranchOnMerge`)\n- Repos missing descriptions\n- Public repos without `SECURITY.md`\n- Legacy repos (`coh`, `The_Calling`, `focusbro`) — archive candidates\n\n**No repos will be archived or mutated automatically.**\nAll findings are report-only. Mutations require explicit human action per FRIDGE rule 8.\n\nWill open a draft PR adding `docs/governance/repo-audit-$(date +%Y-%m).md`.\nReact ✅ to proceed.\n"
         },
         "side_effects": "none"
       },
@@ -2483,7 +2483,7 @@
           "head": "$slots.branch_name",
           "title": "$slots.commit_message",
           "draft": true,
-          "body": "Closes #$triggers.issue_number (or enables human to action sub-issues)\n\nAdds `docs/governance/repo-audit.md` \u2014 structured findings from the OPS-2\nrepo governance audit.\n\n**Scope:** $slots.audit_scope\n\n**Findings format:**\n| Repo | Issue | Required action |\n|------|-------|----------------|\n| (populated from audit) | ... | ... |\n\n**No repos are archived or mutated by this PR.**\nAll mutations are manual follow-ups per the transfer runbook.\n\nYellow-tier: human review required before merge.\n",
+          "body": "Closes #$triggers.issue_number (or enables human to action sub-issues)\n\nAdds `docs/governance/repo-audit.md` — structured findings from the OPS-2\nrepo governance audit.\n\n**Scope:** $slots.audit_scope\n\n**Findings format:**\n| Repo | Issue | Required action |\n|------|-------|----------------|\n| (populated from audit) | ... | ... |\n\n**No repos are archived or mutated by this PR.**\nAll mutations are manual follow-ups per the transfer runbook.\n\nYellow-tier: human review required before merge.\n",
           "labels": [
             "area:ops",
             "hardening",
@@ -2497,7 +2497,7 @@
         "tool": "github.comment",
         "slots": {
           "pr": "$s4.number",
-          "body": "Supervisor drafted this repo governance audit PR (yellow tier).\n- Only `docs/governance/repo-audit.md` is added (new doc, no existing files modified).\n- No repos archived, no settings changed \u2014 findings only.\n- Sub-issues OPS-2.1, OPS-2.2, OPS-2.3 require separate human-initiated actions.\n- Source issue: #$triggers.issue_number\n"
+          "body": "Supervisor drafted this repo governance audit PR (yellow tier).\n- Only `docs/governance/repo-audit.md` is added (new doc, no existing files modified).\n- No repos archived, no settings changed — findings only.\n- Sub-issues OPS-2.1, OPS-2.2, OPS-2.3 require separate human-initiated actions.\n- Source issue: #$triggers.issue_number\n"
         },
         "side_effects": "none"
       }
@@ -2720,7 +2720,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor triage \u2014 Stripe error `$slots.stripe_error_code`**\n\nSentry: $slots.sentry_issue_id\nApp: $slots.affected_app\nError: $s1.exception_type \u2014 $s1.exception_value\n\n**Runbook:**\n- `no_such_price` / `no_such_product` \u2014 price/product ID in code doesn't exist in Stripe. Check if the live-mode ID was accidentally replaced with a test-mode ID. Look up `$s1.exception_value` in the Stripe dashboard and update the env var or DB row.\n- `no_such_customer` \u2014 customer record deleted in Stripe or created in wrong mode. Check `stripe_customer_id` column for the user mentioned in the stack trace.\n- `card_declined` / `insufficient_funds` \u2014 user-facing; no code change needed. Check if webhook handler marks the subscription as `past_due` correctly.\n- `invalid_request_error` \u2014 inspect the Stripe API call arguments in the stack frame. Common cause: empty/null fields passed to the API.\n\n**Next step:** A CODEOWNER should investigate the linked Sentry issue and apply the appropriate fix. If a code change is needed, file a new issue tagged `supervisor:approved-source` with the specific file + line.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor triage — Stripe error `$slots.stripe_error_code`**\n\nSentry: $slots.sentry_issue_id\nApp: $slots.affected_app\nError: $s1.exception_type — $s1.exception_value\n\n**Runbook:**\n- `no_such_price` / `no_such_product` — price/product ID in code doesn't exist in Stripe. Check if the live-mode ID was accidentally replaced with a test-mode ID. Look up `$s1.exception_value` in the Stripe dashboard and update the env var or DB row.\n- `no_such_customer` — customer record deleted in Stripe or created in wrong mode. Check `stripe_customer_id` column for the user mentioned in the stack trace.\n- `card_declined` / `insufficient_funds` — user-facing; no code change needed. Check if webhook handler marks the subscription as `past_due` correctly.\n- `invalid_request_error` — inspect the Stripe API call arguments in the stack frame. Common cause: empty/null fields passed to the API.\n\n**Next step:** A CODEOWNER should investigate the linked Sentry issue and apply the appropriate fix. If a code change is needed, file a new issue tagged `supervisor:approved-source` with the specific file + line.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -2828,6 +2828,117 @@
     ]
   },
   {
+    "id": "stage3-shared-config-adoption",
+    "tier": "yellow",
+    "description": "Plan Stage 3 adoption of shared @latimer-woods-tech eslint, biome, and tsconfig packages across product repos.",
+    "trigger_keywords": [
+      "area",
+      "platform",
+      "priority",
+      "stage3",
+      "shared",
+      "config",
+      "adoption",
+      "plan",
+      "stage",
+      "latimerwoodstech",
+      "eslint",
+      "biome"
+    ],
+    "triggers": {
+      "labels_any_of": [
+        "area:platform",
+        "priority:P1"
+      ],
+      "title_pattern": "(Stage 3.*adopt shared|adopt shared.*config|@lwt|@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)|eslint-config|biome-config|tsconfig-base)",
+      "body_patterns": [
+        "(?is)(@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)|Every repo extends shared configs|Stage 3 exit criteria|shared configs)"
+      ]
+    },
+    "slot_names": [
+      "package_set",
+      "rollout_scope",
+      "validation_command"
+    ],
+    "slot_validators": {
+      "package_set": "^@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)(, ?@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base))*$",
+      "validation_command": "^[a-zA-Z0-9:_ ./-]+$"
+    },
+    "slot_defaults": {
+      "package_set": "@latimer-woods-tech/eslint-config, @latimer-woods-tech/biome-config, @latimer-woods-tech/tsconfig-base",
+      "rollout_scope": "portfolio",
+      "validation_command": "lint typecheck"
+    },
+    "slot_descriptions": {},
+    "step_intents": [
+      "Post the deterministic Stage 3 shared-config adoption checklist and require assisted approval."
+    ],
+    "pr_files": [],
+    "steps": [
+      {
+        "tool": "github.comment",
+        "slots": {
+          "issue": "$issue.number",
+          "body": "**Supervisor Stage 3 shared-config adoption plan**\n\nScope: `$slots.rollout_scope`\nPackage set: `$slots.package_set`\nValidation: `$slots.validation_command`\n\nExecution checklist:\n1. Confirm canonical versions in `docs/STACK.md` and package manifests.\n2. For each target repo, add the shared config packages as devDependencies.\n3. Add or replace `.eslintrc.json`, `biome.json`, and `tsconfig.json` so they extend the shared packages.\n4. Remove local config that conflicts with the shared config contract.\n5. Run lint and typecheck in each touched repo.\n6. Split by repo if the fan-out crosses safe PR-size limits.\n\nThis is a Yellow assisted plan. It requires explicit approval before execution.\n"
+        },
+        "side_effects": "write-external"
+      }
+    ]
+  },
+  {
+    "id": "supervisor-template-gap-audit",
+    "tier": "yellow",
+    "description": "Audit supervisor no-template or empty-branch behavior and map issues to template fixes or alternate agent routes.",
+    "trigger_keywords": [
+      "area",
+      "supervisor",
+      "priority",
+      "template",
+      "gap",
+      "audit",
+      "notemplate",
+      "emptybranch",
+      "behavior",
+      "issues"
+    ],
+    "triggers": {
+      "labels_any_of": [
+        "area:supervisor",
+        "priority:P1"
+      ],
+      "title_pattern": "(SUPERVISOR-002|Templates don't match|template.*Sprint 2|no suitable template|0 file changes|empty branch)",
+      "body_patterns": [
+        "(?is)(Sprint 2|template.*doesn't fit|0 file changes|branch deleted|no PR|supervisor:no-template|agent:claimed:supervisor)"
+      ]
+    },
+    "slot_names": [
+      "affected_issue_range",
+      "failure_mode"
+    ],
+    "slot_validators": {
+      "affected_issue_range": "^[#0-9, –—-]+$"
+    },
+    "slot_defaults": {
+      "affected_issue_range": "#61-#66, #74-#81, #116",
+      "failure_mode": "mixed"
+    },
+    "slot_descriptions": {},
+    "step_intents": [
+      "Post the template-gap audit checklist and keep broad Sprint 2 feature work out of unsafe Green automation."
+    ],
+    "pr_files": [],
+    "steps": [
+      {
+        "tool": "github.comment",
+        "slots": {
+          "issue": "$issue.number",
+          "body": "**Supervisor template-gap audit plan**\n\nAffected issues: `$slots.affected_issue_range`\nFailure mode: `$slots.failure_mode`\n\nAudit checklist:\n1. List every issue in the affected cluster and record title, labels, current claim owner, and linked PR if any.\n2. For each issue, run deterministic matching against the current template set.\n3. Classify each miss as `no-template`, `wrong-template`, `empty-branch`, or `claimed-stale`.\n4. Add or update templates only for repeated patterns with safe slots and deterministic gates.\n5. Route broad feature implementation work to assisted Yellow plans or a separate coding-agent path, not Green automation.\n6. Re-queue only issues whose new template match is verified.\n\nThis is a Yellow assisted plan. It requires explicit approval before execution.\n"
+        },
+        "side_effects": "write-external"
+      }
+    ]
+  },
+  {
     "id": "syn-package-migration",
     "tier": "yellow",
     "description": "",
@@ -2873,6 +2984,65 @@
           "body": "Supervisor triage plan for SYN/package migration.\n- Confirm API compatibility and semver impact\n- Verify import path + build/test changes across affected apps\n- Validate release, changelog, and rollback plan\n- Require human approval before execution\n"
         },
         "side_effects": "none"
+      }
+    ]
+  },
+  {
+    "id": "typed-env-conformance",
+    "tier": "yellow",
+    "description": "Plan typed Cloudflare Worker Env bindings across the portfolio so conformance can verify env access.",
+    "trigger_keywords": [
+      "area",
+      "platform",
+      "priority",
+      "typed",
+      "env",
+      "conformance",
+      "plan",
+      "cloudflare",
+      "worker",
+      "bindings",
+      "across",
+      "portfolio"
+    ],
+    "triggers": {
+      "labels_any_of": [
+        "area:platform",
+        "priority:P2"
+      ],
+      "title_pattern": "(typed Env|Env interface|Bindings: Env|conformance.*Env|add typed Env)",
+      "body_patterns": [
+        "(?is)(Typed Env interface|Hono<\\{ Bindings: Env \\}>|wrangler\\.jsonc|platform_conformance|Code patterns dimension)"
+      ]
+    },
+    "slot_names": [
+      "target_apps",
+      "env_file",
+      "conformance_check"
+    ],
+    "slot_validators": {
+      "target_apps": "^[a-zA-Z0-9, _.-]+$",
+      "env_file": "^[a-zA-Z0-9_./-]+\\.ts$",
+      "conformance_check": "^[a-zA-Z0-9_ ./:-]+$"
+    },
+    "slot_defaults": {
+      "target_apps": "HumanDesign, videoking, factory-admin-studio, cypher-healing, xico-city",
+      "env_file": "src/types/env.ts",
+      "conformance_check": "scripts/platform_conformance.py Typed Env interface"
+    },
+    "slot_descriptions": {},
+    "step_intents": [
+      "Post the typed Env implementation checklist and require assisted approval."
+    ],
+    "pr_files": [],
+    "steps": [
+      {
+        "tool": "github.comment",
+        "slots": {
+          "issue": "$issue.number",
+          "body": "**Supervisor typed Env conformance plan**\n\nTarget apps: `$slots.target_apps`\nEnv file convention: `$slots.env_file`\nConformance check: `$slots.conformance_check`\n\nExecution checklist:\n1. Read each app's `wrangler.jsonc` vars and bindings.\n2. Define a typed `Env` interface with every D1, KV, R2, Hyperdrive, secret, and var binding the app uses.\n3. Type Hono as `new Hono<{ Bindings: Env }>()` or equivalent Worker handler bindings.\n4. Replace untyped `c.env` or handler `env` access with the typed binding surface.\n5. Re-run the conformance scorer and TypeScript checks.\n6. Split by app if the diff gets large.\n\nThis is a Yellow assisted plan. It requires explicit approval before execution.\n"
+        },
+        "side_effects": "write-external"
       }
     ]
   },
@@ -2929,7 +3099,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor \u2014 pre-suspension verification**\n\nUser `$slots.user_id` found:\n- Email: $s1.email\n- Tier: $s1.tier\n- Status: $s1.status\n- Created: $s1.created_at\n\nProposed action: **suspend** with reason: \"$slots.reason\"\n\n\u26a0\ufe0f This action requires CODEOWNER approval. React \u2705 to this comment to authorize.\nOnce approved, the supervisor will call `$slots.affected_app.user.suspend`.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor — pre-suspension verification**\n\nUser `$slots.user_id` found:\n- Email: $s1.email\n- Tier: $s1.tier\n- Status: $s1.status\n- Created: $s1.created_at\n\nProposed action: **suspend** with reason: \"$slots.reason\"\n\n⚠️ This action requires CODEOWNER approval. React ✅ to this comment to authorize.\nOnce approved, the supervisor will call `$slots.affected_app.user.suspend`.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },
@@ -3047,7 +3217,7 @@
       {
         "tool": "github.comment",
         "slots": {
-          "body": "**Supervisor \u2014 worker health degradation triage**\n\nAffected worker: `$slots.affected_worker` (HTTP $slots.error_code)\nObservability summary: $s1.summary\n\n**Immediate checks (human):**\n1. `curl -I https://$slots.affected_worker.adrper79.workers.dev/health` \u2014 confirm current status\n2. Check Cloudflare dashboard for the worker at https://dash.cloudflare.com\n3. Check Sentry project for `$slots.affected_worker` for recent error spike\n4. If 502/503: check if a recent deployment is the cause via `wrangler rollback`\n\n**Rollback command (if deployment-related):**\n```\ncd apps/$slots.affected_worker && wrangler rollback\n```\n\n**Escalation:** If the worker is still degraded after 15 min, page on-call via Pushover.\n\nThe supervisor cannot invoke `wrangler rollback` (FRIDGE rule 8 \u2014 irreversible infra action). A CODEOWNER must execute this runbook.\n\n_Run ID: $RUN_ID_\n"
+          "body": "**Supervisor — worker health degradation triage**\n\nAffected worker: `$slots.affected_worker` (HTTP $slots.error_code)\nObservability summary: $s1.summary\n\n**Immediate checks (human):**\n1. `curl -I https://$slots.affected_worker.adrper79.workers.dev/health` — confirm current status\n2. Check Cloudflare dashboard for the worker at https://dash.cloudflare.com\n3. Check Sentry project for `$slots.affected_worker` for recent error spike\n4. If 502/503: check if a recent deployment is the cause via `wrangler rollback`\n\n**Rollback command (if deployment-related):**\n```\ncd apps/$slots.affected_worker && wrangler rollback\n```\n\n**Escalation:** If the worker is still degraded after 15 min, page on-call via Pushover.\n\nThe supervisor cannot invoke `wrangler rollback` (FRIDGE rule 8 — irreversible infra action). A CODEOWNER must execute this runbook.\n\n_Run ID: $RUN_ID_\n"
         },
         "side_effects": "none"
       },

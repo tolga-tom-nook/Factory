@@ -2,8 +2,8 @@
 // DO NOT EDIT DIRECTLY — edit docs/supervisor/plans/*.yml instead,
 // then run: node scripts/generate-supervisor-templates.mjs
 //
-// Generated: 2026-05-25T00:20:16.633Z
-// Source files: branch-protection-hardening.yml, db-migration-gap-fix.yml, deps-bump-minor-patch.yml, docs-naming-convention.yml, extract-from-wordis-bond.yml, feat-call-room-implementation.yml, feat-ci-workflow.yml, feat-conversations-implementation.yml, feat-editor-effect-implementation.yml, feat-editor-web-implementation.yml, feat-flaky-detector.yml, feat-memory-single-writer.yml, feat-review-hints.yml, fix-analytics-event-whitelist.yml, fix-billing-portal-400.yml, fix-ci-package-auth.yml, fix-csp-hash.yml, fix-mobile-layout.yml, fix-stripe-price-id.yml, governance-branch-protection.yml, governance-hardening-tweak.yml, governance-hardening.yml, migration-drift-fix.yml, package-version-migration.yml, repo-governance-audit.yml, reusable-workflow-rollout.yml, security-codeql-fix.yml, sentry-stripe-error-triage.yml, sentry-triage-new-issue.yml, syn-package-migration.yml, user-account-suspend.yml, ux-regression-triage.yml, worker-health-degraded.yml, wrangler-config-drift-fix.yml
+// Generated: 2026-06-06T17:45:13.103Z
+// Source files: branch-protection-hardening.yml, db-migration-gap-fix.yml, deps-bump-minor-patch.yml, docs-naming-convention.yml, extract-from-wordis-bond.yml, feat-call-room-implementation.yml, feat-ci-workflow.yml, feat-conversations-implementation.yml, feat-editor-effect-implementation.yml, feat-editor-web-implementation.yml, feat-flaky-detector.yml, feat-memory-single-writer.yml, feat-review-hints.yml, fix-analytics-event-whitelist.yml, fix-billing-portal-400.yml, fix-ci-package-auth.yml, fix-csp-hash.yml, fix-mobile-layout.yml, fix-stripe-price-id.yml, governance-branch-protection.yml, governance-hardening-tweak.yml, governance-hardening.yml, migration-drift-fix.yml, package-version-migration.yml, repo-governance-audit.yml, reusable-workflow-rollout.yml, security-codeql-fix.yml, sentry-stripe-error-triage.yml, sentry-triage-new-issue.yml, stage3-shared-config-adoption.yml, supervisor-template-gap-audit.yml, syn-package-migration.yml, typed-env-conformance.yml, user-account-suspend.yml, ux-regression-triage.yml, worker-health-degraded.yml, wrangler-config-drift-fix.yml
 
 import type { Template } from './load';
 
@@ -2043,6 +2043,82 @@ export const GENERATED_TEMPLATES: Template[] = [
     ]
   },
   {
+    "id": "stage3-shared-config-adoption",
+    "tier": "yellow",
+    "description": "Plan Stage 3 adoption of shared @latimer-woods-tech eslint, biome, and tsconfig packages across product repos.",
+    "trigger_keywords": [
+      "area",
+      "platform",
+      "priority",
+      "stage3",
+      "shared",
+      "config",
+      "adoption",
+      "plan",
+      "stage",
+      "latimerwoodstech",
+      "eslint",
+      "biome"
+    ],
+    "triggers": {
+      "labels_any_of": [
+        "area:platform",
+        "priority:P1"
+      ],
+      "title_pattern": "(Stage 3.*adopt shared|adopt shared.*config|@lwt|@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)|eslint-config|biome-config|tsconfig-base)",
+      "body_patterns": [
+        "(?is)(@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)|Every repo extends shared configs|Stage 3 exit criteria|shared configs)"
+      ]
+    },
+    "steps": [
+      {
+        "tool": "github.comment",
+        "slots": {
+          "issue": "$issue.number",
+          "body": "**Supervisor Stage 3 shared-config adoption plan**\n\nScope: `$slots.rollout_scope`\nPackage set: `$slots.package_set`\nValidation: `$slots.validation_command`\n\nExecution checklist:\n1. Confirm canonical versions in `docs/STACK.md` and package manifests.\n2. For each target repo, add the shared config packages as devDependencies.\n3. Add or replace `.eslintrc.json`, `biome.json`, and `tsconfig.json` so they extend the shared packages.\n4. Remove local config that conflicts with the shared config contract.\n5. Run lint and typecheck in each touched repo.\n6. Split by repo if the fan-out crosses safe PR-size limits.\n\nThis is a Yellow assisted plan. It requires explicit approval before execution.\n"
+        },
+        "side_effects": "write-external"
+      }
+    ]
+  },
+  {
+    "id": "supervisor-template-gap-audit",
+    "tier": "yellow",
+    "description": "Audit supervisor no-template or empty-branch behavior and map issues to template fixes or alternate agent routes.",
+    "trigger_keywords": [
+      "area",
+      "supervisor",
+      "priority",
+      "template",
+      "gap",
+      "audit",
+      "notemplate",
+      "emptybranch",
+      "behavior",
+      "issues"
+    ],
+    "triggers": {
+      "labels_any_of": [
+        "area:supervisor",
+        "priority:P1"
+      ],
+      "title_pattern": "(SUPERVISOR-002|Templates don't match|template.*Sprint 2|no suitable template|0 file changes|empty branch)",
+      "body_patterns": [
+        "(?is)(Sprint 2|template.*doesn't fit|0 file changes|branch deleted|no PR|supervisor:no-template|agent:claimed:supervisor)"
+      ]
+    },
+    "steps": [
+      {
+        "tool": "github.comment",
+        "slots": {
+          "issue": "$issue.number",
+          "body": "**Supervisor template-gap audit plan**\n\nAffected issues: `$slots.affected_issue_range`\nFailure mode: `$slots.failure_mode`\n\nAudit checklist:\n1. List every issue in the affected cluster and record title, labels, current claim owner, and linked PR if any.\n2. For each issue, run deterministic matching against the current template set.\n3. Classify each miss as `no-template`, `wrong-template`, `empty-branch`, or `claimed-stale`.\n4. Add or update templates only for repeated patterns with safe slots and deterministic gates.\n5. Route broad feature implementation work to assisted Yellow plans or a separate coding-agent path, not Green automation.\n6. Re-queue only issues whose new template match is verified.\n\nThis is a Yellow assisted plan. It requires explicit approval before execution.\n"
+        },
+        "side_effects": "write-external"
+      }
+    ]
+  },
+  {
     "id": "syn-package-migration",
     "tier": "yellow",
     "description": "",
@@ -2074,6 +2150,45 @@ export const GENERATED_TEMPLATES: Template[] = [
           "body": "Supervisor triage plan for SYN/package migration.\n- Confirm API compatibility and semver impact\n- Verify import path + build/test changes across affected apps\n- Validate release, changelog, and rollback plan\n- Require human approval before execution\n"
         },
         "side_effects": "none"
+      }
+    ]
+  },
+  {
+    "id": "typed-env-conformance",
+    "tier": "yellow",
+    "description": "Plan typed Cloudflare Worker Env bindings across the portfolio so conformance can verify env access.",
+    "trigger_keywords": [
+      "area",
+      "platform",
+      "priority",
+      "typed",
+      "env",
+      "conformance",
+      "plan",
+      "cloudflare",
+      "worker",
+      "bindings",
+      "across",
+      "portfolio"
+    ],
+    "triggers": {
+      "labels_any_of": [
+        "area:platform",
+        "priority:P2"
+      ],
+      "title_pattern": "(typed Env|Env interface|Bindings: Env|conformance.*Env|add typed Env)",
+      "body_patterns": [
+        "(?is)(Typed Env interface|Hono<\\{ Bindings: Env \\}>|wrangler\\.jsonc|platform_conformance|Code patterns dimension)"
+      ]
+    },
+    "steps": [
+      {
+        "tool": "github.comment",
+        "slots": {
+          "issue": "$issue.number",
+          "body": "**Supervisor typed Env conformance plan**\n\nTarget apps: `$slots.target_apps`\nEnv file convention: `$slots.env_file`\nConformance check: `$slots.conformance_check`\n\nExecution checklist:\n1. Read each app's `wrangler.jsonc` vars and bindings.\n2. Define a typed `Env` interface with every D1, KV, R2, Hyperdrive, secret, and var binding the app uses.\n3. Type Hono as `new Hono<{ Bindings: Env }>()` or equivalent Worker handler bindings.\n4. Replace untyped `c.env` or handler `env` access with the typed binding surface.\n5. Re-run the conformance scorer and TypeScript checks.\n6. Split by app if the diff gets large.\n\nThis is a Yellow assisted plan. It requires explicit approval before execution.\n"
+        },
+        "side_effects": "write-external"
       }
     ]
   },

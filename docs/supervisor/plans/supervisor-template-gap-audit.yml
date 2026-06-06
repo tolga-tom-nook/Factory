@@ -1,0 +1,57 @@
+id: supervisor-template-gap-audit
+version: 1
+description: "Audit supervisor no-template or empty-branch behavior and map issues to template fixes or alternate agent routes."
+tier: yellow
+triggers:
+  labels_any_of: [area:supervisor, priority:P1]
+  title_pattern: "(SUPERVISOR-002|Templates don't match|template.*Sprint 2|no suitable template|0 file changes|empty branch)"
+  body_patterns:
+    - "(?is)(Sprint 2|template.*doesn't fit|0 file changes|branch deleted|no PR|supervisor:no-template|agent:claimed:supervisor)"
+preconditions:
+  - capability_exists: github.comment
+slots:
+  - name: affected_issue_range
+    type: string
+    validator: "^[#0-9, –—-]+$"
+    source: issue_body
+    default: "#61-#66, #74-#81, #116"
+  - name: failure_mode
+    type: enum
+    values: [no-template, wrong-template, empty-branch, claimed-stale, mixed]
+    source: issue_body
+    default: mixed
+steps:
+  - id: s1
+    tool: github.comment
+    depends_on: null
+    side_effects: write-external
+    params:
+      issue: "$issue.number"
+      body: |
+        **Supervisor template-gap audit plan**
+
+        Affected issues: `$slots.affected_issue_range`
+        Failure mode: `$slots.failure_mode`
+
+        Audit checklist:
+        1. List every issue in the affected cluster and record title, labels, current claim owner, and linked PR if any.
+        2. For each issue, run deterministic matching against the current template set.
+        3. Classify each miss as `no-template`, `wrong-template`, `empty-branch`, or `claimed-stale`.
+        4. Add or update templates only for repeated patterns with safe slots and deterministic gates.
+        5. Route broad feature implementation work to assisted Yellow plans or a separate coding-agent path, not Green automation.
+        6. Re-queue only issues whose new template match is verified.
+
+        This is a Yellow assisted plan. It requires explicit approval before execution.
+    intent: "Post the template-gap audit checklist and keep broad Sprint 2 feature work out of unsafe Green automation."
+acceptance_gate:
+  description: "Issue contains the template-gap audit checklist."
+  verifier_query:
+    tool: github.comment
+    query: "issue:$issue.number body contains 'Supervisor template-gap audit plan'"
+    assert: "count >= 1"
+rollback:
+  - on_step: s1
+    action: github.removeLabel
+    params:
+      issue: "$issue.number"
+      label: "status:wip"

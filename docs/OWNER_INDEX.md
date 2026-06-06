@@ -149,7 +149,7 @@
 | [docs/marketing/ROADMAP.md](marketing/ROADMAP.md) | active | unverified | unknown | Marketing Maturation Roadmap |
 | [docs/marketing/VOICES.md](marketing/VOICES.md) | active | unverified | unknown | Voices |
 
-## platform (340)
+## platform (341)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -425,12 +425,13 @@
 | [docs/sessions/2026-04-30-org-migration.md](sessions/2026-04-30-org-migration.md) | active | unverified | unknown | Latimer-Woods-Tech Org Migration — Complete |
 | [docs/sessions/2026-05-06-agent-ship-orchestrator.md](sessions/2026-05-06-agent-ship-orchestrator.md) | active | unverified | unknown | 2026-05-06 - agent ship orchestrator |
 | [docs/SLO.md](SLO.md) | active | unverified | unknown | Service Level Objectives — Factory Admin Studio |
-| [docs/STACK.md](STACK.md) | active | unverified | 2026-05-30 | Stack Manifest |
+| [docs/STACK.md](STACK.md) | active | unverified | 2026-06-05 | Stack Manifest |
 | [docs/STAGE_2_ACQUISITION_SELFPRIME.md](STAGE_2_ACQUISITION_SELFPRIME.md) | active | unverified | unknown | Stage 2 Acquisition — Selfprime "Practitioner First Domino" |
 | [docs/STATE.md](STATE.md) | active | unverified | unknown | Factory State — 2026-05-30 |
 | [docs/STATUS.md](STATUS.md) | active | unverified | unknown | Factory Ecosystem — Status |
 | [docs/supervisor/adr-001-llm-cache-blocks.md](supervisor/adr-001-llm-cache-blocks.md) | active | unverified | unknown | ADR-001: Multi-Block Prompt Cache Structure for Supervisor LLM Calls |
 | [docs/supervisor/ADR-EXEC-GAPS.md](supervisor/ADR-EXEC-GAPS.md) | active | unverified | unknown | ADR: SUP-4 EXEC Gaps — Design Decisions |
+| [docs/supervisor/AOS_COMPLETION_AUDIT.md](supervisor/AOS_COMPLETION_AUDIT.md) | active | unverified | unknown | Factory Autonomous OS Completion Audit |
 | [docs/supervisor/aos-green-smoke.md](supervisor/aos-green-smoke.md) | active | unverified | unknown | AOS Green Smoke |
 | [docs/supervisor/APP_INTEGRATION.md](supervisor/APP_INTEGRATION.md) | active | unverified | unknown | Supervisor Integration Guide for Apps |
 | [docs/supervisor/ARCHITECTURE.md](supervisor/ARCHITECTURE.md) | active | unverified | unknown | Factory as Supervisor — Architecture Plan, v2.1 |
