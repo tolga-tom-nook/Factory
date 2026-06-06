@@ -1,0 +1,74 @@
+{
+  "date": "2026-06-05",
+  "generated": "2026-06-06T09:11:25.295248+00:00",
+  "lines": [
+    {
+      "provider": "cloudflare",
+      "label": "Workers + R2 + KV + D1 (MTD/day est.)",
+      "amount_usd": 0.0,
+      "detail": {
+        "month_to_date": 0.0,
+        "day_of_month": 5,
+        "window": [
+          "2026-06-05T00:00:00+00:00",
+          "2026-06-06T00:00:00+00:00"
+        ]
+      },
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "anthropic",
+      "label": "LLM tokens",
+      "amount_usd": 4.87,
+      "detail": {
+        "daily_cap_usd": 50,
+        "raw_minor_units": 487.426,
+        "window": [
+          "2026-06-05T00:00:00+00:00",
+          "2026-06-06T00:00:00+00:00"
+        ],
+        "pages_fetched": 1
+      },
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "sentry",
+      "label": "Event ingestion",
+      "amount_usd": 0.0,
+      "detail": {
+        "events_24h": 2,
+        "rate_per_event_usd": 0.0003
+      },
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "stripe",
+      "label": "Gross revenue (GAINS)",
+      "amount_usd": 0.0,
+      "detail": {
+        "transaction_count": 0
+      },
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "stripe",
+      "label": "Stripe fees",
+      "amount_usd": 0.0,
+      "detail": {},
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "gcp",
+      "label": "Cloud Run + Logging",
+      "amount_usd": 0.0,
+      "detail": {},
+      "skipped": true,
+      "skip_reason": "missing GCP_BILLING_TOKEN or GCP_BILLING_ACCOUNT_ID"
+    }
+  ]
+}
