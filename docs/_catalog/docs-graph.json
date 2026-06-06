@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 443,
+    "total_docs": 444,
     "canonical": 17,
-    "active": 378,
+    "active": 379,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -395,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:aa4450e69b29dbcf7b1ada926fdbeec116edcb22568f97e329cc405e3acc2df4",
+      "content_hash": "sha256:734178575020dcf8558612626f8d4b4b6da800b946c05db284ba31ef1ca83c3a",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -3324,6 +3324,27 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:98d6b591eeee0ec83ee5fd43ce137aa1f775ea92f2ca21ed62a485043220d84d",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/digest/2026-06-05.md",
+      "title": "Morning digest — 2026-06-05",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:217ba0bec1399f8411f47ac1aa563310a12f290cd4d78cdd907b7be12ce7a035",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
