@@ -8,9 +8,9 @@
 
 | Status | Count |
 |---|---:|
-| total_docs | 443 |
+| total_docs | 444 |
 | canonical | 17 |
-| active | 378 |
+| active | 379 |
 | stale | 0 |
 | archive | 45 |
 | generated | 3 |
@@ -39,7 +39,7 @@
 | [prompts/README.md](../prompts/README.md) | canonical | owner-reviewed | platform | unknown | Factory Prompt Index |
 | [WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md](../WORLD_CLASS_IMPLEMENTATION_DASHBOARD.md) | canonical | owner-reviewed | platform | unknown | World-Class Implementation Dashboard |
 
-## Active Docs (378)
+## Active Docs (379)
 
 | Path | Status | Fidelity | Owner | Last Updated | Title |
 |---|---|---|---|---|---|
@@ -163,6 +163,7 @@
 | [docs/digest/2026-05-17.md](digest/2026-05-17.md) | active | unverified | platform | unknown | Morning digest — 2026-05-17 |
 | [docs/digest/2026-05-25.md](digest/2026-05-25.md) | active | unverified | platform | unknown | Morning digest — 2026-05-25 |
 | [docs/digest/2026-05-30.md](digest/2026-05-30.md) | active | unverified | platform | unknown | Morning digest — 2026-05-30 |
+| [docs/digest/2026-06-05.md](digest/2026-06-05.md) | active | unverified | platform | unknown | Morning digest — 2026-06-05 |
 | [docs/DOCS_OWNERSHIP.md](DOCS_OWNERSHIP.md) | active | unverified | platform | unknown | Documentation Ownership & Update Cadence |
 | [docs/DOCUMENT_STATUS_INDEX.md](DOCUMENT_STATUS_INDEX.md) | active | unverified | platform | 2026-05-27 | Document Status Index |
 | [docs/DOCUMENTATION_HIERARCHY.md](DOCUMENTATION_HIERARCHY.md) | active | unverified | platform | unknown | Documentation Hierarchy & Source of Truth |

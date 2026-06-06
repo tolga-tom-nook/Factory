@@ -149,7 +149,7 @@
 | [docs/marketing/ROADMAP.md](marketing/ROADMAP.md) | active | unverified | unknown | Marketing Maturation Roadmap |
 | [docs/marketing/VOICES.md](marketing/VOICES.md) | active | unverified | unknown | Voices |
 
-## platform (339)
+## platform (340)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -243,6 +243,7 @@
 | [docs/digest/2026-05-17.md](digest/2026-05-17.md) | active | unverified | unknown | Morning digest — 2026-05-17 |
 | [docs/digest/2026-05-25.md](digest/2026-05-25.md) | active | unverified | unknown | Morning digest — 2026-05-25 |
 | [docs/digest/2026-05-30.md](digest/2026-05-30.md) | active | unverified | unknown | Morning digest — 2026-05-30 |
+| [docs/digest/2026-06-05.md](digest/2026-06-05.md) | active | unverified | unknown | Morning digest — 2026-06-05 |
 | [docs/DOCS_OWNERSHIP.md](DOCS_OWNERSHIP.md) | active | unverified | unknown | Documentation Ownership & Update Cadence |
 | [docs/DOCS_TRUTH_AND_GUARDRAILS.md](DOCS_TRUTH_AND_GUARDRAILS.md) | canonical | owner-reviewed | 2026-05-27 | Documentation Truth Map and Hallucination Guardrails |
 | [docs/DOCUMENT_STATUS_INDEX.md](DOCUMENT_STATUS_INDEX.md) | active | unverified | 2026-05-27 | Document Status Index |
