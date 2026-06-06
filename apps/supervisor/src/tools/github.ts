@@ -26,6 +26,53 @@ interface GitHubReaction {
   user: { login: string };
 }
 
+export interface GitHubCountResult {
+  count: number;
+  sampleNumbers: number[];
+}
+
+async function githubJson<T>(token: string, url: string, op: string): Promise<T> {
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'factory-supervisor',
+    },
+    signal: AbortSignal.timeout(GITHUB_TIMEOUT_MS),
+  });
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '(no body)');
+    throw new Error(`${op}: GitHub API error ${res.status}: ${text}`);
+  }
+
+  return (await res.json()) as T;
+}
+
+export async function countOpenPullRequests(token: string): Promise<number> {
+  const q = encodeURIComponent('repo:Latimer-Woods-Tech/Factory is:pr is:open');
+  const data = await githubJson<{ total_count: number }>(
+    token,
+    `${GITHUB_API}/search/issues?q=${q}&per_page=1`,
+    'countOpenPullRequests',
+  );
+  return data.total_count;
+}
+
+export async function countOpenIssuesWithLabel(token: string, label: string): Promise<GitHubCountResult> {
+  const q = encodeURIComponent(`repo:Latimer-Woods-Tech/Factory is:issue is:open label:"${label}"`);
+  const data = await githubJson<{ total_count: number; items: Array<{ number: number }> }>(
+    token,
+    `${GITHUB_API}/search/issues?q=${q}&per_page=5`,
+    `countOpenIssuesWithLabel(${label})`,
+  );
+  return {
+    count: data.total_count,
+    sampleNumbers: data.items.map((item) => item.number),
+  };
+}
+
 /**
  * Fetch all open issues labelled `supervisor:approved-source` from the
  * factory repo. Returns an array capped at 10 (per-run cap).

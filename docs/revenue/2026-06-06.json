@@ -1,0 +1,50 @@
+{
+  "date": "2026-06-06",
+  "generated": "2026-06-06T09:29:48.999252+00:00",
+  "lines": [
+    {
+      "provider": "stripe_mrr",
+      "label": "Active subscription MRR",
+      "metric": "usd",
+      "value": 0.0,
+      "detail": {
+        "subscription_count": 0,
+        "pages_fetched": 1,
+        "by_product_cents": {},
+        "arr_estimate_usd": 0.0,
+        "truncated": false
+      },
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "sentry_users",
+      "label": "Total errors (24h)",
+      "metric": "count",
+      "value": 0.0,
+      "detail": {},
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "sentry_users",
+      "label": "User-facing errors (24h)",
+      "metric": "count",
+      "value": 0.0,
+      "detail": {
+        "ratio_user_to_total": 0.0
+      },
+      "skipped": false,
+      "skip_reason": ""
+    },
+    {
+      "provider": "posthog_funnel",
+      "label": "Monetization funnel conversion",
+      "metric": "ratio",
+      "value": 0.0,
+      "detail": {},
+      "skipped": true,
+      "skip_reason": "missing POSTHOG_API_KEY/PROJECT_ID/FUNNEL_ID"
+    }
+  ]
+}

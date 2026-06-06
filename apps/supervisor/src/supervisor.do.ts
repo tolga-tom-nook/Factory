@@ -2,7 +2,7 @@
 import { matchTemplate } from './planner/match';
 import { parameterize } from './planner/parameterize';
 import { loadTemplates } from './planner/load';
-import { readMemory, writeMemory } from './memory/d1';
+import { listMemoryKeys, readMemory, writeMemory } from './memory/d1';
 import { ToolRegistry } from '@latimer-woods-tech/agent';
 import { GENERATED_CAPABILITIES } from './capabilities.generated';
 import { getTemplateStats, recordRun } from './stats';
@@ -19,6 +19,8 @@ import {
   addLabel,
   getPlanApproval,
   formatPlanComment,
+  countOpenIssuesWithLabel,
+  countOpenPullRequests,
 } from './tools/github';
 import { sendDigest } from './tools/pushover';
 import { getInstallationToken } from './tools/github-auth';
@@ -82,6 +84,8 @@ export class SupervisorDO {
           return await this.handleHealth();
         case 'GET /state':
           return await this.handleState();
+        case 'GET /aos/status':
+          return await this.handleAosStatus();
         case 'GET /capabilities':
           return await this.handleCapabilities();
         case 'GET /tools/read-only-smoke':
@@ -135,6 +139,92 @@ export class SupervisorDO {
           tiers_allowed: a.tiers_allowed,
           capability_count: a.capabilities.length,
         })),
+      },
+    });
+  }
+
+  private async handleAosStatus(): Promise<Response> {
+    const lastRun = await readMemory(this.env.MEMORY, 'last_run');
+    const planKeys = await listMemoryKeys(this.env.MEMORY, 'plan:');
+    const approvedKeys = await listMemoryKeys(this.env.MEMORY, 'approved:');
+    const approvedIssueNumbers = new Set(approvedKeys.map((key) => key.replace('approved:', '')));
+    const pendingPlanApprovalIssues = planKeys
+      .map((key) => key.replace('plan:', ''))
+      .filter((issueNumber) => issueNumber && !approvedIssueNumbers.has(issueNumber))
+      .slice(0, 20);
+
+    const blockedApprovalRow = await this.env.MEMORY
+      .prepare(`SELECT COUNT(*) AS count FROM supervisor_steps WHERE awaiting_approval IS NOT NULL`)
+      .first<{ count: number }>()
+      .catch(() => ({ count: 0 }));
+
+    const recentRuns = await this.env.MEMORY
+      .prepare(
+        `SELECT id, template_id, template_version, status, dry_run, pr_url, pr_open_error, started_at, finished_at
+         FROM supervisor_runs
+         ORDER BY started_at DESC
+         LIMIT 5`,
+      )
+      .all<Record<string, unknown>>()
+      .catch(() => ({ results: [] as Record<string, unknown>[] }));
+
+    const templateStats = await this.env.MEMORY
+      .prepare(
+        `SELECT template_id, template_version, runs_attempted, runs_merged, runs_reverted, blessed_at, demoted_at, last_run_at
+         FROM template_stats
+         ORDER BY last_run_at DESC
+         LIMIT 20`,
+      )
+      .all<Record<string, unknown>>()
+      .catch(() => ({ results: [] as Record<string, unknown>[] }));
+
+    let github: Record<string, unknown> = { ok: false, error: 'not checked' };
+    try {
+      const ghToken = await getInstallationToken(
+        this.env.FACTORY_APP_ID,
+        this.env.FACTORY_APP_PRIVATE_KEY,
+        this.env.FACTORY_APP_INSTALLATION_ID,
+      );
+      const [noTemplateQueue, openPullRequests] = await Promise.all([
+        countOpenIssuesWithLabel(ghToken, 'supervisor:no-template'),
+        countOpenPullRequests(ghToken),
+      ]);
+      github = { ok: true, noTemplateQueue, openPullRequests };
+    } catch (err) {
+      github = {
+        ok: false,
+        error: err instanceof Error ? err.message.slice(0, 200) : String(err).slice(0, 200),
+      };
+    }
+
+    const perRunCapCents = Number.parseInt(this.env.PER_RUN_CAP_CENTS ?? '500', 10);
+
+    return Response.json({
+      ok: true,
+      kind: 'factory-autonomous-os-status',
+      at: new Date().toISOString(),
+      lastRun,
+      budget: {
+        perRunCapCents,
+        perRunCapUsd: `$${(perRunCapCents / 100).toFixed(2)}`,
+        source: this.env.PER_RUN_CAP_CENTS ? 'PER_RUN_CAP_CENTS' : 'default-calibration-cap',
+      },
+      approvals: {
+        pendingPlanApprovalCount: pendingPlanApprovalIssues.length,
+        pendingPlanApprovalIssues,
+        blockedStepApprovalCount: blockedApprovalRow?.count ?? 0,
+      },
+      github,
+      templates: {
+        tracked: templateStats.results.length,
+        stats: templateStats.results,
+      },
+      recentRuns: recentRuns.results,
+      gates: {
+        green: 'execute only through guarded tools; blessed template stats exposed here',
+        yellow: 'plan approval required before assisted execution',
+        red: 'route-and-stop; needs human owner',
+        noTemplate: 'label supervisor:no-template and stop',
       },
     });
   }
@@ -310,6 +400,23 @@ export class SupervisorDO {
 
         matched++;
 
+        if (template.tier === 'red') {
+          try {
+            await addLabel(ghToken, issue.number, 'needs-human');
+          } catch (err) {
+            const msg = `addLabel(needs-human) #${issue.number}: ${(err as Error).message?.slice(0, 200) ?? String(err)}`;
+            errors.push(msg);
+            console.error('[supervisor]', msg);
+          }
+          await writeMemory(this.env.MEMORY, `receipt:${runId}:red-route-stop:${issue.number}`, {
+            issueNumber: issue.number,
+            templateId: template.id,
+            tier: template.tier,
+            at: Date.now(),
+          });
+          continue;
+        }
+
         const existingPlan = await readMemory<PlanRecord>(
           this.env.MEMORY,
           `plan:${issue.number}`,
@@ -432,7 +539,10 @@ export class SupervisorDO {
     }
 
     const plan = parameterize(match, { description: body.description, source: body.source ?? 'human' });
-    return Response.json({ matched: true, template: match.id, plan });
+    const stats = await getTemplateStats(this.env.MEMORY, match.id, (match as unknown as { version?: number }).version ?? 1);
+    const requiresPlanApproval = match.tier !== 'green' || !stats?.blessed || stats.demoted;
+    const route = match.tier === 'red' ? 'route-and-stop' : requiresPlanApproval ? 'plan-approval-required' : 'green-blessed-executable';
+    return Response.json({ matched: true, template: match.id, tier: match.tier, route, requires_plan_approval: requiresPlanApproval, stats, plan });
   }
 
   private async handleRun(request: Request): Promise<Response> {
@@ -479,6 +589,30 @@ export class SupervisorDO {
         { error: `Template not found: ${templateId}@${version}` },
         { status: 404 },
       );
+    }
+
+    const stats = await getTemplateStats(this.env.MEMORY, templateId, version);
+    if (template.tier === 'red') {
+      return Response.json({
+        ok: false,
+        template_id: templateId,
+        version,
+        tier: template.tier,
+        route: 'route-and-stop',
+        reason: 'red-tier templates require a human owner and are not executable through /run',
+        stats,
+      }, { status: 409 });
+    }
+    if (template.tier === 'yellow') {
+      return Response.json({
+        ok: false,
+        template_id: templateId,
+        version,
+        tier: template.tier,
+        route: 'plan-approval-required',
+        reason: 'yellow-tier templates require assisted plan approval before execution',
+        stats,
+      }, { status: 409 });
     }
 
     // Parameterize the template

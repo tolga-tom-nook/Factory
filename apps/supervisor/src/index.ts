@@ -38,7 +38,7 @@ export interface Env {
   FACTORY_CORE_API_URL?: string;
   /** Service key for POST /v1/runs/mirror on factory-core-api. Set via `wrangler secret put SUPERVISOR_PUSH_KEY`. */
   SUPERVISOR_PUSH_KEY?: string;
-  /** Service key guarding privileged HTTP routes (/run, /plan, /scheduled, /state, /capabilities). Set via `wrangler secret put SUPERVISOR_API_KEY`. */
+  /** Service key guarding privileged HTTP routes (/run, /plan, /scheduled, /state, /aos/status, /capabilities). Set via `wrangler secret put SUPERVISOR_API_KEY`. */
   SUPERVISOR_API_KEY?: string;
 }
 
@@ -76,7 +76,7 @@ export default {
       return handleSlackEvents(request, env);
     }
 
-    // Every other route (/run, /plan, /scheduled, /state, /capabilities) is
+    // Every other route (/run, /plan, /scheduled, /state, /aos/status, /capabilities) is
     // privileged — runs spend LLM budget and can open PRs — so require the
     // supervisor service key. Fail closed (503) when it is not configured.
     if (!env.SUPERVISOR_API_KEY) {

@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 444,
+    "total_docs": 445,
     "canonical": 17,
-    "active": 379,
+    "active": 380,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -395,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:734178575020dcf8558612626f8d4b4b6da800b946c05db284ba31ef1ca83c3a",
+      "content_hash": "sha256:c796ecb517904f69f620a3ad894ef15000d83ab7d7102e4ba3579fad2a3841a6",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -6487,7 +6487,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:1a971c4803ff3a2b38db07c210e349f9a1d1a43e18dde255174952701be1fa8b",
+      "content_hash": "sha256:37b67addcc3c11c285454952b44abad7f8c892902c2e1296f71dd12c887deddc",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7770,7 +7770,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:a394fbefa3102826cb986909e6252a6a5a802be21a6e5d4b82de5fede83395bc",
+      "content_hash": "sha256:3350c90484d9ed6217224a1ca93b694ea0448a28e9ea026d9c84b1a8922475df",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -7915,12 +7915,12 @@
       "doc_type": "reference",
       "fidelity": "unverified",
       "quality": "usable",
-      "last_updated": "2026-05-30",
+      "last_updated": "2026-06-05",
       "last_verified": null,
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:8a12ca69aaf68f04719c76ec84558455ae1e21770cc7ccf7ed32945d021ee7b3",
+      "content_hash": "sha256:c577089f1a3a0ef49ca677c2366ebc1e62bdd65bc3ef3c0d20ca775fa4e83f5b",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -8026,6 +8026,27 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:ba52423e2db70df842d1343d21db8478a5aa6918eb00f0aa5131bfbc37d59553",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/supervisor/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/supervisor/AOS_COMPLETION_AUDIT.md",
+      "title": "Factory Autonomous OS Completion Audit",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "audit",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:6b0e28f86113f350c07e43a3df8fe2398e1d2760233da0373755485f624b291a",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,

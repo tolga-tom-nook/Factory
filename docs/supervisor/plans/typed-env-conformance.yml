@@ -1,0 +1,63 @@
+id: typed-env-conformance
+version: 1
+description: "Plan typed Cloudflare Worker Env bindings across the portfolio so conformance can verify env access."
+tier: yellow
+triggers:
+  labels_any_of: [area:platform, priority:P2]
+  title_pattern: "(typed Env|Env interface|Bindings: Env|conformance.*Env|add typed Env)"
+  body_patterns:
+    - '(?is)(Typed Env interface|Hono<\{ Bindings: Env \}>|wrangler\.jsonc|platform_conformance|Code patterns dimension)'
+preconditions:
+  - capability_exists: github.comment
+slots:
+  - name: target_apps
+    type: string
+    validator: "^[a-zA-Z0-9, _.-]+$"
+    source: issue_body
+    default: "HumanDesign, videoking, factory-admin-studio, cypher-healing, xico-city"
+  - name: env_file
+    type: string
+    validator: "^[a-zA-Z0-9_./-]+\\.ts$"
+    source: issue_body
+    default: "src/types/env.ts"
+  - name: conformance_check
+    type: string
+    validator: "^[a-zA-Z0-9_ ./:-]+$"
+    source: issue_body
+    default: "scripts/platform_conformance.py Typed Env interface"
+steps:
+  - id: s1
+    tool: github.comment
+    depends_on: null
+    side_effects: write-external
+    params:
+      issue: "$issue.number"
+      body: |
+        **Supervisor typed Env conformance plan**
+
+        Target apps: `$slots.target_apps`
+        Env file convention: `$slots.env_file`
+        Conformance check: `$slots.conformance_check`
+
+        Execution checklist:
+        1. Read each app's `wrangler.jsonc` vars and bindings.
+        2. Define a typed `Env` interface with every D1, KV, R2, Hyperdrive, secret, and var binding the app uses.
+        3. Type Hono as `new Hono<{ Bindings: Env }>()` or equivalent Worker handler bindings.
+        4. Replace untyped `c.env` or handler `env` access with the typed binding surface.
+        5. Re-run the conformance scorer and TypeScript checks.
+        6. Split by app if the diff gets large.
+
+        This is a Yellow assisted plan. It requires explicit approval before execution.
+    intent: "Post the typed Env implementation checklist and require assisted approval."
+acceptance_gate:
+  description: "Issue contains the typed Env conformance checklist."
+  verifier_query:
+    tool: github.comment
+    query: "issue:$issue.number body contains 'Supervisor typed Env conformance plan'"
+    assert: "count >= 1"
+rollback:
+  - on_step: s1
+    action: github.removeLabel
+    params:
+      issue: "$issue.number"
+      label: "status:wip"

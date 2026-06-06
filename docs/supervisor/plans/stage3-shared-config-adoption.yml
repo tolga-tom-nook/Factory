@@ -1,0 +1,63 @@
+id: stage3-shared-config-adoption
+version: 1
+description: "Plan Stage 3 adoption of shared @latimer-woods-tech eslint, biome, and tsconfig packages across product repos."
+tier: yellow
+triggers:
+  labels_any_of: [area:platform, priority:P1]
+  title_pattern: "(Stage 3.*adopt shared|adopt shared.*config|@lwt|@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)|eslint-config|biome-config|tsconfig-base)"
+  body_patterns:
+    - "(?is)(@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)|Every repo extends shared configs|Stage 3 exit criteria|shared configs)"
+preconditions:
+  - capability_exists: github.comment
+slots:
+  - name: package_set
+    type: string
+    validator: "^@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base)(, ?@latimer-woods-tech/(eslint-config|biome-config|tsconfig-base))*$"
+    source: issue_body
+    default: "@latimer-woods-tech/eslint-config, @latimer-woods-tech/biome-config, @latimer-woods-tech/tsconfig-base"
+  - name: rollout_scope
+    type: enum
+    values: [portfolio, app, package]
+    source: issue_body
+    default: portfolio
+  - name: validation_command
+    type: string
+    validator: "^[a-zA-Z0-9:_ ./-]+$"
+    source: issue_body
+    default: "lint typecheck"
+steps:
+  - id: s1
+    tool: github.comment
+    depends_on: null
+    side_effects: write-external
+    params:
+      issue: "$issue.number"
+      body: |
+        **Supervisor Stage 3 shared-config adoption plan**
+
+        Scope: `$slots.rollout_scope`
+        Package set: `$slots.package_set`
+        Validation: `$slots.validation_command`
+
+        Execution checklist:
+        1. Confirm canonical versions in `docs/STACK.md` and package manifests.
+        2. For each target repo, add the shared config packages as devDependencies.
+        3. Add or replace `.eslintrc.json`, `biome.json`, and `tsconfig.json` so they extend the shared packages.
+        4. Remove local config that conflicts with the shared config contract.
+        5. Run lint and typecheck in each touched repo.
+        6. Split by repo if the fan-out crosses safe PR-size limits.
+
+        This is a Yellow assisted plan. It requires explicit approval before execution.
+    intent: "Post the deterministic Stage 3 shared-config adoption checklist and require assisted approval."
+acceptance_gate:
+  description: "Issue contains the Stage 3 shared-config adoption checklist."
+  verifier_query:
+    tool: github.comment
+    query: "issue:$issue.number body contains 'Supervisor Stage 3 shared-config adoption plan'"
+    assert: "count >= 1"
+rollback:
+  - on_step: s1
+    action: github.removeLabel
+    params:
+      issue: "$issue.number"
+      label: "status:wip"
