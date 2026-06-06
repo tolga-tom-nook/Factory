@@ -53,7 +53,7 @@ jobs:
                   }
                 }
               }
-            }' -f q="org:$ORG is:pr is:open author:app/copilot-swe-agent draft:false review:approved" \
+            }' -f q="org:$ORG is:pr is:open draft:false review:approved" \
             --jq '.data.search.nodes')
 
           echo "$PRS" | jq -c '.[]' | while read pr; do

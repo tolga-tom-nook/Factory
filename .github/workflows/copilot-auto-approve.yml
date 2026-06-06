@@ -59,7 +59,7 @@ jobs:
           # Extended per ADR-0003/0006: also auto-approve PRs from operators in branch-protection bypass list.
           # adrper79-dot is in bypass_pull_request_allowances; without this, rebase-driven stale-review dismissals require manual re-approval.
           case "$author" in
-            Copilot|copilot-swe-agent|adrper79-dot) ;;
+            Copilot|copilot-swe-agent|adrper79-dot|factory-cross-repo[bot]|dependabot[bot]|app/dependabot) ;;
             *) echo "proceed=0" >> "$GITHUB_OUTPUT"; exit 0;;
           esac
 

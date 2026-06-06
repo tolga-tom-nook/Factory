@@ -149,7 +149,7 @@
 | [docs/marketing/ROADMAP.md](marketing/ROADMAP.md) | active | unverified | unknown | Marketing Maturation Roadmap |
 | [docs/marketing/VOICES.md](marketing/VOICES.md) | active | unverified | unknown | Voices |
 
-## platform (338)
+## platform (339)
 
 | Path | Status | Fidelity | Last Updated | Title |
 |---|---|---|---|---|
@@ -430,6 +430,7 @@
 | [docs/STATUS.md](STATUS.md) | active | unverified | unknown | Factory Ecosystem — Status |
 | [docs/supervisor/adr-001-llm-cache-blocks.md](supervisor/adr-001-llm-cache-blocks.md) | active | unverified | unknown | ADR-001: Multi-Block Prompt Cache Structure for Supervisor LLM Calls |
 | [docs/supervisor/ADR-EXEC-GAPS.md](supervisor/ADR-EXEC-GAPS.md) | active | unverified | unknown | ADR: SUP-4 EXEC Gaps — Design Decisions |
+| [docs/supervisor/aos-green-smoke.md](supervisor/aos-green-smoke.md) | active | unverified | unknown | AOS Green Smoke |
 | [docs/supervisor/APP_INTEGRATION.md](supervisor/APP_INTEGRATION.md) | active | unverified | unknown | Supervisor Integration Guide for Apps |
 | [docs/supervisor/ARCHITECTURE.md](supervisor/ARCHITECTURE.md) | active | unverified | unknown | Factory as Supervisor — Architecture Plan, v2.1 |
 | [docs/supervisor/CAPABILITY_DECLARATION.md](supervisor/CAPABILITY_DECLARATION.md) | active | unverified | unknown | Supervisor Capability Declaration — Phase 2 (SUP-4 EXEC Leg) |
