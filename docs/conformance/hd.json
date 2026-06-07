@@ -2,7 +2,7 @@
   "repo_key": "HD",
   "repo_name": "HumanDesign",
   "repo_path": "Latimer-Woods-Tech/HumanDesign",
-  "timestamp": "2026-05-30T07:59:52.900763+00:00",
+  "timestamp": "2026-06-06T08:05:06.263138+00:00",
   "cohesion": 53,
   "dimensions": [
     {
@@ -184,7 +184,7 @@
         {
           "name": "ROLLBACK block enforced",
           "passed": true,
-          "detail": "WARN: 2 existing migration(s) missing -- ROLLBACK: block (debt \u2014 not blocking): migrations/20260401_create_tier_schema.sql, migrations/20260401_insert_tier_data.sql"
+          "detail": "WARN: 9 existing migration(s) missing -- ROLLBACK: block (debt \u2014 not blocking): migrations/20260401_create_tier_schema.sql, migrations/20260401_insert_tier_data.sql, migrations/20260603_rls_app_role.sql, migrations/20260603_rls_defn_lookups.sql, migrations/20260603_rls_policies.sql, migrations/20260603_rls_policies_crossuser.sql, migrations/20260603_rls_policies_writes.sql, migrations/20260604_add_comped_tier.sql, migrations/20260604_notifications_inbox.sql"
         },
         {
           "name": "Numbered file naming",

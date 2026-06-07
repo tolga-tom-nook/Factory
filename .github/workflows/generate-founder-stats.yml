@@ -117,6 +117,9 @@ jobs:
           git config user.name  "factory-cross-repo[bot]"
           git config user.email "factory-cross-repo[bot]@users.noreply.github.com"
 
+          # Preserve the generated snapshot in TMP, then clear the working tree
+          # so Git can switch to the stable daily update branch.
+          git restore --staged --worktree "$FILE"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
             git fetch origin "$BRANCH"
             git checkout -B "$BRANCH" "origin/$BRANCH"

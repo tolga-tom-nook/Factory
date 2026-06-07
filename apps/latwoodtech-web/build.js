@@ -280,6 +280,9 @@ await writeFile(join(distDir, 'styles.css'), cssMin, 'utf8');
 await copyFile(join(srcDir, 'app.js'), join(distDir, 'app.js'));
 await copyFile(join(srcDir, 'hero-circuitry.js'), join(distDir, 'hero-circuitry.js'));
 await cp(join(srcDir, 'assets'), join(distDir, 'assets'), { recursive: true });
+// /work/ — engagement model and delivery process.
+await mkdir(join(distDir, 'work'), { recursive: true });
+await copyFile(join(srcDir, 'work', 'index.html'), join(distDir, 'work', 'index.html'));
 // /stack/ — annotated architecture + "what we refuse to ship with" page.
 await mkdir(join(distDir, 'stack'), { recursive: true });
 await copyFile(join(srcDir, 'stack', 'index.html'), join(distDir, 'stack', 'index.html'));

@@ -22,6 +22,26 @@ function fmt(n) {
   return Number(n).toLocaleString();
 }
 
+function animateNumber(el, value) {
+  const target = Number(value);
+  if (!Number.isFinite(target)) return;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    el.textContent = fmt(target);
+    return;
+  }
+
+  const duration = 950;
+  const started = performance.now();
+  const tick = (now) => {
+    const progress = Math.min((now - started) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 4);
+    el.textContent = fmt(Math.round(target * eased));
+    if (progress < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
 /* ── 1. Founder stats ──────────────────────────────────────────── */
 async function hydrateStats() {
   let stats;
@@ -44,7 +64,7 @@ async function hydrateStats() {
 
   for (const [key, value] of Object.entries(map)) {
     for (const el of document.querySelectorAll(`[data-stat="${key}"]`)) {
-      el.textContent = fmt(value);
+      animateNumber(el, value);
     }
     for (const el of document.querySelectorAll(`[data-stat-inline="${key}"]`)) {
       el.textContent = fmt(value);

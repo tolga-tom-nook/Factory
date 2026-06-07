@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="The Latimer Woods stack. Edge-first, Cloudflare Workers + Hono, Neon Postgres via Hyperdrive, a three-tier LLM cascade, and a published list of what we refuse to ship with." />
-    <meta property="og:title" content="Latimer Woods — Stack" />
-    <meta property="og:description" content="What we build with, and what we refuse to ship with." />
+    <meta name="description" content="The Latimer Woods stack: edge-first architecture, Cloudflare Workers, Neon Postgres, AI cascade, and the constraints that keep the platform coherent." />
+    <meta property="og:title" content="Latimer Woods Stack" />
+    <meta property="og:description" content="What I build with, why it is opinionated, and what I refuse to ship with." />
     <meta property="og:type" content="article" />
     <meta property="og:url" content="https://latwoodtech.com/stack/" />
     <meta property="og:image" content="https://latwoodtech.com/assets/og-image.svg" />
@@ -21,7 +21,7 @@
     <title>Stack — Latimer Woods</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
-  <body>
+  <body class="studio-page stack-page">
     <a href="#main" class="skip-link">Skip to main content</a>
     <div class="page-shell">
       <nav class="site-nav" aria-label="Primary">
@@ -33,18 +33,31 @@
           <a href="/stack/" aria-current="page">Stack</a>
           <a href="/work/">Work</a>
           <a href="/founder/">Founder</a>
+          <a href="/status/">Status</a>
         </div>
       </nav>
-      <header class="stack-hero">
-        <a class="stack-back" href="/">← Latimer Woods</a>
+
+      <header class="world-hero stack-hero">
         <p class="eyebrow">Stack</p>
-        <h1>What we build with, and what we refuse to ship with.</h1>
-        <p class="subtitle stack-lead">
-          If you're evaluating a platform engagement, this page tells you exactly what you'd be getting and why each decision was made. Every choice below is opinionated, load-bearing, and already running in production across five live products.
+        <h1>What I build with, and what I refuse to ship with.</h1>
+        <p class="world-hero-copy">
+          Every technical choice here is already carrying real traffic. The stack exists to keep products lean,
+          public proof visible, and operating complexity lower than the industry norm.
         </p>
-        <p class="subtitle">
-          Edge-first by default. Every product runs on Cloudflare Workers, talks to Neon Postgres through Hyperdrive, and pulls language work from a three-tier LLM cascade. Not a roadmap. Not a wishlist. This is what's deployed right now.
-        </p>
+        <div class="world-hero-metrics">
+          <div class="world-hero-metric">
+            <strong>Edge-first</strong>
+            <span>Workers and Pages instead of region-bound app servers</span>
+          </div>
+          <div class="world-hero-metric">
+            <strong>Readably strict</strong>
+            <span>TypeScript, ESM, Web Crypto, and explicit runtime boundaries</span>
+          </div>
+          <div class="world-hero-metric">
+            <strong>Lean by design</strong>
+            <span>Fewer moving parts, fewer wasteful dependencies, lower steady-state cost</span>
+          </div>
+        </div>
       </header>
 
       <main id="main">
@@ -71,7 +84,6 @@
               </style>
             </defs>
 
-            <!-- Layer 1: Public surfaces -->
             <rect x="0" y="0" width="920" height="80" class="layer-band"/>
             <text x="16" y="22" class="lbl">Brand surfaces · public</text>
             <g>
@@ -85,13 +97,11 @@
               <text x="780" y="59" text-anchor="middle" class="box-label">apunlimited.com</text>
             </g>
 
-            <!-- Flow lines down to runtime -->
             <path d="M 130 80 L 130 110" class="flow" marker-end="url(#arrow)"/>
             <path d="M 330 80 L 330 110" class="flow" marker-end="url(#arrow)"/>
             <path d="M 550 80 L 550 110" class="flow" marker-end="url(#arrow)"/>
             <path d="M 780 80 L 780 110" class="flow" marker-end="url(#arrow)"/>
 
-            <!-- Layer 2: Edge runtime -->
             <rect x="0" y="100" width="920" height="80" class="layer-band"/>
             <text x="16" y="122" class="lbl">Edge runtime · cloudflare</text>
             <g>
@@ -103,12 +113,10 @@
               <text x="760" y="161" class="box-note">Static + SPA surfaces</text>
             </g>
 
-            <!-- Flow to data + AI + integrations -->
             <path d="M 200 180 L 200 220" class="flow" marker-end="url(#arrow)"/>
             <path d="M 460 180 L 460 220" class="flow" marker-end="url(#arrow)"/>
             <path d="M 720 180 L 720 220" class="flow" marker-end="url(#arrow)"/>
 
-            <!-- Layer 3: Data -->
             <rect x="0" y="210" width="920" height="80" class="layer-band"/>
             <text x="16" y="232" class="lbl">Data · stateful</text>
             <g>
@@ -124,7 +132,6 @@
               <text x="820" y="269" text-anchor="middle" class="box-label">Stream (video)</text>
             </g>
 
-            <!-- Layer 4: AI cascade -->
             <rect x="0" y="310" width="920" height="80" class="layer-band"/>
             <text x="16" y="332" class="lbl">Language · llm cascade</text>
             <g>
@@ -141,7 +148,6 @@
               <text x="800" y="369" text-anchor="middle" class="box-label">Groq (tier 3)</text>
             </g>
 
-            <!-- Layer 5: Integrations -->
             <rect x="0" y="410" width="920" height="70" class="layer-band"/>
             <text x="16" y="432" class="lbl">Integrations · external</text>
             <g>
@@ -155,7 +161,6 @@
               <text x="750" y="464" text-anchor="middle" class="box-label">GitHub Actions · GCP Secret Manager (WIF)</text>
             </g>
 
-            <!-- Layer 6: Observability -->
             <rect x="0" y="500" width="920" height="60" class="layer-band"/>
             <text x="16" y="522" class="lbl">Observability · always-on</text>
             <g>
@@ -171,93 +176,125 @@
           </svg>
         </section>
 
-        <section aria-labelledby="why-title">
+        <section class="world-section">
           <div class="section-heading">
             <p class="section-eyebrow">Why this stack</p>
-            <h2 id="why-title">Eight decisions, each opinionated, each load-bearing.</h2>
+            <h2>Opinionated choices that keep the platform coherent.</h2>
           </div>
 
           <div class="stack-decisions">
             <article class="stack-decision">
               <span class="stack-decision-tag">Edge over region</span>
               <h3>Cloudflare Workers everywhere</h3>
-              <p>Every API runs on Workers, not on a single-region container or serverless function. We get sub-100ms TTFB to every user on Earth without managing capacity, and cold starts vanish because there are no cold starts. The cost: no <code>fs</code>, no <code>process.env</code>, no Node built-ins. Worth it.</p>
+              <p>Every API runs at the edge, not inside a single-region app server. Lower latency, fewer capacity rituals, and fewer reasons to over-provision compute.</p>
             </article>
 
             <article class="stack-decision">
               <span class="stack-decision-tag">Router</span>
               <h3>Hono, not Express or Next</h3>
-              <p>Hono is the only router we found that treats Workers as a first-class runtime and not a polyfill target. The whole framework is smaller than Express's middleware loader. Type-safety on routes and middleware is real, not vibes.</p>
+              <p>Hono treats Workers as a first-class runtime instead of a compatibility afterthought, which keeps the platform smaller and more honest.</p>
             </article>
 
             <article class="stack-decision">
               <span class="stack-decision-tag">Database</span>
               <h3>Neon Postgres via Hyperdrive</h3>
-              <p>Postgres because it's still the most reliable thing we can run a business on. Neon because branching gives every PR a real database. Hyperdrive because connection-pooling from the edge is otherwise a load-bearing footgun — we get a sane <code>env.DB</code> binding and no connection storms.</p>
+              <p>Postgres for durability, Neon for branching, Hyperdrive for sane edge connections without load-bearing pool management.</p>
             </article>
 
             <article class="stack-decision">
               <span class="stack-decision-tag">Auth</span>
-              <h3>JWT via Web Crypto, not a library</h3>
-              <p>We sign and verify JWTs ourselves with the Web Crypto API. No <code>jsonwebtoken</code>, no framework auth helpers. The verification path is ~40 lines, every line is auditable, and we never get bitten by a transitive CVE in a parsing library we never used.</p>
+              <h3>JWT via Web Crypto</h3>
+              <p>Short, auditable verification paths with fewer transitive dependencies and no Node-only assumptions hiding in the background.</p>
             </article>
 
             <article class="stack-decision">
               <span class="stack-decision-tag">LLM</span>
               <h3>Three-tier cascade: Anthropic → Grok → Groq</h3>
-              <p>Tier 1 is Anthropic for anything where output quality is product-defining. Tier 2 is Grok for high-volume work that tolerates more variance. Tier 3 is Groq when latency dominates correctness. All three go through Cloudflare AI Gateway so we get one rate-limit ceiling, one cache, one set of logs, and an instant failover path if any provider goes dark.</p>
+              <p>Quality first when quality matters, lower-cost throughput when variance is acceptable, and low-latency fallback when speed dominates.</p>
             </article>
 
             <article class="stack-decision">
               <span class="stack-decision-tag">Frontend</span>
-              <h3>Static-first, hydrate only what moves</h3>
-              <p>Pages serve static HTML from the edge. JavaScript loads only where it earns its weight — pulse hydration, contact form, video playback. This page you're reading is under 5KB of JS. Most landing-page React bundles are 30× that for less.</p>
+              <h3>Static first, hydrate only what moves</h3>
+              <p>Most of the site is HTML and CSS served fast. JavaScript arrives only where interactivity earns its keep.</p>
             </article>
 
             <article class="stack-decision">
               <span class="stack-decision-tag">Secrets</span>
-              <h3>GCP Secret Manager via Workload Identity Federation</h3>
-              <p>No secrets in GitHub Actions repo settings, no secrets in <code>wrangler.jsonc</code> vars, no secrets in source. CI authenticates to GCP via WIF (no service-account JSON), fetches what it needs at job start, exports to step env, and the secrets are gone when the job ends. Rotation is one place, not seventeen.</p>
+              <h3>WIF + GCP Secret Manager</h3>
+              <p>No long-lived secrets in CI settings, no secrets in repo config, and a cleaner rotation story when the platform changes.</p>
             </article>
 
             <article class="stack-decision">
-              <span class="stack-decision-tag">Public surface</span>
-              <h3>Same-origin curated JSON, no public APIs</h3>
-              <p>The pulse data on the landing page is a build-time JSON file, same origin, no auth — because there's nothing to auth. Operator endpoints stay behind authenticated Admin Studio routes. The public surface advertises proof, never plumbing.</p>
+              <span class="stack-decision-tag">Public proof</span>
+              <h3>Same-origin curated JSON, not public operator APIs</h3>
+              <p>The public layer shows rigor without exposing control surfaces. Proof is public; power stays authenticated.</p>
             </article>
           </div>
         </section>
 
         <aside class="stack-bans" aria-labelledby="bans-title">
           <p class="section-eyebrow">Hard constraints</p>
-          <h2 id="bans-title">What we refuse to ship with.</h2>
-          <p style="color:#d8c9a3;margin:8px 0 0">These are not stylistic preferences. Every one is enforced by CI and reviewed against on every PR.</p>
+          <h2 id="bans-title">What I refuse to ship with.</h2>
+          <p style="color:#d8c9a3;margin:8px 0 0">These are design constraints, not taste preferences. They keep the platform edge-native, auditable, and lean.</p>
           <ul>
-            <li><code>process.env</code> anywhere — Workers don't have it; use bindings.</li>
-            <li>Node built-ins: no <code>fs</code>, no <code>path</code>, no Node <code>crypto</code>.</li>
-            <li>CommonJS <code>require()</code> — ESM <code>import</code>/<code>export</code> only.</li>
-            <li><code>Buffer</code> — use <code>Uint8Array</code>, <code>TextEncoder</code>, <code>TextDecoder</code>.</li>
+            <li><code>process.env</code> anywhere. Workers do not have it. Use bindings.</li>
+            <li>Node built-ins like <code>fs</code>, <code>path</code>, or Node <code>crypto</code>.</li>
+            <li>CommonJS <code>require()</code>. ESM only.</li>
+            <li><code>Buffer</code> where <code>Uint8Array</code>, <code>TextEncoder</code>, and <code>TextDecoder</code> are the right answer.</li>
             <li>Raw <code>fetch</code> without explicit error handling.</li>
-            <li>Secrets in source or in <code>wrangler.jsonc</code> <code>vars</code>.</li>
-            <li><code>*.workers.dev</code> URLs in any user-facing HTML, JS, or API client.</li>
-            <li><code>any</code> in any public TypeScript API.</li>
-            <li>Worker renames without first updating every consumer file listed in <code>service-registry.yml</code>.</li>
+            <li>Secrets in source or <code>wrangler.jsonc</code> <code>vars</code>.</li>
+            <li><code>*.workers.dev</code> URLs in user-facing flows.</li>
+            <li><code>any</code> in public TypeScript APIs.</li>
+            <li>Runtime changes that skip the registry and consumer update pass.</li>
           </ul>
         </aside>
 
-        <section class="section section-footnote" style="margin-top:64px">
-          <p style="margin-bottom:24px;font-size:1.1rem;color:rgba(248,241,222,0.9);max-width:560px;">
-            If this stack is what your project needs, I take on a small number of engagements at a time.
-          </p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
-            <a class="button button-primary" href="https://latwoodtech.com/#contact">Start a conversation</a>
+        <section class="section section-footnote stack-footnote">
+          <p>If this stack philosophy matches the system you need, the `Work` page explains how engagements are structured.</p>
+          <div class="footnote-actions">
+            <a class="button button-primary" href="/work/">See engagement structure</a>
             <a class="button button-secondary" href="/founder/">Founder profile</a>
           </div>
-          <p style="margin-top:32px;">
-            <a class="stack-back" href="/">← Back to Latimer Woods</a>
-          </p>
         </section>
       </main>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Latimer Woods</h3>
+            <p class="footer-text">Founder-led edge platform studio for healing, media, governance, and lean infrastructure.</p>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Platforms</p>
+            <ul class="footer-links">
+              <li><a href="https://selfprime.net" target="_blank" rel="noreferrer">Prime Self</a></li>
+              <li><a href="https://capricast.com" target="_blank" rel="noreferrer">Capricast</a></li>
+              <li><a href="https://cypherofhealing.com" target="_blank" rel="noreferrer">Cypher of Healing</a></li>
+              <li><a href="https://apunlimited.com" target="_blank" rel="noreferrer">AP Unlimited</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Learn</p>
+            <ul class="footer-links">
+              <li><a href="/stack/" aria-current="page">Stack & Architecture</a></li>
+              <li><a href="/work/">How I Work</a></li>
+              <li><a href="/founder/">Founder Profile</a></li>
+              <li><a href="/status/">System Status</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Contact</p>
+            <p class="footer-availability">Available for founder-led platform and AI pipeline engagements.</p>
+            <ul class="footer-links">
+              <li><a href="mailto:aperry@latwoodtech.com">aperry@latwoodtech.com</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Latimer Woods Technology. <a href="/privacy.html">Privacy Policy</a>.</p>
+        </div>
+      </footer>
     </div>
   </body>
 </html>
