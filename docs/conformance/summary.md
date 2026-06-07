@@ -1,6 +1,6 @@
 # Platform Conformance — Shadow Mode
 
-*Generated: 2026-05-30 (UTC). Stage 1 shadow — scores are advisory, not enforced.*
+*Generated: 2026-06-06 (UTC). Stage 1 shadow — scores are advisory, not enforced.*
 
 ## Cohesion summary
 
@@ -8,8 +8,8 @@
 |------|---------:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|-----:|
 | HumanDesign | **53** | 40 | 0 | 100 | 40 | 80 | 67 | 33 | 67 | 67 | 25 |
 | capricast | **42** | 40 | 20 | 40 | 40 | 60 | 33 | 33 | 33 | 67 | 50 |
-| factory-admin-studio | **62** | 60 | 80 | 20 | 40 | 80 | 100 | 33 | 67 | 100 | 75 |
-| cypher-healing | **49** | 60 | 80 | 60 | 60 | 40 | 67 | 33 | 33 | 0 | 25 |
+| factory-admin-studio | **73** | 60 | 80 | 100 | 40 | 60 | 100 | 33 | 67 | 100 | 100 |
+| cypher-healing | **47** | 60 | 80 | 60 | 40 | 40 | 67 | 33 | 33 | 0 | 25 |
 | xico-city | **51** | 80 | 80 | 60 | 0 | 20 | 100 | 33 | 33 | 67 | 50 |
 
 **Shadow threshold:** 70. Below this would block deploys once Stage 4 ships.
@@ -53,7 +53,7 @@
 
 ### Schema — 67/100 (weight 5)
 - ✅ Migrations directory present
-- ✅ ROLLBACK block enforced — WARN: 2 existing migration(s) missing -- ROLLBACK: block (debt — not blocking): migrations/20260401_create_tier_schema.sql, migrations/20260401_insert_tier_data.sql
+- ✅ ROLLBACK block enforced — WARN: 9 existing migration(s) missing -- ROLLBACK: block (debt — not blocking): migrations/20260401_create_tier_schema.sql, migrations/20260401_insert_tier_data.sql, migrations/20260603_rls_app_role.sql, migrations/20260603_rls_defn_lookups.sql, migrations/20260603_rls_policies.sql, migrations/20260603_rls_policies_crossuser.sql, migrations/20260603_rls_policies_writes.sql, migrations/20260604_add_comped_tier.sql, migrations/20260604_notifications_inbox.sql
 - ❌ Numbered file naming
 
 ### Workflows — 33/100 (weight 10)
@@ -140,7 +140,7 @@
 - ❌ DSR endpoint hints (export + delete)
 - ✅ Migration PII columns documented
 
-## factory-admin-studio — 62/100
+## factory-admin-studio — 73/100
 
 ### Stack — 60/100 (weight 10)
 - ❌ wrangler.jsonc present
@@ -156,12 +156,12 @@
 - ✅ No console.log in src/
 - ❌ Typed Env bindings
 
-### Tests — 20/100 (weight 15)
-- ❌ vitest.config present
-- ❌ playwright.config present
+### Tests — 100/100 (weight 15)
+- ✅ vitest.config present
+- ✅ playwright.config present
 - ✅ tests/ or test/ dir present
-- ❌ Smoke tier present
-- ❌ Coverage thresholds set
+- ✅ Smoke tier present
+- ✅ Coverage thresholds set
 
 ### Observability — 40/100 (weight 10)
 - ❌ Sentry import
@@ -170,10 +170,10 @@
 - ✅ SLO doc present
 - ❌ Structured log fields
 
-### Security — 80/100 (weight 15)
+### Security — 60/100 (weight 15)
 - ✅ CodeQL workflow present
 - ❌ npm audit step in CI
-- ✅ No NPM_TOKEN in workflows
+- ❌ No NPM_TOKEN in workflows
 - ✅ Trusted Publishers (OIDC)
 - ✅ Renovate config present
 
@@ -197,13 +197,13 @@
 - ✅ Canary or post-deploy verify
 - ✅ Synthetic / smoke workflow
 
-### Privacy — 75/100 (weight 5)
+### Privacy — 100/100 (weight 5)
 - ✅ PII_INVENTORY.md present
 - ✅ Retention policy doc present
-- ❌ DSR endpoint hints (export + delete)
+- ✅ DSR endpoint hints (export + delete)
 - ✅ Migration PII columns documented
 
-## cypher-healing — 49/100
+## cypher-healing — 47/100
 
 ### Stack — 60/100 (weight 10)
 - ✅ wrangler.jsonc present
@@ -226,12 +226,12 @@
 - ❌ Smoke tier present
 - ✅ Coverage thresholds set
 
-### Observability — 60/100 (weight 10)
+### Observability — 40/100 (weight 10)
 - ✅ Sentry import
 - ✅ @lwt/monitoring consumed
 - ❌ Sourcemap upload step
 - ❌ SLO doc present
-- ✅ Structured log fields
+- ❌ Structured log fields
 
 ### Security — 40/100 (weight 15)
 - ❌ CodeQL workflow present

@@ -56,7 +56,7 @@
     </script>
     <script type="module" src="../founder.js"></script>
   </head>
-  <body>
+  <body class="founder-page">
     <a href="#main" class="skip-link">Skip to main content</a>
     <div class="page-shell resume-shell">
 
@@ -69,6 +69,7 @@
           <a href="/stack/">Stack</a>
           <a href="/work/">Work</a>
           <a href="/founder/" aria-current="page">Founder</a>
+          <a href="/status/">Status</a>
           <button type="button" class="button button-secondary resume-print-btn" data-print-btn>Print / Save PDF</button>
         </div>
       </nav>
@@ -101,42 +102,45 @@
 
         <!-- ── Live Stats Band ──────────────────────────────────── -->
         <section class="resume-stats-band" aria-label="Live platform statistics">
-          <p class="section-eyebrow" style="margin-bottom: 20px;">Live Platform Stats</p>
+          <div class="resume-telemetry-head">
+            <p class="section-eyebrow">Live Platform Telemetry</p>
+            <p class="resume-telemetry-time" data-stats-updated>Syncing Factory signal...</p>
+          </div>
           <div class="resume-stats-grid">
             <a href="https://github.com/Latimer-Woods-Tech/Factory/pulls?q=is%3Apr+is%3Amerged"
                class="stat-chip" target="_blank" rel="noreferrer" aria-label="Merged PRs — verify on GitHub">
               <span class="stat-chip-label">Merged PRs</span>
-              <strong class="stat-chip-value" data-stat="prs">--</strong>
+              <strong class="stat-chip-value" data-stat="prs">1,325</strong>
               <span class="stat-chip-proof">Verify on GitHub →</span>
             </a>
             <a href="https://github.com/Latimer-Woods-Tech/Factory/commits/main"
                class="stat-chip" target="_blank" rel="noreferrer" aria-label="Total commits — verify on GitHub">
               <span class="stat-chip-label">Total Commits</span>
-              <strong class="stat-chip-value" data-stat="commits">--</strong>
+              <strong class="stat-chip-value" data-stat="commits">1,105</strong>
               <span class="stat-chip-proof">Verify on GitHub →</span>
             </a>
             <a href="https://github.com/Latimer-Woods-Tech/Factory/tree/main/apps"
                class="stat-chip stat-chip-green" target="_blank" rel="noreferrer" aria-label="Deployed apps — verify on GitHub">
               <span class="stat-chip-label">Deployed Apps</span>
-              <strong class="stat-chip-value" data-stat="apps">--</strong>
+              <strong class="stat-chip-value" data-stat="apps">27</strong>
               <span class="stat-chip-proof">Verify on GitHub →</span>
             </a>
             <a href="https://github.com/Latimer-Woods-Tech/Factory/tree/main/.github/workflows"
                class="stat-chip stat-chip-red" target="_blank" rel="noreferrer" aria-label="CI/CD workflows — verify on GitHub">
               <span class="stat-chip-label">CI/CD Workflows</span>
-              <strong class="stat-chip-value" data-stat="workflows">--</strong>
+              <strong class="stat-chip-value" data-stat="workflows">130</strong>
               <span class="stat-chip-proof">Verify on GitHub →</span>
             </a>
             <a href="https://github.com/Latimer-Woods-Tech/Factory/tree/main/packages"
                class="stat-chip" target="_blank" rel="noreferrer" aria-label="Shared packages — verify on GitHub">
               <span class="stat-chip-label">Shared Packages</span>
-              <strong class="stat-chip-value" data-stat="packages">--</strong>
+              <strong class="stat-chip-value" data-stat="packages">37</strong>
               <span class="stat-chip-proof">Verify on GitHub →</span>
             </a>
             <a href="https://github.com/orgs/Latimer-Woods-Tech/repositories"
                class="stat-chip" target="_blank" rel="noreferrer" aria-label="Org repos — verify on GitHub">
               <span class="stat-chip-label">Platform Repos</span>
-              <strong class="stat-chip-value" data-stat="repos">--</strong>
+              <strong class="stat-chip-value" data-stat="repos">15</strong>
               <span class="stat-chip-proof">Verify on GitHub →</span>
             </a>
           </div>
@@ -157,7 +161,7 @@
         </section>
 
         <!-- ── Profile ───────────────────────────────────────────── -->
-        <section class="resume-section">
+        <section class="resume-section" id="judgment">
           <p class="section-eyebrow">Profile</p>
           <p class="resume-profile-text">
             Platform and infrastructure engineer with 25+ years building and operating production systems at enterprise scale, now

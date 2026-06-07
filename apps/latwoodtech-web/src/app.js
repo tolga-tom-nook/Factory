@@ -82,6 +82,11 @@ async function hydratePulse() {
     if (security) security.textContent = pulse.securityModel;
     if (surfaces) surfaces.innerHTML = renderSurfaces(pulse.surfaces);
     if (vectors) vectors.innerHTML = renderVectors(pulse.vectors ?? []);
+    if (Array.isArray(pulse.surfaces)) {
+      for (const el of document.querySelectorAll('[data-hero-stat="surfaces"]')) {
+        el.textContent = String(pulse.surfaces.length);
+      }
+    }
   } catch (error) {
     if (status) status.textContent = 'Public operating picture temporarily unavailable.';
     if (updated) updated.textContent = 'Feed unavailable';
@@ -112,8 +117,12 @@ async function hydrateHeroStats() {
     for (const el of document.querySelectorAll('[data-hero-stat="apps"]')) {
       el.textContent = stats.deployedApps;
     }
-    for (const el of document.querySelectorAll('[data-hero-stat="cost"]')) {
-      el.textContent = stats.monthlyCostUsd?.toFixed(2) ?? '9.11';
+    const monthlyCost = Number(stats.monthlyCostUsd);
+    const deployedApps = Number(stats.deployedApps);
+    const perApp = monthlyCost > 0 && deployedApps > 0 ? (monthlyCost / deployedApps).toFixed(2) : '0.34';
+
+    for (const el of document.querySelectorAll('[data-hero-stat="per-app"]')) {
+      el.textContent = perApp;
     }
   } catch {
     /* fallback values already seeded in HTML */

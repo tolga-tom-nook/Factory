@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 445,
+    "total_docs": 446,
     "canonical": 17,
-    "active": 380,
+    "active": 381,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -395,7 +395,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:c796ecb517904f69f620a3ad894ef15000d83ab7d7102e4ba3579fad2a3841a6",
+      "content_hash": "sha256:a21573b4f5f511544cb80b85f17c19f601bd03ced7deb1a934fd47640b27f600",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -416,7 +416,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:dd5951e5e661cec8131798ff8ddcc02ee693d475a90afaab5350c6b42c2e06f4",
+      "content_hash": "sha256:54a777ec60df60456642bfca77da5d9c530eb9ace347d396eaf30dc53d942e96",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -437,7 +437,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:bafce951511c1b12af799e03e02165d5ddedc8baed0dcaaff173ede962d72218",
+      "content_hash": "sha256:289c846fec2adca92590f791f3a1280c80ea35a96f0c4f393647cc01cb1c1382",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -2775,7 +2775,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:0d5216a34490c249db85b1ddeb000492920a6a7fb7c618f8ddec0919f082866a",
+      "content_hash": "sha256:7d2cd25fc1627513fb99cf4f41ab5638afaba261c30d0d1a6e125282f98a1996",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -2796,7 +2796,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:dc123025842adc61622361cdb3ea5d2ae03eac5e25dbee9089469a36502603dd",
+      "content_hash": "sha256:17d42bb5394a733cde741bed39702bf89f32d18feecf4119fd5118b066eaae34",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -3345,6 +3345,27 @@
       "truth_sources": [],
       "verified_by": [],
       "content_hash": "sha256:217ba0bec1399f8411f47ac1aa563310a12f290cd4d78cdd907b7be12ce7a035",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
+      "path": "docs/digest/2026-06-06.md",
+      "title": "Morning digest — 2026-06-06",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "reference",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:a7b063f4f41462cb64965f7daabdb6fd0dfa28d08afcf9d785491e62e78d5632",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,

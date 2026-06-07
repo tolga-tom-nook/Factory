@@ -123,6 +123,7 @@ This view lists docs that are stale/archive or missing a `Last Updated`/`last_up
 | [docs/digest/2026-05-25.md](digest/2026-05-25.md) | active | unverified | platform | unknown | Morning digest — 2026-05-25 |
 | [docs/digest/2026-05-30.md](digest/2026-05-30.md) | active | unverified | platform | unknown | Morning digest — 2026-05-30 |
 | [docs/digest/2026-06-05.md](digest/2026-06-05.md) | active | unverified | platform | unknown | Morning digest — 2026-06-05 |
+| [docs/digest/2026-06-06.md](digest/2026-06-06.md) | active | unverified | platform | unknown | Morning digest — 2026-06-06 |
 | [docs/DOCS_OWNERSHIP.md](DOCS_OWNERSHIP.md) | active | unverified | platform | unknown | Documentation Ownership & Update Cadence |
 | [docs/DOCUMENTATION_HIERARCHY.md](DOCUMENTATION_HIERARCHY.md) | active | unverified | platform | unknown | Documentation Hierarchy & Source of Truth |
 | [docs/ENVIRONMENT_VERIFICATION_SETUP.md](ENVIRONMENT_VERIFICATION_SETUP.md) | active | unverified | platform | unknown | Environment Verification Script Setup |

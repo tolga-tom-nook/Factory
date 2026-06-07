@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-30T08:01:18.184420+00:00",
+  "generated": "2026-06-06T08:06:27.722857+00:00",
   "total_weight": 100,
   "shadow_threshold": 70,
   "repos": [
@@ -7,7 +7,7 @@
       "repo_key": "HD",
       "repo_name": "HumanDesign",
       "repo_path": "Latimer-Woods-Tech/HumanDesign",
-      "timestamp": "2026-05-30T07:59:52.900763+00:00",
+      "timestamp": "2026-06-06T08:05:06.263138+00:00",
       "cohesion": 53,
       "dimensions": [
         {
@@ -189,7 +189,7 @@
             {
               "name": "ROLLBACK block enforced",
               "passed": true,
-              "detail": "WARN: 2 existing migration(s) missing -- ROLLBACK: block (debt \u2014 not blocking): migrations/20260401_create_tier_schema.sql, migrations/20260401_insert_tier_data.sql"
+              "detail": "WARN: 9 existing migration(s) missing -- ROLLBACK: block (debt \u2014 not blocking): migrations/20260401_create_tier_schema.sql, migrations/20260401_insert_tier_data.sql, migrations/20260603_rls_app_role.sql, migrations/20260603_rls_defn_lookups.sql, migrations/20260603_rls_policies.sql, migrations/20260603_rls_policies_crossuser.sql, migrations/20260603_rls_policies_writes.sql, migrations/20260604_add_comped_tier.sql, migrations/20260604_notifications_inbox.sql"
             },
             {
               "name": "Numbered file naming",
@@ -302,7 +302,7 @@
       "repo_key": "CC",
       "repo_name": "capricast",
       "repo_path": "Latimer-Woods-Tech/capricast",
-      "timestamp": "2026-05-30T08:00:07.469357+00:00",
+      "timestamp": "2026-06-06T08:05:20.596557+00:00",
       "cohesion": 42,
       "dimensions": [
         {
@@ -597,8 +597,8 @@
       "repo_key": "FA",
       "repo_name": "factory-admin-studio",
       "repo_path": "Latimer-Woods-Tech/Factory",
-      "timestamp": "2026-05-30T08:00:37.606034+00:00",
-      "cohesion": 62,
+      "timestamp": "2026-06-06T08:05:49.062724+00:00",
+      "cohesion": 73,
       "dimensions": [
         {
           "key": "stack",
@@ -670,16 +670,16 @@
           "key": "tests",
           "title": "Tests",
           "weight": 15,
-          "score": 20,
+          "score": 100,
           "checks": [
             {
               "name": "vitest.config present",
-              "passed": false,
+              "passed": true,
               "detail": ""
             },
             {
               "name": "playwright.config present",
-              "passed": false,
+              "passed": true,
               "detail": ""
             },
             {
@@ -689,12 +689,12 @@
             },
             {
               "name": "Smoke tier present",
-              "passed": false,
+              "passed": true,
               "detail": ""
             },
             {
               "name": "Coverage thresholds set",
-              "passed": false,
+              "passed": true,
               "detail": ""
             }
           ]
@@ -736,7 +736,7 @@
           "key": "security",
           "title": "Security",
           "weight": 15,
-          "score": 80,
+          "score": 60,
           "checks": [
             {
               "name": "CodeQL workflow present",
@@ -750,7 +750,7 @@
             },
             {
               "name": "No NPM_TOKEN in workflows",
-              "passed": true,
+              "passed": false,
               "detail": ""
             },
             {
@@ -861,7 +861,7 @@
           "key": "privacy",
           "title": "Privacy",
           "weight": 5,
-          "score": 75,
+          "score": 100,
           "checks": [
             {
               "name": "PII_INVENTORY.md present",
@@ -875,7 +875,7 @@
             },
             {
               "name": "DSR endpoint hints (export + delete)",
-              "passed": false,
+              "passed": true,
               "detail": ""
             },
             {
@@ -892,8 +892,8 @@
       "repo_key": "CH",
       "repo_name": "cypher-healing",
       "repo_path": "Latimer-Woods-Tech/coh",
-      "timestamp": "2026-05-30T08:00:54.521245+00:00",
-      "cohesion": 49,
+      "timestamp": "2026-06-06T08:06:05.146502+00:00",
+      "cohesion": 47,
       "dimensions": [
         {
           "key": "stack",
@@ -998,7 +998,7 @@
           "key": "observability",
           "title": "Observability",
           "weight": 10,
-          "score": 60,
+          "score": 40,
           "checks": [
             {
               "name": "Sentry import",
@@ -1022,7 +1022,7 @@
             },
             {
               "name": "Structured log fields",
-              "passed": true,
+              "passed": false,
               "detail": ""
             }
           ]
@@ -1187,7 +1187,7 @@
       "repo_key": "XC",
       "repo_name": "xico-city",
       "repo_path": "Latimer-Woods-Tech/xico-city",
-      "timestamp": "2026-05-30T08:01:18.183667+00:00",
+      "timestamp": "2026-06-06T08:06:27.722111+00:00",
       "cohesion": 51,
       "dimensions": [
         {
