@@ -8,12 +8,7 @@ name: PR Size Warning (Warn-Only)
 # Parent rollout issue: #270   Implementing issue: #273
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-concurrency:
-  group: pr-size-warning-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  workflow_dispatch:  # now handled by pr-advisory-sweep.yml on a 4-hour schedule
 
 permissions:
   contents: read

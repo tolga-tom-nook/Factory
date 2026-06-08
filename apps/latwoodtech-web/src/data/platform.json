@@ -1,0 +1,750 @@
+{
+  "generatedAt": "2026-06-07T00:00:00Z",
+  "_note": "Seed file — replaced hourly by generate-platform-data.mjs via generate-founder-stats.yml",
+  "platform": {
+    "stage": 2,
+    "stageName": "Revenue + Customer",
+    "cohesionThreshold": 70,
+    "gaps": {
+      "p0": 1,
+      "p1": 3,
+      "p2": 6,
+      "p3": 17
+    }
+  },
+  "apps": [
+    {
+      "id": "selfprime",
+      "name": "Self Prime",
+      "domain": "selfprime.net",
+      "maturity": "revenue",
+      "cohesion": 53,
+      "healthState": "live",
+      "packages": [
+        "auth",
+        "neon",
+        "stripe",
+        "llm",
+        "analytics",
+        "bodygraph",
+        "telephony"
+      ],
+      "svgPos": {
+        "cx": 400,
+        "cy": 140,
+        "r": 38
+      },
+      "category": "product",
+      "roadmap": [
+        {
+          "id": "sp-launch",
+          "label": "Public Launch",
+          "status": "active",
+          "quarter": "Q3-2026"
+        },
+        {
+          "id": "sp-rls",
+          "label": "RLS enforced",
+          "status": "queued",
+          "quarter": "Q4-2026"
+        },
+        {
+          "id": "sp-ios",
+          "label": "iOS PWA",
+          "status": "design",
+          "quarter": "Q2-2027"
+        }
+      ],
+      "features": [
+        {
+          "id": "energy-blueprint",
+          "label": "Energy Blueprint synthesis",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "narration",
+          "label": "AI voice narration",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "practitioner-network",
+          "label": "Practitioner referral network",
+          "status": "in-progress",
+          "tier": "growth"
+        }
+      ]
+    },
+    {
+      "id": "capricast",
+      "name": "Capricast",
+      "domain": "capricast.com",
+      "maturity": "production",
+      "cohesion": 42,
+      "healthState": "live",
+      "packages": [
+        "auth",
+        "neon",
+        "stripe",
+        "analytics",
+        "video"
+      ],
+      "svgPos": {
+        "cx": 539,
+        "cy": 220,
+        "r": 38
+      },
+      "category": "product",
+      "roadmap": [
+        {
+          "id": "cc-monetize",
+          "label": "Creator Monetization Live",
+          "status": "active",
+          "quarter": "Q3-2026"
+        },
+        {
+          "id": "cc-live-stream",
+          "label": "Live Streaming GA",
+          "status": "queued",
+          "quarter": "Q4-2026"
+        },
+        {
+          "id": "cc-group-chat",
+          "label": "16-way Video Chat",
+          "status": "queued",
+          "quarter": "Q1-2027"
+        }
+      ],
+      "features": [
+        {
+          "id": "video-playback",
+          "label": "CF Stream video playback",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "stripe-payments",
+          "label": "Stripe payments",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "conference",
+          "label": "Conference scheduling",
+          "status": "live",
+          "tier": "core"
+        }
+      ]
+    },
+    {
+      "id": "admin-studio",
+      "name": "AP Unlimited",
+      "domain": "apunlimited.com",
+      "maturity": "production",
+      "cohesion": 62,
+      "healthState": "live",
+      "packages": [
+        "auth",
+        "neon",
+        "analytics",
+        "monitoring",
+        "logger"
+      ],
+      "svgPos": {
+        "cx": 539,
+        "cy": 380,
+        "r": 38
+      },
+      "category": "product",
+      "roadmap": [
+        {
+          "id": "as-agent-integration",
+          "label": "Agent Gateway integration",
+          "status": "active",
+          "quarter": "Q3-2026"
+        },
+        {
+          "id": "as-conformance-dashboard",
+          "label": "Live cohesion scores",
+          "status": "queued",
+          "quarter": "Q4-2026"
+        }
+      ],
+      "features": [
+        {
+          "id": "auth-login",
+          "label": "Operator authentication",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "supervisor-control",
+          "label": "Supervisor task management",
+          "status": "live",
+          "tier": "core"
+        }
+      ]
+    },
+    {
+      "id": "coh",
+      "name": "Cypher of Healing",
+      "domain": "cypherofhealing.com",
+      "maturity": "production",
+      "cohesion": 49,
+      "healthState": "live",
+      "packages": [
+        "auth",
+        "neon",
+        "stripe",
+        "telephony",
+        "email"
+      ],
+      "svgPos": {
+        "cx": 400,
+        "cy": 460,
+        "r": 38
+      },
+      "category": "product",
+      "roadmap": [
+        {
+          "id": "coh-5streams",
+          "label": "All 5 Streams Live",
+          "status": "active",
+          "quarter": "Q3-2026"
+        },
+        {
+          "id": "coh-test-coverage",
+          "label": "Test coverage 60%+",
+          "status": "active",
+          "quarter": "Q3-2026"
+        }
+      ],
+      "features": [
+        {
+          "id": "the-chair",
+          "label": "The Chair (bookings)",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "the-vault",
+          "label": "The Vault (products)",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "the-academy",
+          "label": "The Academy (courses)",
+          "status": "live",
+          "tier": "core"
+        }
+      ]
+    },
+    {
+      "id": "xico-city",
+      "name": "Xico City",
+      "domain": "xicocity.com",
+      "maturity": "beta",
+      "cohesion": 51,
+      "healthState": "live",
+      "packages": [
+        "auth",
+        "neon",
+        "analytics",
+        "monitoring"
+      ],
+      "svgPos": {
+        "cx": 261,
+        "cy": 380,
+        "r": 38
+      },
+      "category": "product",
+      "roadmap": [
+        {
+          "id": "xc-media-processor",
+          "label": "Media Processor Live",
+          "status": "active",
+          "quarter": "Q3-2026"
+        },
+        {
+          "id": "xc-artist-profiles",
+          "label": "Artist Profile GA",
+          "status": "queued",
+          "quarter": "Q4-2026"
+        }
+      ],
+      "features": [
+        {
+          "id": "artist-roles",
+          "label": "11 artist role types",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "auth-system",
+          "label": "JWT + BetterAuth",
+          "status": "live",
+          "tier": "infra"
+        }
+      ]
+    },
+    {
+      "id": "agent-gateway",
+      "name": "Agent Gateway",
+      "domain": "agent-gateway.latwoodtech.work",
+      "maturity": "beta",
+      "cohesion": 55,
+      "healthState": "live",
+      "packages": [
+        "auth",
+        "llm",
+        "logger",
+        "monitoring"
+      ],
+      "svgPos": {
+        "cx": 261,
+        "cy": 220,
+        "r": 38
+      },
+      "category": "product",
+      "roadmap": [
+        {
+          "id": "ag-custom-domain",
+          "label": "Production custom domain",
+          "status": "active",
+          "quarter": "Q3-2026"
+        },
+        {
+          "id": "ag-vertical-1",
+          "label": "First production vertical",
+          "status": "queued",
+          "quarter": "Q4-2026"
+        }
+      ],
+      "features": [
+        {
+          "id": "session-management",
+          "label": "AgentSessionDO lifecycle",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "tool-calling",
+          "label": "Multi-provider tool calling",
+          "status": "live",
+          "tier": "core"
+        },
+        {
+          "id": "guardrails",
+          "label": "Spend guardrails",
+          "status": "live",
+          "tier": "compliance"
+        }
+      ]
+    }
+  ],
+  "infraWorkers": [
+    {
+      "id": "schedule-worker",
+      "name": "Schedule Worker",
+      "healthState": "live",
+      "svgPos": {
+        "cx": 522,
+        "cy": 88,
+        "r": 22
+      }
+    },
+    {
+      "id": "factory-supervisor",
+      "name": "Supervisor",
+      "healthState": "live",
+      "svgPos": {
+        "cx": 645,
+        "cy": 300,
+        "r": 22
+      }
+    },
+    {
+      "id": "daily-brief",
+      "name": "Daily Brief",
+      "healthState": "live",
+      "svgPos": {
+        "cx": 522,
+        "cy": 512,
+        "r": 22
+      }
+    },
+    {
+      "id": "status-prober",
+      "name": "Status Prober",
+      "healthState": "live",
+      "svgPos": {
+        "cx": 278,
+        "cy": 512,
+        "r": 22
+      }
+    },
+    {
+      "id": "factory-core-api",
+      "name": "Core API",
+      "healthState": "live",
+      "svgPos": {
+        "cx": 155,
+        "cy": 300,
+        "r": 22
+      }
+    },
+    {
+      "id": "synthetic-monitor",
+      "name": "Monitor",
+      "healthState": "live",
+      "svgPos": {
+        "cx": 278,
+        "cy": 88,
+        "r": 22
+      }
+    }
+  ],
+  "packages": [
+    {
+      "id": "errors",
+      "name": "errors",
+      "tier": "infra"
+    },
+    {
+      "id": "monitoring",
+      "name": "monitoring",
+      "tier": "infra"
+    },
+    {
+      "id": "logger",
+      "name": "logger",
+      "tier": "infra"
+    },
+    {
+      "id": "auth",
+      "name": "auth",
+      "tier": "infra"
+    },
+    {
+      "id": "neon",
+      "name": "neon",
+      "tier": "infra"
+    },
+    {
+      "id": "llm",
+      "name": "llm",
+      "tier": "capability"
+    },
+    {
+      "id": "stripe",
+      "name": "stripe",
+      "tier": "capability"
+    },
+    {
+      "id": "analytics",
+      "name": "analytics",
+      "tier": "capability"
+    },
+    {
+      "id": "video",
+      "name": "video",
+      "tier": "capability"
+    },
+    {
+      "id": "telephony",
+      "name": "telephony",
+      "tier": "capability"
+    },
+    {
+      "id": "bodygraph",
+      "name": "bodygraph",
+      "tier": "capability"
+    },
+    {
+      "id": "email",
+      "name": "email",
+      "tier": "capability"
+    }
+  ],
+  "timeline": {
+    "startQuarter": "Q2-2026",
+    "endQuarter": "Q4-2028",
+    "platformStages": [
+      {
+        "id": "s0",
+        "label": "Stage 0: Foundation",
+        "status": "done",
+        "startQuarter": "Q2-2026",
+        "endQuarter": "Q2-2026"
+      },
+      {
+        "id": "s1",
+        "label": "Stage 1: Visibility",
+        "status": "done",
+        "startQuarter": "Q2-2026",
+        "endQuarter": "Q2-2026"
+      },
+      {
+        "id": "s2",
+        "label": "Stage 2: Revenue + Customer",
+        "status": "active",
+        "startQuarter": "Q2-2026",
+        "endQuarter": "Q3-2026"
+      },
+      {
+        "id": "s3",
+        "label": "Stage 3: Adoption Tools",
+        "status": "queued",
+        "startQuarter": "Q4-2026",
+        "endQuarter": "Q4-2026"
+      },
+      {
+        "id": "s4",
+        "label": "Stage 4: Enforcement",
+        "status": "queued",
+        "startQuarter": "Q1-2027",
+        "endQuarter": "Q1-2027"
+      },
+      {
+        "id": "s5",
+        "label": "Stage 5: Sellability",
+        "status": "queued",
+        "startQuarter": "Q2-2027",
+        "endQuarter": "Q2-2027"
+      },
+      {
+        "id": "s6",
+        "label": "Stage 6: UI/UX Foundations",
+        "status": "queued",
+        "startQuarter": "Q3-2027",
+        "endQuarter": "Q3-2027"
+      },
+      {
+        "id": "s7",
+        "label": "Platform GA (cohesion ≥ 70)",
+        "status": "design",
+        "startQuarter": "Q2-2028",
+        "endQuarter": "Q2-2028"
+      }
+    ],
+    "milestones": [
+      {
+        "id": "sp-launch",
+        "label": "Self Prime: Public Launch",
+        "appId": "selfprime",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "cc-monetize",
+        "label": "Capricast: Creator Monetization",
+        "appId": "capricast",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "coh-5streams",
+        "label": "CoH: All 5 Streams Live",
+        "appId": "coh",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "xc-processor",
+        "label": "Xico City: Media Processor",
+        "appId": "xico-city",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "ag-custom-domain",
+        "label": "Agent Gateway: Custom Domain",
+        "appId": "agent-gateway",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "sp-rls",
+        "label": "Self Prime: RLS Enforced",
+        "appId": "selfprime",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "as-conformance",
+        "label": "Admin: Conformance Dashboard",
+        "appId": "admin-studio",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "ag-vertical-1",
+        "label": "Agent Gateway: First Production Vertical",
+        "appId": "agent-gateway",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "wordis-bond-gate",
+        "label": "Wordis Bond: TCPA Gate Cleared",
+        "appId": null,
+        "status": "on-hold",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "ijustus-foundation",
+        "label": "iJustus: Foundation Shipped",
+        "appId": null,
+        "status": "design",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "design-system",
+        "label": "Design System (@lwt/ui-tokens GA)",
+        "appId": null,
+        "status": "queued",
+        "quarter": "Q3-2027"
+      },
+      {
+        "id": "rls-all-apps",
+        "label": "RLS enforced across all apps",
+        "appId": null,
+        "status": "queued",
+        "quarter": "Q4-2027"
+      },
+      {
+        "id": "neighbor-aid",
+        "label": "Neighbor Aid: Foundation",
+        "appId": null,
+        "status": "design",
+        "quarter": "Q3-2027"
+      },
+      {
+        "id": "platform-ga",
+        "label": "Platform GA: All cohesion ≥ 70",
+        "appId": null,
+        "status": "design",
+        "quarter": "Q2-2028"
+      }
+    ]
+  },
+  "kpis": {
+    "generatedAt": "2026-06-08T03:21:19.911Z",
+    "current": {
+      "overallCohesion": 51.4,
+      "registryCoverage": 45.45,
+      "openGaps": 14,
+      "gaps": {
+        "p0": 1,
+        "p1": 0,
+        "p2": 4,
+        "p3": 9
+      },
+      "cost30dUsd": 4.87,
+      "mrrUsd": 0,
+      "completionWeighted": 0
+    },
+    "trends": {
+      "cohesion": {
+        "current": 51.4,
+        "prior": 49.6,
+        "priorDate": "2026-05-30",
+        "dayGap": 7,
+        "delta": 1.8,
+        "direction": "up"
+      },
+      "cost": {
+        "current": 4.87,
+        "prior": 1.25,
+        "priorDate": "2026-05-29",
+        "dayGap": 7,
+        "delta": 3.62,
+        "direction": "up"
+      },
+      "mrr": {
+        "current": 0,
+        "prior": 0,
+        "priorDate": "2026-05-30",
+        "dayGap": 7,
+        "delta": 0,
+        "direction": "flat"
+      },
+      "completion": {
+        "current": 0,
+        "prior": 26.5,
+        "priorDate": "2026-05-17",
+        "dayGap": 8,
+        "delta": -26.5,
+        "direction": "down"
+      },
+      "registryCoverage": {
+        "current": 45.45,
+        "prior": null,
+        "priorDate": null,
+        "dayGap": null,
+        "delta": null,
+        "direction": "flat"
+      },
+      "openGaps": {
+        "current": 14,
+        "prior": null,
+        "priorDate": null,
+        "dayGap": null,
+        "delta": null,
+        "direction": "flat"
+      }
+    },
+    "movers": {
+      "cohesion": [
+        {
+          "app": "coh",
+          "current": 49,
+          "prior": 40,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 9,
+          "direction": "up"
+        },
+        {
+          "app": "selfprime",
+          "current": 53,
+          "prior": 53,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        },
+        {
+          "app": "capricast",
+          "current": 42,
+          "prior": 42,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        },
+        {
+          "app": "admin-studio",
+          "current": 62,
+          "prior": 62,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        },
+        {
+          "app": "xico-city",
+          "current": 51,
+          "prior": 51,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        }
+      ]
+    },
+    "seriesPoints": 1
+  }
+}

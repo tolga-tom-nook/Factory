@@ -37,6 +37,7 @@ jobs:
       pr: ${{ steps.eval.outputs.pr }}
       proceed: ${{ steps.eval.outputs.proceed }}
       diff_chars: ${{ steps.eval.outputs.diff_chars }}
+      is_operator: ${{ steps.eval.outputs.is_operator }}
     steps:
       - name: Resolve PR + gate
         id: eval
@@ -56,6 +57,8 @@ jobs:
 
           v=$(gh pr view "$PR" --repo "$REPO" --json author,labels,files,statusCheckRollup)
           author=$(echo "$v" | jq -r '.author.login')
+          is_op=0; [ "$author" = "adrper79-dot" ] && is_op=1
+          echo "is_operator=$is_op" >> "$GITHUB_OUTPUT"
           # Extended per ADR-0003/0006: also auto-approve PRs from operators in branch-protection bypass list.
           # adrper79-dot is in bypass_pull_request_allowances; without this, rebase-driven stale-review dismissals require manual re-approval.
           case "$author" in
@@ -89,7 +92,7 @@ jobs:
 
   judges:
     needs: gate
-    if: needs.gate.outputs.proceed == '1'
+    if: needs.gate.outputs.proceed == '1' && needs.gate.outputs.is_operator != '1'
     runs-on: ubuntu-latest
     outputs:
       primary:        ${{ steps.primary.outputs.verdict }}
@@ -192,11 +195,20 @@ jobs:
           GH_TOKEN:   ${{ steps.tok.outputs.token }}
           REPO:       ${{ github.repository }}
           PR:         ${{ needs.gate.outputs.pr }}
+          IS_OP:      ${{ needs.gate.outputs.is_operator }}
           PRIMARY:    ${{ needs.judges.outputs.primary }}
           PRI_NAME:   ${{ needs.judges.outputs.primary_name }}
           GROK:       ${{ needs.judges.outputs.grok }}
         run: |
           set -euo pipefail
+
+          if [ "$IS_OP" = "1" ]; then
+            gh pr ready "$PR" --repo "$REPO" || true
+            gh pr review "$PR" --repo "$REPO" --approve --body "Operator PR auto-approved (CI green, no Red-tier paths)."
+            gh pr edit "$PR" --repo "$REPO" --add-label "automerge:allow-bot-branch"
+            exit 0
+          fi
+
           p_dec=$(echo "$PRIMARY" | jq -r '.decision // "reject"')
           g_dec=$(echo "$GROK"    | jq -r '.decision // "reject"')
 

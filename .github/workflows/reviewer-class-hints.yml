@@ -5,12 +5,7 @@ name: reviewer-class-hints
 # Non-blocking — never prevents merge.
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  workflow_dispatch:  # now handled by pr-advisory-sweep.yml on a 4-hour schedule
 
 permissions:
   pull-requests: write

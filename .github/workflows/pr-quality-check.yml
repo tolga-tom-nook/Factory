@@ -7,12 +7,7 @@ name: PR Quality Check (shadow-mode)
 # Ref: Factory governance issue #271 — phased rollout, warn-only first.
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, edited]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  workflow_dispatch:  # now handled by pr-advisory-sweep.yml on a 4-hour schedule
 
 permissions:
   contents: read
