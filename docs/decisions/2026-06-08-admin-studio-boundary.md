@@ -6,9 +6,12 @@ status: decided
 
 # 2026-06-08 — Admin Studio surface & responsibility boundary
 
-> Scope note: this is the *short* boundary record. The multi-package **enforcement**
-> work (consolidating policy evaluation, collapsing UI tabs onto one contract) is
-> architecture-grade and may warrant a full [RFC](../rfc/) before implementation.
+> Scope note: this is the *short* boundary record. The full enforcement program already
+> exists as [`docs/admin-studio/06-DEBT-DELIVERY-PLAN.md`](../admin-studio/06-DEBT-DELIVERY-PLAN.md)
+> (Tranches 0–5, owned by the admin-studio hardening effort). **That plan is the single
+> authoritative debt register for the Admin Studio control plane** — this ADR only fixes
+> the *boundary of record* and the sense-layer modeling; it does not maintain a parallel
+> backlog (the plan forbids parallel backlogs).
 
 ## Decision
 
@@ -53,11 +56,9 @@ We now do:
 - Treat `factory-admin` as an Admin Studio surface in the sense layer (aliased to `admin-studio`; not ticketed for its own registry; not scored as a peer in conformance) and plan to fold/retire it in favor of the monorepo API + UI.
 - Hold the API-authoritative invariant: the UI submits typed action requests; the API admits actions and creates receipts.
 
-Enforcement backlog (each leak below to be closed; sequencing TBD, possibly via RFC):
-1. **Policy evaluation exists once, server-side** — catalog `canInvoke` and route `requireConfirmation` must not diverge.
-2. **One action executor + one shared client contract** — UI tabs (Tests, Code, Flags, AI, Capabilities, Graph Composer, Functions, Command Center) consume one generated contract instead of each reimplementing action lookup/confirmation/error UI.
-3. **Command Center owns prioritization; domain tabs own detailed workflows** — remove overlap.
-4. **Static UI read models** (Apps, Council JSON) become API-owned read models or are explicitly classified as generated static artifacts.
+Enforcement is owned by [`docs/admin-studio/06-DEBT-DELIVERY-PLAN.md`](../admin-studio/06-DEBT-DELIVERY-PLAN.md), not restated here. In brief, its Tranches close the boundary leaks: T1 one authoritative action-admission service (policy evaluated once, server-side) + durable receipts + idempotency; T2 Command Center default + one shared action experience; T2/T5 static read-model ownership + one shared client contract. Findings go into that register, not a parallel backlog.
+
+**Autonomy interlock (binds the Platform Brain):** the autonomous loop (opportunity-scan / Supervisor) is a *consumer* of the authoritative action path, not a parallel mutator. Per that plan's Tranche 4 + model-routing table, autonomous Admin Studio admission stays gated until Tranches 0–3 pass, and when enabled must submit typed requests through the same action-admission contract — never invent execution semantics or exceed an equivalent human request. The Platform Brain also does not file parallel Admin Studio control-plane debt tickets; that register is canonical.
 
 We do NOT:
 - Move `apps/admin-studio` out to its own repo. The monorepo trio (studio-core + API + UI) is canonical; relocating is not the goal — enforcing the boundary is.
