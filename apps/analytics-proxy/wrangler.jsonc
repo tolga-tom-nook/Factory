@@ -1,0 +1,54 @@
+{
+  "$schema": "https://developers.cloudflare.com/workers/wrangler/config-schema.json",
+  // analytics-proxy — Thin CORS proxy that queries the Cloudflare Analytics
+  // GraphQL API for per-Worker traffic metrics and caches responses in KV.
+  //
+  // Serves the /platform/ Flow mode on latwoodtech.com with live request-rate
+  // and error-rate data. CORS is locked to latwoodtech.com only.
+  //
+  // Deployed at: https://analytics.latwoodtech.work/
+  // Cache TTL: 60s (KV). No cron — responds on-demand.
+  "name": "analytics-proxy",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-05-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  "logpush": true,
+  "observability": {
+    "enabled": true
+  },
+
+  // KV cache: analytics-proxy-cache (provisioned 2026-06-07, id below)
+  "kv_namespaces": [
+    {
+      "binding": "ANALYTICS_KV",
+      "id": "f712da4678f74762b0d10fcd777881a1"
+    }
+  ],
+
+  "vars": {
+    "ENVIRONMENT": "development"
+  },
+
+  "env": {
+    "production": {
+      "name": "analytics-proxy",
+      "workers_dev": true,
+      "routes": [
+        {
+          "pattern": "analytics.latwoodtech.work",
+          "custom_domain": true
+        }
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "ANALYTICS_KV",
+          "id": "f712da4678f74762b0d10fcd777881a1"
+        }
+      ],
+      "vars": {
+        "ENVIRONMENT": "production"
+      }
+    }
+  }
+}

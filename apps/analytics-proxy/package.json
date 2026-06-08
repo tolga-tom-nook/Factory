@@ -1,0 +1,18 @@
+{
+  "name": "@factory/analytics-proxy",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --env production",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.12.18"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260423.1",
+    "typescript": "^5.4.0",
+    "wrangler": "^3.0.0"
+  }
+}

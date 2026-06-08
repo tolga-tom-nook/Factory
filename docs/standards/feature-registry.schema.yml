@@ -1,0 +1,89 @@
+# Feature Registry Schema
+# Version: 1.0 — introduced alongside /platform/ dashboard (2026-06-07)
+#
+# PURPOSE:
+#   Every app — both in the Factory monorepo and in standalone repos —
+#   must have a feature-registry.yml at its root (monorepo: apps/{name}/feature-registry.yml;
+#   standalone repo: feature-registry.yml at repo root).
+#
+#   The generate-platform-data.mjs CI script reads these files to build platform.json,
+#   which powers the /platform/ live SVG dashboard on latwoodtech.com.
+#
+# CONFORMANCE:
+#   This is Platform Standards Dimension 11. A missing feature-registry.yml is a
+#   conformance gap at Stage 3+. The supervisor loop enforces presence.
+#
+# FIELD REFERENCE:
+
+# app: string (required)
+#   Matches the `id` field in docs/service-registry.yml.
+#   Example: selfprime, capricast, coh, xico-city, admin-studio, agent-gateway
+
+# name: string (required)
+#   Human-readable product name shown in the dashboard.
+
+# domain: string (required for products, null for infra)
+#   Primary public domain. Example: selfprime.net
+
+# stage: string (required)
+#   One of: foundation | beta | production | revenue | on-hold | design
+#   - foundation: scaffolded, not yet user-facing
+#   - beta: live but not publicly launched
+#   - production: publicly live
+#   - revenue: live with active Stripe revenue
+#   - on-hold: paused by regulatory/strategic decision
+#   - design: planned, not yet built
+
+# cohesion: integer (required)
+#   Current cohesion score out of 100. Updated from docs/conformance/summary.md.
+#   Threshold for Stage 4+ enforcement: 70.
+
+# description: string (required)
+#   One-sentence product description shown in dashboard node tooltip.
+
+# roadmap: list (required, may be empty list)
+#   Each item:
+#     id: string — unique within this app's registry
+#     label: string — milestone name shown in timeline
+#     status: done | active | queued | on-hold | design
+#     quarter: string — e.g. Q3-2026, Q1-2027
+#     description: string (optional) — tooltip detail
+
+# features: list (required, may be empty list)
+#   Each item:
+#     id: string — unique within this app's registry
+#     label: string — feature name
+#     status: live | in-progress | roadmap | on-hold
+#     tier: core | growth | infra | compliance
+
+# packages: list of strings (required, may be empty list)
+#   @latimer-woods-tech/* package short names used by this app.
+#   Example: [auth, neon, stripe, llm]
+
+# Example canonical file:
+#
+# app: selfprime
+# name: Self Prime
+# domain: selfprime.net
+# stage: revenue
+# cohesion: 53
+# description: Practitioner intelligence platform — Energy Blueprint synthesis
+#
+# roadmap:
+#   - id: sp-launch
+#     label: Public Launch
+#     status: active
+#     quarter: Q3-2026
+#     description: Remove invite gate, open to public practitioners
+#
+# features:
+#   - id: energy-blueprint
+#     label: Energy Blueprint synthesis
+#     status: live
+#     tier: core
+#
+# packages:
+#   - auth
+#   - neon
+#   - stripe
+#   - llm

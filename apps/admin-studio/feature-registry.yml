@@ -1,0 +1,82 @@
+app: admin-studio
+name: AP Unlimited
+domain: apunlimited.com
+stage: production
+cohesion: 62
+description: Authenticated operator dashboard and supervisor control surface for the Factory platform
+
+roadmap:
+  - id: as-agent-integration
+    label: Agent Gateway integration
+    status: active
+    quarter: Q3-2026
+    description: Wire agent-gateway into admin-studio operator surfaces
+  - id: as-conformance-dashboard
+    label: Conformance dashboard (live cohesion scores)
+    status: queued
+    quarter: Q4-2026
+    description: Show per-app cohesion scores with drill-down in the operator UI
+  - id: as-pr-review-ui
+    label: Supervisor PR review surface
+    status: queued
+    quarter: Q1-2027
+    description: Review and approve/reject supervisor-proposed PRs from the dashboard
+  - id: as-cost-alerts
+    label: Cost alert configuration UI
+    status: queued
+    quarter: Q1-2027
+    description: Operator-configurable LLM and infra cost thresholds with Pushover alerts
+  - id: as-multi-product-overview
+    label: Cross-product health overview
+    status: queued
+    quarter: Q2-2027
+    description: Single-pane view of all platform products, health, and revenue metrics
+
+features:
+  - id: auth-login
+    label: Operator authentication (JWT + Google SSO)
+    status: live
+    tier: core
+  - id: app-registry
+    label: App registry viewer
+    status: live
+    tier: core
+  - id: supervisor-control
+    label: Supervisor task management
+    status: live
+    tier: core
+  - id: smoke-tests
+    label: Smoke test runner
+    status: live
+    tier: infra
+  - id: github-app-auth
+    label: GitHub App installation token (no 90-day churn)
+    status: live
+    tier: infra
+  - id: sentry-integration
+    label: Sentry error tracking
+    status: live
+    tier: infra
+  - id: burn-rate-alerts
+    label: LLM burn-rate governance alerts
+    status: live
+    tier: compliance
+  - id: storybook
+    label: Component Storybook
+    status: live
+    tier: infra
+  - id: pr-automation
+    label: Automated PR creation via GitHub App
+    status: in-progress
+    tier: growth
+  - id: rls-enforcement
+    label: Row-Level Security (RLS) on all tables
+    status: roadmap
+    tier: compliance
+
+packages:
+  - auth
+  - neon
+  - analytics
+  - monitoring
+  - logger

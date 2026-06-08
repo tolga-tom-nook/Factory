@@ -1,0 +1,1842 @@
+{
+  "generatedAt": "2026-06-08T03:21:14.698Z",
+  "schemaVersion": 1,
+  "aliasIndex": {
+    "selfprime": "selfprime",
+    "prime-self": "selfprime",
+    "prime-self-ui": "selfprime",
+    "prime-self-smoke": "selfprime",
+    "prime-self-reference": "selfprime",
+    "humandesign": "selfprime",
+    "hd": "selfprime",
+    "capricast": "capricast",
+    "capricast-api": "capricast",
+    "capricast-ui": "capricast",
+    "videoking": "capricast",
+    "cc": "capricast",
+    "coh": "coh",
+    "cypher-healing": "coh",
+    "cipher-healing": "coh",
+    "cypherofhealing": "coh",
+    "coh-api": "coh",
+    "ch": "coh",
+    "xico-city": "xico-city",
+    "xicocity": "xico-city",
+    "xico-city-api": "xico-city",
+    "xc": "xico-city",
+    "admin-studio": "admin-studio",
+    "admin-studio-production": "admin-studio",
+    "admin-studio-staging": "admin-studio",
+    "admin-studio-ui": "admin-studio",
+    "factory-admin-studio": "admin-studio",
+    "factory-admin": "admin-studio",
+    "fa": "admin-studio",
+    "agent-gateway": "agent-gateway",
+    "factory-agent-gateway": "agent-gateway"
+  },
+  "nodes": {
+    "apps": [
+      {
+        "id": "admin-studio",
+        "name": "AP Unlimited",
+        "repo": "Latimer-Woods-Tech/Factory",
+        "kind": "product",
+        "domain": "apunlimited.com",
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": "production",
+        "cohesion": 73,
+        "registryStatus": "present",
+        "aliases": [
+          "admin-studio-production",
+          "admin-studio-staging",
+          "admin-studio-ui",
+          "factory-admin-studio",
+          "factory-admin",
+          "FA"
+        ],
+        "packages": [
+          "auth",
+          "neon",
+          "analytics",
+          "monitoring",
+          "logger"
+        ],
+        "registrySource": "apps/admin-studio/feature-registry.yml",
+        "cohesionDimensions": [
+          {
+            "key": "stack",
+            "score": 60,
+            "weight": 10
+          },
+          {
+            "key": "code_patterns",
+            "score": 80,
+            "weight": 15
+          },
+          {
+            "key": "tests",
+            "score": 100,
+            "weight": 15
+          },
+          {
+            "key": "observability",
+            "score": 40,
+            "weight": 10
+          },
+          {
+            "key": "security",
+            "score": 60,
+            "weight": 15
+          },
+          {
+            "key": "schema",
+            "score": 100,
+            "weight": 5
+          },
+          {
+            "key": "workflows",
+            "score": 33,
+            "weight": 10
+          },
+          {
+            "key": "release",
+            "score": 67,
+            "weight": 5
+          },
+          {
+            "key": "performance",
+            "score": 100,
+            "weight": 10
+          },
+          {
+            "key": "privacy",
+            "score": 100,
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "id": "agent-gateway",
+        "name": "Agent Gateway",
+        "repo": "Latimer-Woods-Tech/Factory",
+        "kind": "product",
+        "domain": "agent-gateway.latwoodtech.work",
+        "url": "https://schedule.latwoodtech.work",
+        "healthState": "planned",
+        "lifecycleStage": null,
+        "maturity": "beta",
+        "cohesion": null,
+        "registryStatus": "present",
+        "aliases": [
+          "factory-agent-gateway"
+        ],
+        "packages": [
+          "auth",
+          "llm",
+          "logger",
+          "monitoring"
+        ],
+        "registrySource": "apps/agent-gateway/feature-registry.yml"
+      },
+      {
+        "id": "browser-agent",
+        "name": "Browser Agent",
+        "repo": null,
+        "kind": "infra",
+        "domain": null,
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "scaffolded",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "capricast",
+        "name": "Capricast",
+        "repo": "Latimer-Woods-Tech/capricast",
+        "kind": "product",
+        "domain": "capricast.com",
+        "url": "https://api.capricast.latimerwoods.dev",
+        "healthState": "live",
+        "lifecycleStage": "live",
+        "maturity": "production",
+        "cohesion": 42,
+        "registryStatus": "present",
+        "aliases": [
+          "capricast-api",
+          "capricast-ui",
+          "videoking",
+          "CC"
+        ],
+        "packages": [
+          "auth",
+          "neon",
+          "stripe",
+          "analytics",
+          "video"
+        ],
+        "registrySource": "Latimer-Woods-Tech/capricast/feature-registry.yml",
+        "cohesionDimensions": [
+          {
+            "key": "stack",
+            "score": 40,
+            "weight": 10
+          },
+          {
+            "key": "code_patterns",
+            "score": 20,
+            "weight": 15
+          },
+          {
+            "key": "tests",
+            "score": 40,
+            "weight": 15
+          },
+          {
+            "key": "observability",
+            "score": 40,
+            "weight": 10
+          },
+          {
+            "key": "security",
+            "score": 60,
+            "weight": 15
+          },
+          {
+            "key": "schema",
+            "score": 33,
+            "weight": 5
+          },
+          {
+            "key": "workflows",
+            "score": 33,
+            "weight": 10
+          },
+          {
+            "key": "release",
+            "score": 33,
+            "weight": 5
+          },
+          {
+            "key": "performance",
+            "score": 67,
+            "weight": 10
+          },
+          {
+            "key": "privacy",
+            "score": 50,
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "id": "coh",
+        "name": "Cypher of Healing",
+        "repo": "Latimer-Woods-Tech/coh",
+        "kind": "product",
+        "domain": "cypherofhealing.com",
+        "url": "https://api.cipherofhealing.com",
+        "healthState": "live",
+        "lifecycleStage": "live",
+        "maturity": "production",
+        "cohesion": 47,
+        "registryStatus": "present",
+        "aliases": [
+          "cypher-healing",
+          "cipher-healing",
+          "cypherofhealing",
+          "coh-api",
+          "CH"
+        ],
+        "packages": [
+          "auth",
+          "neon",
+          "stripe",
+          "telephony",
+          "email"
+        ],
+        "registrySource": "Latimer-Woods-Tech/coh/feature-registry.yml",
+        "cohesionDimensions": [
+          {
+            "key": "stack",
+            "score": 60,
+            "weight": 10
+          },
+          {
+            "key": "code_patterns",
+            "score": 80,
+            "weight": 15
+          },
+          {
+            "key": "tests",
+            "score": 60,
+            "weight": 15
+          },
+          {
+            "key": "observability",
+            "score": 40,
+            "weight": 10
+          },
+          {
+            "key": "security",
+            "score": 40,
+            "weight": 15
+          },
+          {
+            "key": "schema",
+            "score": 67,
+            "weight": 5
+          },
+          {
+            "key": "workflows",
+            "score": 33,
+            "weight": 10
+          },
+          {
+            "key": "release",
+            "score": 33,
+            "weight": 5
+          },
+          {
+            "key": "performance",
+            "score": 0,
+            "weight": 10
+          },
+          {
+            "key": "privacy",
+            "score": 25,
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "id": "daily-brief",
+        "name": "Daily Brief",
+        "repo": null,
+        "kind": "infra",
+        "domain": null,
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "lead-gen",
+        "name": "Lead Gen",
+        "repo": null,
+        "kind": "infra",
+        "domain": null,
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "scaffolded",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "schedule-worker",
+        "name": "Schedule Worker",
+        "repo": null,
+        "kind": "infra",
+        "domain": "schedule.latwoodtech.work",
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "selfprime",
+        "name": "Self Prime",
+        "repo": "Latimer-Woods-Tech/HumanDesign",
+        "kind": "product",
+        "domain": "selfprime.net",
+        "url": "https://api.selfprime.net",
+        "healthState": "live",
+        "lifecycleStage": "live",
+        "maturity": "revenue",
+        "cohesion": 53,
+        "registryStatus": "present",
+        "aliases": [
+          "prime-self",
+          "prime-self-ui",
+          "prime-self-smoke",
+          "prime-self-reference",
+          "humandesign",
+          "HumanDesign",
+          "HD"
+        ],
+        "packages": [
+          "auth",
+          "neon",
+          "stripe",
+          "llm",
+          "analytics",
+          "bodygraph",
+          "telephony"
+        ],
+        "registrySource": "Latimer-Woods-Tech/HumanDesign/feature-registry.yml",
+        "cohesionDimensions": [
+          {
+            "key": "stack",
+            "score": 40,
+            "weight": 10
+          },
+          {
+            "key": "code_patterns",
+            "score": 0,
+            "weight": 15
+          },
+          {
+            "key": "tests",
+            "score": 100,
+            "weight": 15
+          },
+          {
+            "key": "observability",
+            "score": 40,
+            "weight": 10
+          },
+          {
+            "key": "security",
+            "score": 80,
+            "weight": 15
+          },
+          {
+            "key": "schema",
+            "score": 67,
+            "weight": 5
+          },
+          {
+            "key": "workflows",
+            "score": 33,
+            "weight": 10
+          },
+          {
+            "key": "release",
+            "score": 67,
+            "weight": 5
+          },
+          {
+            "key": "performance",
+            "score": 67,
+            "weight": 10
+          },
+          {
+            "key": "privacy",
+            "score": 25,
+            "weight": 5
+          }
+        ]
+      },
+      {
+        "id": "supervisor",
+        "name": "Supervisor",
+        "repo": null,
+        "kind": "infra",
+        "domain": "supervisor.latwoodtech.work",
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "synthetic-monitor",
+        "name": "Synthetic Monitor",
+        "repo": null,
+        "kind": "infra",
+        "domain": "monitor.latwoodtech.work",
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "video-cron",
+        "name": "Video Cron",
+        "repo": null,
+        "kind": "infra",
+        "domain": null,
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "webhook-fanout",
+        "name": "Webhook Fanout",
+        "repo": null,
+        "kind": "infra",
+        "domain": "webhooks.latwoodtech.work",
+        "url": null,
+        "healthState": "unknown",
+        "lifecycleStage": "live",
+        "maturity": null,
+        "cohesion": null,
+        "registryStatus": "missing",
+        "aliases": [],
+        "packages": []
+      },
+      {
+        "id": "xico-city",
+        "name": "xico-city-staging",
+        "repo": "Latimer-Woods-Tech/xico-city",
+        "kind": "product",
+        "domain": "xicocity.com",
+        "url": "https://xicocity.com",
+        "healthState": "live",
+        "lifecycleStage": null,
+        "maturity": null,
+        "cohesion": 51,
+        "registryStatus": "missing",
+        "aliases": [
+          "xicocity",
+          "xico-city-api",
+          "XC"
+        ],
+        "packages": [],
+        "cohesionDimensions": [
+          {
+            "key": "stack",
+            "score": 80,
+            "weight": 10
+          },
+          {
+            "key": "code_patterns",
+            "score": 80,
+            "weight": 15
+          },
+          {
+            "key": "tests",
+            "score": 60,
+            "weight": 15
+          },
+          {
+            "key": "observability",
+            "score": 0,
+            "weight": 10
+          },
+          {
+            "key": "security",
+            "score": 20,
+            "weight": 15
+          },
+          {
+            "key": "schema",
+            "score": 100,
+            "weight": 5
+          },
+          {
+            "key": "workflows",
+            "score": 33,
+            "weight": 10
+          },
+          {
+            "key": "release",
+            "score": 33,
+            "weight": 5
+          },
+          {
+            "key": "performance",
+            "score": 67,
+            "weight": 10
+          },
+          {
+            "key": "privacy",
+            "score": 50,
+            "weight": 5
+          }
+        ]
+      }
+    ],
+    "packages": [
+      {
+        "id": "pkg:admin",
+        "name": "admin",
+        "tier": null
+      },
+      {
+        "id": "pkg:analytics",
+        "name": "analytics",
+        "tier": null
+      },
+      {
+        "id": "pkg:auth",
+        "name": "auth",
+        "tier": null
+      },
+      {
+        "id": "pkg:bodygraph",
+        "name": "bodygraph",
+        "tier": null
+      },
+      {
+        "id": "pkg:browser",
+        "name": "browser",
+        "tier": null
+      },
+      {
+        "id": "pkg:compliance",
+        "name": "compliance",
+        "tier": null
+      },
+      {
+        "id": "pkg:content",
+        "name": "content",
+        "tier": null
+      },
+      {
+        "id": "pkg:copy",
+        "name": "copy",
+        "tier": null
+      },
+      {
+        "id": "pkg:crm",
+        "name": "crm",
+        "tier": null
+      },
+      {
+        "id": "pkg:deploy",
+        "name": "deploy",
+        "tier": null
+      },
+      {
+        "id": "pkg:email",
+        "name": "email",
+        "tier": null
+      },
+      {
+        "id": "pkg:errors",
+        "name": "errors",
+        "tier": null
+      },
+      {
+        "id": "pkg:llm",
+        "name": "llm",
+        "tier": null
+      },
+      {
+        "id": "pkg:logger",
+        "name": "logger",
+        "tier": null
+      },
+      {
+        "id": "pkg:monitoring",
+        "name": "monitoring",
+        "tier": null
+      },
+      {
+        "id": "pkg:neon",
+        "name": "neon",
+        "tier": null
+      },
+      {
+        "id": "pkg:schedule",
+        "name": "schedule",
+        "tier": null
+      },
+      {
+        "id": "pkg:seo",
+        "name": "seo",
+        "tier": null
+      },
+      {
+        "id": "pkg:social",
+        "name": "social",
+        "tier": null
+      },
+      {
+        "id": "pkg:stripe",
+        "name": "stripe",
+        "tier": null
+      },
+      {
+        "id": "pkg:studio-core",
+        "name": "studio-core",
+        "tier": null
+      },
+      {
+        "id": "pkg:telephony",
+        "name": "telephony",
+        "tier": null
+      },
+      {
+        "id": "pkg:testing",
+        "name": "testing",
+        "tier": null
+      },
+      {
+        "id": "pkg:video",
+        "name": "video",
+        "tier": null
+      }
+    ],
+    "features": [
+      {
+        "id": "admin-studio:auth-login",
+        "appId": "admin-studio",
+        "label": "Operator authentication (JWT + Google SSO)",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "admin-studio:app-registry",
+        "appId": "admin-studio",
+        "label": "App registry viewer",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "admin-studio:supervisor-control",
+        "appId": "admin-studio",
+        "label": "Supervisor task management",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "admin-studio:smoke-tests",
+        "appId": "admin-studio",
+        "label": "Smoke test runner",
+        "status": "live",
+        "tier": "infra"
+      },
+      {
+        "id": "admin-studio:github-app-auth",
+        "appId": "admin-studio",
+        "label": "GitHub App installation token (no 90-day churn)",
+        "status": "live",
+        "tier": "infra"
+      },
+      {
+        "id": "admin-studio:sentry-integration",
+        "appId": "admin-studio",
+        "label": "Sentry error tracking",
+        "status": "live",
+        "tier": "infra"
+      },
+      {
+        "id": "admin-studio:burn-rate-alerts",
+        "appId": "admin-studio",
+        "label": "LLM burn-rate governance alerts",
+        "status": "live",
+        "tier": "compliance"
+      },
+      {
+        "id": "admin-studio:storybook",
+        "appId": "admin-studio",
+        "label": "Component Storybook",
+        "status": "live",
+        "tier": "infra"
+      },
+      {
+        "id": "admin-studio:pr-automation",
+        "appId": "admin-studio",
+        "label": "Automated PR creation via GitHub App",
+        "status": "in-progress",
+        "tier": "growth"
+      },
+      {
+        "id": "admin-studio:rls-enforcement",
+        "appId": "admin-studio",
+        "label": "Row-Level Security (RLS) on all tables",
+        "status": "roadmap",
+        "tier": "compliance"
+      },
+      {
+        "id": "agent-gateway:session-management",
+        "appId": "agent-gateway",
+        "label": "AgentSessionDO — Durable Object session lifecycle",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "agent-gateway:idempotency",
+        "appId": "agent-gateway",
+        "label": "Idempotent session creation",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "agent-gateway:guardrails",
+        "appId": "agent-gateway",
+        "label": "Per-session spend guardrails",
+        "status": "live",
+        "tier": "compliance"
+      },
+      {
+        "id": "agent-gateway:tool-calling",
+        "appId": "agent-gateway",
+        "label": "Anthropic/Grok/DeepSeek tool calling",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "agent-gateway:episodic-memory",
+        "appId": "agent-gateway",
+        "label": "Episodic memory (context pruning)",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "agent-gateway:streaming",
+        "appId": "agent-gateway",
+        "label": "SSE streaming responses",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "agent-gateway:run-loop",
+        "appId": "agent-gateway",
+        "label": "Autonomous run loop with max-steps guard",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "agent-gateway:jwt-auth",
+        "appId": "agent-gateway",
+        "label": "JWT authentication on session routes",
+        "status": "live",
+        "tier": "infra"
+      },
+      {
+        "id": "agent-gateway:rate-limiting",
+        "appId": "agent-gateway",
+        "label": "Per-session rate limiting",
+        "status": "live",
+        "tier": "infra"
+      },
+      {
+        "id": "agent-gateway:custom-domain",
+        "appId": "agent-gateway",
+        "label": "Production custom domain",
+        "status": "in-progress",
+        "tier": "infra"
+      },
+      {
+        "id": "capricast:video-playback",
+        "appId": "capricast",
+        "label": "CF Stream video playback",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "capricast:stripe-payments",
+        "appId": "capricast",
+        "label": "Stripe payments",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "capricast:conference",
+        "appId": "capricast",
+        "label": "Conference scheduling and hosting",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "capricast:chat-1to1",
+        "appId": "capricast",
+        "label": "1:1 text chat",
+        "status": "live",
+        "tier": "growth"
+      },
+      {
+        "id": "capricast:live-stream",
+        "appId": "capricast",
+        "label": "Live streaming",
+        "status": "in-progress",
+        "tier": "core"
+      },
+      {
+        "id": "capricast:group-video",
+        "appId": "capricast",
+        "label": "16-way video chat",
+        "status": "roadmap",
+        "tier": "growth"
+      },
+      {
+        "id": "selfprime:energy-blueprint",
+        "appId": "selfprime",
+        "label": "Energy Blueprint synthesis",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "selfprime:narration",
+        "appId": "selfprime",
+        "label": "AI voice narration",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "selfprime:video-engine",
+        "appId": "selfprime",
+        "label": "Energy Blueprint video engine",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "selfprime:notification-inbox",
+        "appId": "selfprime",
+        "label": "In-app notification inbox",
+        "status": "live",
+        "tier": "growth"
+      },
+      {
+        "id": "selfprime:practitioner-network",
+        "appId": "selfprime",
+        "label": "Practitioner referral network",
+        "status": "in-progress",
+        "tier": "growth"
+      },
+      {
+        "id": "selfprime:group-readings",
+        "appId": "selfprime",
+        "label": "Group reading sessions",
+        "status": "roadmap",
+        "tier": "growth"
+      },
+      {
+        "id": "selfprime:rls-enforcement",
+        "appId": "selfprime",
+        "label": "Row-Level Security on all tables",
+        "status": "roadmap",
+        "tier": "compliance"
+      },
+      {
+        "id": "coh:the-chair",
+        "appId": "coh",
+        "label": "The Chair (bookings)",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "coh:the-vault",
+        "appId": "coh",
+        "label": "The Vault (products)",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "coh:the-academy",
+        "appId": "coh",
+        "label": "The Academy (courses)",
+        "status": "live",
+        "tier": "core"
+      },
+      {
+        "id": "coh:the-stage",
+        "appId": "coh",
+        "label": "The Stage (events)",
+        "status": "in-progress",
+        "tier": "core"
+      },
+      {
+        "id": "coh:inner-circle",
+        "appId": "coh",
+        "label": "Inner Circle (membership)",
+        "status": "in-progress",
+        "tier": "growth"
+      }
+    ],
+    "roadmapItems": [
+      {
+        "id": "admin-studio:as-agent-integration",
+        "appId": "admin-studio",
+        "label": "Agent Gateway integration",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "admin-studio:as-conformance-dashboard",
+        "appId": "admin-studio",
+        "label": "Conformance dashboard (live cohesion scores)",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "admin-studio:as-pr-review-ui",
+        "appId": "admin-studio",
+        "label": "Supervisor PR review surface",
+        "status": "queued",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "admin-studio:as-cost-alerts",
+        "appId": "admin-studio",
+        "label": "Cost alert configuration UI",
+        "status": "queued",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "admin-studio:as-multi-product-overview",
+        "appId": "admin-studio",
+        "label": "Cross-product health overview",
+        "status": "queued",
+        "quarter": "Q2-2027"
+      },
+      {
+        "id": "agent-gateway:ag-custom-domain",
+        "appId": "agent-gateway",
+        "label": "Production branded domain (agent-gateway.latwoodtech.work)",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "agent-gateway:ag-ci-deploy",
+        "appId": "agent-gateway",
+        "label": "CI/CD deploy workflow",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "agent-gateway:ag-admin-integration",
+        "appId": "agent-gateway",
+        "label": "Admin Studio integration",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "agent-gateway:ag-vertical-1",
+        "appId": "agent-gateway",
+        "label": "Phase 4 first vertical (selfprime or capricast)",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "agent-gateway:ag-episodic-memory",
+        "appId": "agent-gateway",
+        "label": "Episodic memory across sessions",
+        "status": "queued",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "agent-gateway:ag-tool-library",
+        "appId": "agent-gateway",
+        "label": "Platform tool library (neon, stripe, comms)",
+        "status": "queued",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "capricast:cc-monetize",
+        "appId": "capricast",
+        "label": "Creator Monetization Live",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "capricast:cc-live-stream",
+        "appId": "capricast",
+        "label": "Live Streaming GA",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "capricast:cc-group-chat",
+        "appId": "capricast",
+        "label": "16-way Video Chat",
+        "status": "queued",
+        "quarter": "Q1-2027"
+      },
+      {
+        "id": "capricast:cc-mobile",
+        "appId": "capricast",
+        "label": "Mobile PWA",
+        "status": "design",
+        "quarter": "Q2-2027"
+      },
+      {
+        "id": "selfprime:sp-launch",
+        "appId": "selfprime",
+        "label": "Public Launch",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "selfprime:sp-rls",
+        "appId": "selfprime",
+        "label": "RLS enforced across all tables",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "selfprime:sp-referrals",
+        "appId": "selfprime",
+        "label": "Practitioner referral engine GA",
+        "status": "queued",
+        "quarter": "Q4-2026"
+      },
+      {
+        "id": "selfprime:sp-ios",
+        "appId": "selfprime",
+        "label": "iOS PWA",
+        "status": "design",
+        "quarter": "Q2-2027"
+      },
+      {
+        "id": "coh:coh-5streams",
+        "appId": "coh",
+        "label": "All 5 Streams Live",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "coh:coh-test-coverage",
+        "appId": "coh",
+        "label": "Test coverage 60%+",
+        "status": "active",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "coh:coh-dual-domain",
+        "appId": "coh",
+        "label": "cipherofhealing.com alias live",
+        "status": "queued",
+        "quarter": "Q3-2026"
+      },
+      {
+        "id": "coh:coh-mobile",
+        "appId": "coh",
+        "label": "Mobile PWA",
+        "status": "design",
+        "quarter": "Q2-2027"
+      }
+    ],
+    "gaps": [
+      {
+        "id": "G6",
+        "tier": "p0",
+        "title": "Bootstrap workflow on PR #622 hasn't run yet",
+        "status": "open (sequence dep)"
+      },
+      {
+        "id": "G14",
+        "tier": "p2",
+        "title": "No retro mechanism for missed milestones",
+        "status": "open"
+      },
+      {
+        "id": "G16",
+        "tier": "p2",
+        "title": "No customer feedback loop in the system",
+        "status": "open"
+      },
+      {
+        "id": "G17",
+        "tier": "p2",
+        "title": "No competitive intel watch",
+        "status": "open"
+      },
+      {
+        "id": "G20",
+        "tier": "p2",
+        "title": "No backup/DR strategy per product",
+        "status": "open"
+      },
+      {
+        "id": "G21",
+        "tier": "p3",
+        "title": "Supply-chain checks beyond CodeQL (Sigstore TLOG for all deps)",
+        "status": "open"
+      },
+      {
+        "id": "G22",
+        "tier": "p3",
+        "title": "No pen-test schedule",
+        "status": "open"
+      },
+      {
+        "id": "G23",
+        "tier": "p3",
+        "title": "No bug bounty program",
+        "status": "open"
+      },
+      {
+        "id": "G24",
+        "tier": "p3",
+        "title": "No multi-region story for D1",
+        "status": "open"
+      },
+      {
+        "id": "G25",
+        "tier": "p3",
+        "title": "Per-product rate limiting standardized",
+        "status": "open"
+      },
+      {
+        "id": "G26",
+        "tier": "p3",
+        "title": "Queue / DO backpressure documented per Worker",
+        "status": "open"
+      },
+      {
+        "id": "G29",
+        "tier": "p3",
+        "title": "HubSpot keep-or-delete pending",
+        "status": "open (leaning keep)"
+      },
+      {
+        "id": "G38",
+        "tier": "p3",
+        "title": "GCP billing line in cost digest is a placeholder — needs BQ billing export",
+        "status": "open"
+      },
+      {
+        "id": "G46",
+        "tier": "p3",
+        "title": "coh: 20+ obsolete root-level MD docs (DEPLOYMENT-*, DEPLOY-*, INTEGRATION-*, GETTING-STARTED, etc.) with internally inconsistent README",
+        "status": "open"
+      }
+    ],
+    "templates": [
+      {
+        "id": "db-migration-gap-fix",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "deps-bump-minor-patch",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "docs-naming-convention",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "feat-ci-workflow",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "package-version-migration",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "reusable-workflow-rollout",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "security-codeql-fix",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "sentry-triage-new-issue",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "syn-package-migration",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "ux-regression-triage",
+        "tier": null,
+        "status": "active"
+      },
+      {
+        "id": "wrangler-config-drift-fix",
+        "tier": null,
+        "status": "active"
+      }
+    ]
+  },
+  "edges": [
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:auth-login",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:app-registry",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:supervisor-control",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:smoke-tests",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:github-app-auth",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:sentry-integration",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:burn-rate-alerts",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:storybook",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:pr-automation",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:rls-enforcement",
+      "type": "has_feature"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:as-agent-integration",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:as-conformance-dashboard",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:as-pr-review-ui",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:as-cost-alerts",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "admin-studio",
+      "to": "admin-studio:as-multi-product-overview",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "admin-studio",
+      "to": "pkg:auth",
+      "type": "uses_package"
+    },
+    {
+      "from": "admin-studio",
+      "to": "pkg:neon",
+      "type": "uses_package"
+    },
+    {
+      "from": "admin-studio",
+      "to": "pkg:analytics",
+      "type": "uses_package"
+    },
+    {
+      "from": "admin-studio",
+      "to": "pkg:monitoring",
+      "type": "uses_package"
+    },
+    {
+      "from": "admin-studio",
+      "to": "pkg:logger",
+      "type": "uses_package"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:session-management",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:idempotency",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:guardrails",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:tool-calling",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:episodic-memory",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:streaming",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:run-loop",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:jwt-auth",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:rate-limiting",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:custom-domain",
+      "type": "has_feature"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:ag-custom-domain",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:ag-ci-deploy",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:ag-admin-integration",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:ag-vertical-1",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:ag-episodic-memory",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "agent-gateway:ag-tool-library",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "pkg:auth",
+      "type": "uses_package"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "pkg:llm",
+      "type": "uses_package"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "pkg:logger",
+      "type": "uses_package"
+    },
+    {
+      "from": "agent-gateway",
+      "to": "pkg:monitoring",
+      "type": "uses_package"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:video-playback",
+      "type": "has_feature"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:stripe-payments",
+      "type": "has_feature"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:conference",
+      "type": "has_feature"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:chat-1to1",
+      "type": "has_feature"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:live-stream",
+      "type": "has_feature"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:group-video",
+      "type": "has_feature"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:cc-monetize",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:cc-live-stream",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:cc-group-chat",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "capricast",
+      "to": "capricast:cc-mobile",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "capricast",
+      "to": "pkg:auth",
+      "type": "uses_package"
+    },
+    {
+      "from": "capricast",
+      "to": "pkg:neon",
+      "type": "uses_package"
+    },
+    {
+      "from": "capricast",
+      "to": "pkg:stripe",
+      "type": "uses_package"
+    },
+    {
+      "from": "capricast",
+      "to": "pkg:analytics",
+      "type": "uses_package"
+    },
+    {
+      "from": "capricast",
+      "to": "pkg:video",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:energy-blueprint",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:narration",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:video-engine",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:notification-inbox",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:practitioner-network",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:group-readings",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:rls-enforcement",
+      "type": "has_feature"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:sp-launch",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:sp-rls",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:sp-referrals",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "selfprime",
+      "to": "selfprime:sp-ios",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:auth",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:neon",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:stripe",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:llm",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:analytics",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:bodygraph",
+      "type": "uses_package"
+    },
+    {
+      "from": "selfprime",
+      "to": "pkg:telephony",
+      "type": "uses_package"
+    },
+    {
+      "from": "coh",
+      "to": "coh:the-chair",
+      "type": "has_feature"
+    },
+    {
+      "from": "coh",
+      "to": "coh:the-vault",
+      "type": "has_feature"
+    },
+    {
+      "from": "coh",
+      "to": "coh:the-academy",
+      "type": "has_feature"
+    },
+    {
+      "from": "coh",
+      "to": "coh:the-stage",
+      "type": "has_feature"
+    },
+    {
+      "from": "coh",
+      "to": "coh:inner-circle",
+      "type": "has_feature"
+    },
+    {
+      "from": "coh",
+      "to": "coh:coh-5streams",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "coh",
+      "to": "coh:coh-test-coverage",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "coh",
+      "to": "coh:coh-dual-domain",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "coh",
+      "to": "coh:coh-mobile",
+      "type": "has_roadmap"
+    },
+    {
+      "from": "coh",
+      "to": "pkg:auth",
+      "type": "uses_package"
+    },
+    {
+      "from": "coh",
+      "to": "pkg:neon",
+      "type": "uses_package"
+    },
+    {
+      "from": "coh",
+      "to": "pkg:stripe",
+      "type": "uses_package"
+    },
+    {
+      "from": "coh",
+      "to": "pkg:telephony",
+      "type": "uses_package"
+    },
+    {
+      "from": "coh",
+      "to": "pkg:email",
+      "type": "uses_package"
+    }
+  ],
+  "stats": {
+    "appCount": 14,
+    "productCount": 6,
+    "infraCount": 8,
+    "registryPresent": 5,
+    "registryMissing": 9,
+    "featureCount": 38,
+    "roadmapCount": 23,
+    "packageCount": 24,
+    "gapCount": 14,
+    "templateCount": 11,
+    "edgeCount": 87
+  },
+  "kpis": {
+    "generatedAt": "2026-06-08T03:21:19.911Z",
+    "current": {
+      "overallCohesion": 51.4,
+      "registryCoverage": 45.45,
+      "openGaps": 14,
+      "gaps": {
+        "p0": 1,
+        "p1": 0,
+        "p2": 4,
+        "p3": 9
+      },
+      "cost30dUsd": 4.87,
+      "mrrUsd": 0,
+      "completionWeighted": 0
+    },
+    "trends": {
+      "cohesion": {
+        "current": 51.4,
+        "prior": 49.6,
+        "priorDate": "2026-05-30",
+        "dayGap": 7,
+        "delta": 1.8,
+        "direction": "up"
+      },
+      "cost": {
+        "current": 4.87,
+        "prior": 1.25,
+        "priorDate": "2026-05-29",
+        "dayGap": 7,
+        "delta": 3.62,
+        "direction": "up"
+      },
+      "mrr": {
+        "current": 0,
+        "prior": 0,
+        "priorDate": "2026-05-30",
+        "dayGap": 7,
+        "delta": 0,
+        "direction": "flat"
+      },
+      "completion": {
+        "current": 0,
+        "prior": 26.5,
+        "priorDate": "2026-05-17",
+        "dayGap": 8,
+        "delta": -26.5,
+        "direction": "down"
+      },
+      "registryCoverage": {
+        "current": 45.45,
+        "prior": null,
+        "priorDate": null,
+        "dayGap": null,
+        "delta": null,
+        "direction": "flat"
+      },
+      "openGaps": {
+        "current": 14,
+        "prior": null,
+        "priorDate": null,
+        "dayGap": null,
+        "delta": null,
+        "direction": "flat"
+      }
+    },
+    "movers": {
+      "cohesion": [
+        {
+          "app": "coh",
+          "current": 49,
+          "prior": 40,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 9,
+          "direction": "up"
+        },
+        {
+          "app": "selfprime",
+          "current": 53,
+          "prior": 53,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        },
+        {
+          "app": "capricast",
+          "current": 42,
+          "prior": 42,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        },
+        {
+          "app": "admin-studio",
+          "current": 62,
+          "prior": 62,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        },
+        {
+          "app": "xico-city",
+          "current": 51,
+          "prior": 51,
+          "priorDate": "2026-05-30",
+          "dayGap": 7,
+          "delta": 0,
+          "direction": "flat"
+        }
+      ]
+    },
+    "seriesPoints": 1
+  }
+}

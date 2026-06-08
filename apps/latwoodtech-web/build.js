@@ -307,10 +307,14 @@ await copyFile(join(srcDir, '_headers'), join(distDir, '_headers'));
 // /status/ — near-live brand surface health page that fetches the
 // status-prober Worker with graceful fall-back to data/pulse.json.
 await cp(join(srcDir, 'status'), join(distDir, 'status'), { recursive: true });
+// /platform/ — live SVG platform dashboard (constellation + flow + roadmap).
+await cp(join(srcDir, 'platform'), join(distDir, 'platform'), { recursive: true });
 await mkdir(join(distDir, 'data'), { recursive: true });
 
 // Copy founder-stats.json (committed seed; updated hourly by generate-founder-stats.yml).
 await copyFile(join(srcDir, 'data', 'founder-stats.json'), join(distDir, 'data', 'founder-stats.json'));
+// Copy platform.json (seed; updated hourly by generate-platform-data.mjs).
+await copyFile(join(srcDir, 'data', 'platform.json'), join(distDir, 'data', 'platform.json'));
 
 // Liveness probes run in parallel; on CI without outbound network they all
 // degrade and the runtime still renders a static topology. Bound the overall

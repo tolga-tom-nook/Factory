@@ -136,13 +136,60 @@ The conformance workflow (M1) scores each repo against these dimensions. Sample 
 | 8 | Release | 5 | semver tags, CHANGELOG present, ADRs link from PRs that need them |
 | 9 | Performance | 10 | SLO budgets declared, synthetic checks live, smoke + canary green |
 | 10 | Privacy | 5 | PII_INVENTORY present, DSR endpoints present where required, audit log middleware on admin routes |
+| 11 | Feature Registry | 5 | `feature-registry.yml` present, schema valid, roadmap entries have status + quarter, cohesion field populated |
 
 Each repo's score = weighted average across dimensions. Anything < 70 blocks deploys (after Stage 4 enforcement; advisory before).
 
 
 ---
 
-## 11. PR size budget
+## 11. Feature Registry
+
+Every app and package — whether in the Factory monorepo or a standalone repo — must maintain a `feature-registry.yml` file at its root (`apps/{name}/feature-registry.yml` for monorepo apps; repo root for standalone repos).
+
+**Purpose:** Powers the public `/platform/` dashboard on latwoodtech.com, feeds the `platform.json` CI artifact, and enforces that product state is machine-readable rather than tribal knowledge.
+
+**Required fields:**
+
+```yaml
+app: my-app          # matches id in docs/service-registry.yml
+name: My App         # human display name
+domain: myapp.com    # canonical domain or worker URL
+stage: production    # foundation | beta | production | revenue | on-hold | design
+cohesion: 62         # current conformance score (0-100)
+description: One sentence describing what this app does.
+
+roadmap:
+  - id: my-feature-launch
+    label: Feature launch
+    status: active   # done | active | queued | on-hold | design
+    quarter: Q3-2026
+
+features:
+  - id: auth
+    label: Authentication
+    status: live     # live | in-progress | roadmap | deprecated
+    tier: core       # core | growth | compliance | infra
+
+packages:            # @latimer-woods-tech/* deps consumed
+  - auth
+  - neon
+```
+
+**When to update:** After any shipped milestone (update `status: done`), when roadmap priorities shift, and as part of the Stage 4+ conformance cycle. The `/platform/` dashboard reflects the next hourly CI run.
+
+**Machine checks (conformance dimension 11):**
+- File exists at expected path
+- `app`, `name`, `stage`, `cohesion` fields present and non-empty
+- At least one `roadmap` entry
+- All roadmap entries have `status` and `quarter` fields
+- `cohesion` is a number between 0 and 100
+
+Schema canonical definition: [`docs/standards/feature-registry.schema.yml`](./standards/feature-registry.schema.yml)
+
+---
+
+## 12. PR size budget
 
 Every PR has a hard size budget by tier. Bigger work decomposes before opening. Atomic PRs review in seconds; sprawling PRs hide bugs and slow merge throughput.
 
@@ -166,18 +213,18 @@ See ADR-0005 for the full decision context.
 
 ---
 
-## 12. UI/UX (customer-facing surfaces)
+## 13. UI/UX (customer-facing surfaces)
 
 Every customer-facing UI satisfies the following machine-checkable rules. Enforced by Stage 6 conformance dimension (Lighthouse + axe + bundle analyzer + visual regression).
 
-### 12.1 Foundation
+### 13.1 Foundation
 - Imports tokens from `@latimer-woods-tech/ui-tokens` (no hard-coded hex colors, spacing, font sizes)
 - Imports components from `@latimer-woods-tech/design-system` (no per-app Buttons, Inputs, Modals reinvented)
 - Imports icons from `@latimer-woods-tech/icons` (no per-app icon libraries beyond Lucide-managed)
 - Imports form patterns from `@latimer-woods-tech/forms` (no per-app form validators)
 - Imports a11y primitives from `@latimer-woods-tech/a11y` (no per-app focus management)
 
-### 12.2 Accessibility (WCAG 2.2 AA, enforced)
+### 13.2 Accessibility (WCAG 2.2 AA, enforced)
 - **axe-core: zero violations on critical paths** (login, signup, checkout, primary feature)
 - Keyboard navigation: every interactive element reachable + operable
 - Screen reader: every interactive element has accessible name + role
@@ -185,7 +232,7 @@ Every customer-facing UI satisfies the following machine-checkable rules. Enforc
 - Focus visible: every focused element shows a 2px+ outline
 - Forms: labels associated with inputs, errors announced to screen readers
 
-### 12.3 Performance budgets (Lighthouse, enforced post-deploy)
+### 13.3 Performance budgets (Lighthouse, enforced post-deploy)
 - Marketing pages: Performance ≥95, Accessibility ≥95, Best Practices ≥95, SEO ≥95
 - App pages (authenticated): Performance ≥85, Accessibility ≥95, Best Practices ≥90
 - Largest Contentful Paint: <1s on desktop, <2.5s on mid-tier mobile
@@ -195,20 +242,20 @@ Every customer-facing UI satisfies the following machine-checkable rules. Enforc
 - JS bundle (initial): <150KB gzipped per route
 - Image strategy: WebP/AVIF; LQIP for above-the-fold; lazy load below-the-fold
 
-### 12.4 Mobile-first
+### 13.4 Mobile-first
 - Design at 320px breakpoint first
 - All tap targets ≥44×44px
 - No horizontal scroll on any breakpoint
 - Forms one-column on mobile; never 2-column inputs side-by-side
 - Bottom-of-screen actions only when context requires (avoid sticky)
 
-### 12.5 Loading + error UX
+### 13.5 Loading + error UX
 - Loading state: skeleton screens (matched to final layout). **Spinners forbidden.**
 - Error state: inline, specific, actionable. Generic "something went wrong" forbidden.
 - Empty state: tells the user the next action. Never blank.
 - Success state: visible confirmation, never silent.
 
-### 12.6 Forms
+### 13.6 Forms
 - One-column on mobile, one-column on desktop unless intentional (two fields max side-by-side)
 - Autofocus the first input
 - Save progress (localStorage or URL params) on multi-step
@@ -216,20 +263,20 @@ Every customer-facing UI satisfies the following machine-checkable rules. Enforc
 - Errors inline + specific + actionable ("Email must include @" not "Invalid")
 - No captchas; use rate limiting + Cloudflare bot management
 
-### 12.7 Component standards
+### 13.7 Component standards
 - One primary action per screen (one filled Button; others are Outline or Text)
 - Modals dismiss on Escape + backdrop click + explicit Cancel
 - Toasts auto-dismiss in 5s for info, 10s for errors, require explicit dismiss for critical
 - Nav: real navigation on desktop ≥768px (no hamburger). Hamburger only <768px.
 - Tables: sortable, filterable, paginated by default. Empty state required.
 
-### 12.8 Theming
+### 13.8 Theming
 - Dark mode is the default. Light is the variant.
 - Both ship at the same time; visual parity verified by snapshot tests.
 - System preference respected on first visit; user override persisted.
 - No "auto-switching" mid-session.
 
-### 12.9 Conformance (Stage 6 conformance dimension)
+### 13.9 Conformance (Stage 6 conformance dimension)
 Sample checks:
 - 30 pts — `@lwt/design-system` in deps + at least one component import
 - 20 pts — Lighthouse Performance ≥85 (app) or ≥95 (marketing)
@@ -242,7 +289,7 @@ Weight in overall cohesion score: 10.
 
 ---
 
-## 13. Design Philosophy — The Two-Question Filter
+## 14. Design Philosophy — The Two-Question Filter
 
 Every UI design decision passes both filters. Sub-agents reading this section apply both questions before proposing UX patterns.
 

@@ -1,0 +1,76 @@
+# Objectives — the objective function for the Platform Brain
+#
+# PURPOSE:
+#   This is the machine-readable north-star. The opportunity scorer (Phase 3,
+#   scripts/opportunity-scan.mjs via scripts/gate.mjs) ranks every candidate piece
+#   of work against these weights; the planning session (Phase 4) uses the
+#   stage exit criteria + north-star to recommend strategic moves; the learning
+#   loop (Phase 5) checks whether shipped work moved these targets.
+#
+#   Prose goals live in docs/ROADMAP.md and docs/OPERATING_FRAMEWORK.md. This file
+#   is the QUANTIFIED projection of them — keep the two in sync.
+#
+# DECISION: balanced composite (locked 2026-06-07). Tune the weights here, not in code.
+
+version: 1
+updated: "2026-06-07"
+
+# ─── Scoring weights ────────────────────────────────────────────────────────────
+# An opportunity's base score is a weighted blend of these four axes (each 0..1),
+# then multiplied by the target app's strategicWeight. Weights sum to 1.0.
+weights:
+  revenueImpact: 0.35      # does this move MRR / conversion on a revenue app?
+  cohesionImpact: 0.30     # does this raise a conformance dimension / close a gap?
+  strategicBreadth: 0.20   # cross-app synergy, shared-package consolidation, new capability
+  riskReduction: 0.15      # security, reliability, compliance, removing single points of failure
+
+# ─── Per-app strategic multiplier ────────────────────────────────────────────────
+# The same opportunity scores higher on a strategic/revenue app. _default applies
+# to any app not listed (most infra/internal workers).
+strategicWeight:
+  selfprime: 1.5           # revenue flagship — practitioner network
+  capricast: 1.3           # revenue — creator video
+  coh: 1.2                 # revenue — restoration ecosystem
+  admin-studio: 1.1        # operator leverage (force-multiplier on all other work)
+  xico-city: 1.0           # beta — creative economy OS
+  agent-gateway: 1.0       # platform capability
+  _default: 0.8
+
+# ─── Revenue targets (feed revenueImpact) ────────────────────────────────────────
+# current is updated from docs/revenue/ snapshots by the trend analyzer (Phase 2).
+revenueTargets:
+  selfprime: { current_mrr: 0, target_mrr: 2000, by: Q3-2026 }
+  capricast: { current_mrr: 0, target_mrr: 1000, by: Q3-2026 }
+  coh:       { current_mrr: 0, target_mrr: 1500, by: Q3-2026 }
+
+# ─── Cohesion policy (feed cohesionImpact + riskReduction) ───────────────────────
+cohesion:
+  shadowThreshold: 70      # Stage 4+ enforcement bar (matches conformance summary)
+  floor: 50                # below this, riskReduction opportunities are prioritized for the app
+
+# ─── Stage exit criteria (feed Phase 4 planning session) ─────────────────────────
+# Mirrors docs/ROADMAP.md. Used to recommend whether the platform should advance a stage.
+stage:
+  current: 2
+  name: Revenue + Customer
+  exitCriteria:
+    - "≥1 paying customer on at least one revenue app"
+    - "Burn-rate / cost alerts live (done)"
+    - "Per-app SLOs declared and monitored"
+
+# ─── North-star (what 'greatness' means, quantified) ─────────────────────────────
+# The planning session and opportunity scorer optimize toward these. Each should be
+# measurable from the entity graph + KPI block.
+northStar:
+  - id: ns-cohesion
+    goal: "All product cohesion >= 70"
+    measure: "min(app.cohesion for app where kind=product) >= 70"
+  - id: ns-registry-coverage
+    goal: "Every live app has a feature-registry.yml"
+    measure: "registryMissing == 0 for live apps"
+  - id: ns-zero-critical-gaps
+    goal: "Zero open P0/P1 gaps"
+    measure: "gaps.p0 == 0 and gaps.p1 == 0"
+  - id: ns-revenue
+    goal: "Each revenue app has active paying customers"
+    measure: "current_mrr > 0 for selfprime, capricast, coh"

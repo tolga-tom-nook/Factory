@@ -1,0 +1,84 @@
+app: agent-gateway
+name: Agent Gateway
+domain: agent-gateway.latwoodtech.work
+stage: beta
+cohesion: 55
+description: Agent Runtime gateway — Hono Worker fronting AgentSessionDO instances for multi-step AI task execution
+
+roadmap:
+  - id: ag-custom-domain
+    label: Production branded domain (agent-gateway.latwoodtech.work)
+    status: active
+    quarter: Q3-2026
+    description: Wire DNS + CF custom domain so agent-gateway.latwoodtech.work is live
+  - id: ag-ci-deploy
+    label: CI/CD deploy workflow
+    status: active
+    quarter: Q3-2026
+    description: deploy-agent-gateway.yml deploy on tag push to production
+  - id: ag-admin-integration
+    label: Admin Studio integration
+    status: queued
+    quarter: Q4-2026
+    description: Expose agent session list/control in AP Unlimited operator dashboard
+  - id: ag-vertical-1
+    label: Phase 4 first vertical (selfprime or capricast)
+    status: queued
+    quarter: Q4-2026
+    description: First production use-case of the agent runtime in a revenue app
+  - id: ag-episodic-memory
+    label: Episodic memory across sessions
+    status: queued
+    quarter: Q1-2027
+  - id: ag-tool-library
+    label: Platform tool library (neon, stripe, comms)
+    status: queued
+    quarter: Q1-2027
+
+features:
+  - id: session-management
+    label: AgentSessionDO — Durable Object session lifecycle
+    status: live
+    tier: core
+  - id: idempotency
+    label: Idempotent session creation
+    status: live
+    tier: core
+  - id: guardrails
+    label: Per-session spend guardrails
+    status: live
+    tier: compliance
+  - id: tool-calling
+    label: Anthropic/Grok/DeepSeek tool calling
+    status: live
+    tier: core
+  - id: episodic-memory
+    label: Episodic memory (context pruning)
+    status: live
+    tier: core
+  - id: streaming
+    label: SSE streaming responses
+    status: live
+    tier: core
+  - id: run-loop
+    label: Autonomous run loop with max-steps guard
+    status: live
+    tier: core
+  - id: jwt-auth
+    label: JWT authentication on session routes
+    status: live
+    tier: infra
+  - id: rate-limiting
+    label: Per-session rate limiting
+    status: live
+    tier: infra
+  - id: custom-domain
+    label: Production custom domain
+    status: in-progress
+    tier: infra
+
+packages:
+  - auth
+  - llm
+  - logger
+  - monitoring

@@ -9,9 +9,9 @@
     "docs/_governance/doc-overrides.yml": "sha256:d7bb0f51d3afd01ab8e3e79c441b4ed737205b809351a25cdea8c43bf503cdc9"
   },
   "counts": {
-    "total_docs": 446,
+    "total_docs": 447,
     "canonical": 17,
-    "active": 381,
+    "active": 382,
     "stale": 0,
     "archive": 45,
     "generated": 3,
@@ -3706,7 +3706,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:d294f5c288cb37d2ee7913d35b8569e4d4d2c729002574418d82de15e41c6d7c",
+      "content_hash": "sha256:168ad1045cab4143ca1dec07ebf8824856a9eac9218af3b87a421d87d3728abe",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,
@@ -6158,6 +6158,27 @@
       "errors": []
     },
     {
+      "path": "docs/planning/brief-2026-06-08.md",
+      "title": "Platform Planning Brief — 2026-06-08",
+      "status": "active",
+      "owner": "platform",
+      "doc_type": "plan",
+      "fidelity": "unverified",
+      "quality": "usable",
+      "last_updated": null,
+      "last_verified": null,
+      "scope": null,
+      "truth_sources": [],
+      "verified_by": [],
+      "content_hash": "sha256:e269a259be4ad992770cb50ac60fa61096bef474711165d88c7aaf73e29b34bd",
+      "source": {
+        "frontmatter": false,
+        "canonical_allowlist": false,
+        "override": "docs/**"
+      },
+      "errors": []
+    },
+    {
       "path": "docs/PLATFORM_STANDARDS.md",
       "title": "Platform Standards — Latimer-Woods-Tech",
       "status": "active",
@@ -6170,7 +6191,7 @@
       "scope": null,
       "truth_sources": [],
       "verified_by": [],
-      "content_hash": "sha256:f9573c7055dc5ba8475783722534a4235f07aa76d928935e377e0b46970fda36",
+      "content_hash": "sha256:4db3bbb264ffe41b2a04a300b67b532d9d55de6f492e1c1b673097ec18973545",
       "source": {
         "frontmatter": false,
         "canonical_allowlist": false,

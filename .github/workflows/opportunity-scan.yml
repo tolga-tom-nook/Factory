@@ -1,0 +1,60 @@
+name: Opportunity Scan
+
+# Phase 3 (PROPOSE+GATE) of the Platform Brain. Hourly, the scanner reads the
+# entity graph, scores opportunities against docs/objectives.yml, runs each
+# through the hybrid-autonomy gate, and auto-files DEDUPLICATED GitHub issues
+# (low-risk) or parks strategic ones for the weekly planning brief.
+#
+# Files at most one open issue per finding (fingerprint dedup), so it will not
+# flood the board on repeated runs. Strategic moves never auto-file.
+
+on:
+  schedule:
+    - cron: '30 * * * *'   # hourly at :30, offset from generate-founder-stats (:00)
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (do not file issues)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: opportunity-scan
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3
+        id: app-token
+        with:
+          app-id: ${{ secrets.FACTORY_APP_ID }}
+          private-key: ${{ secrets.FACTORY_APP_PRIVATE_KEY }}
+          owner: Latimer-Woods-Tech
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Refresh model + trends, then scan
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          npm install js-yaml@^4.1.1 --no-save --no-audit --no-fund
+          # Build a fresh graph; add KPI trends if the analyzer is present (Phase 2).
+          node scripts/build-entity-graph.mjs
+          node scripts/trend-analyzer.mjs || echo "trend-analyzer unavailable — regressed-kpi scanner skipped"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            node scripts/opportunity-scan.mjs
+          else
+            node scripts/opportunity-scan.mjs --apply
+          fi

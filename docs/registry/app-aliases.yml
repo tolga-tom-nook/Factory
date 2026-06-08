@@ -1,0 +1,62 @@
+# App Alias Map — canonical identity resolution for the Platform Brain entity graph
+#
+# PURPOSE:
+#   The same application is referred to by different IDs across registries:
+#     - docs/service-registry.yml   uses worker `id`        (e.g. prime-self)
+#     - docs/app-lifecycle.yml      uses lifecycle `id`     (e.g. prime-self)
+#     - docs/conformance/*.json     uses repo_key / repo    (e.g. HD / HumanDesign)
+#     - apps/*/feature-registry.yml uses product `app`      (e.g. selfprime)
+#     - latwoodtech.com/platform/   uses product id         (e.g. selfprime)
+#
+#   This file is the ONE place that reconciles them. scripts/build-entity-graph.mjs
+#   reads it to collapse every alias to a single canonical app node. The reliable
+#   join key of last resort is `repo` — every alias for an app shares one repo.
+#
+# CANONICAL CHOICE:
+#   For products, canonical == the feature-registry `app` / dashboard id (user-facing).
+#   For infra/internal workers not listed here, canonical == the worker's own id
+#   (build-entity-graph treats any unrecognized id as its own canonical infra node).
+#
+# FIELDS (per app):
+#   canonical        — the single true id used everywhere downstream
+#   repo             — GitHub repo (the strongest join key)
+#   kind             — product | infra
+#   conformance_key  — repo_key in docs/conformance/summary.json (null if not scored)
+#   aliases          — every other id/name this app is known by
+
+apps:
+  - canonical: selfprime
+    repo: Latimer-Woods-Tech/HumanDesign
+    kind: product
+    conformance_key: HD
+    aliases: [prime-self, prime-self-ui, prime-self-smoke, prime-self-reference, humandesign, HumanDesign, HD]
+
+  - canonical: capricast
+    repo: Latimer-Woods-Tech/capricast
+    kind: product
+    conformance_key: CC
+    aliases: [capricast-api, capricast-ui, videoking, CC]
+
+  - canonical: coh
+    repo: Latimer-Woods-Tech/coh
+    kind: product
+    conformance_key: CH
+    aliases: [cypher-healing, cipher-healing, cypherofhealing, coh-api, CH]
+
+  - canonical: xico-city
+    repo: Latimer-Woods-Tech/xico-city
+    kind: product
+    conformance_key: XC
+    aliases: [xicocity, xico-city-api, XC]
+
+  - canonical: admin-studio
+    repo: Latimer-Woods-Tech/Factory
+    kind: product
+    conformance_key: FA
+    aliases: [admin-studio-production, admin-studio-staging, admin-studio-ui, factory-admin-studio, factory-admin, FA]
+
+  - canonical: agent-gateway
+    repo: Latimer-Woods-Tech/Factory
+    kind: product
+    conformance_key: null
+    aliases: [factory-agent-gateway]

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Live platform dashboard for Latimer Woods — app constellation, traffic flows, and roadmap through 2028." />
+    <meta property="og:title" content="Platform — Latimer Woods" />
+    <meta property="og:description" content="See the full Factory platform: app health, traffic patterns, and a public roadmap through 2028." />
+    <meta name="theme-color" content="#05070a" />
+    <link rel="canonical" href="https://latwoodtech.com/platform/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Space+Grotesk:wght@400;500;700&family=Syncopate:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234f7bff' width='100' height='100'/><text x='50' y='60' font-size='70' font-weight='700' fill='white' text-anchor='middle'>L</text></svg>" />
+    <title>Platform — Latimer Woods</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Latimer Woods Platform Dashboard",
+      "url": "https://latwoodtech.com/platform/",
+      "description": "Live SVG dashboard showing the Factory platform: app constellation, traffic flows, and public roadmap through 2028.",
+      "isPartOf": { "@type": "WebSite", "url": "https://latwoodtech.com/" }
+    }
+    </script>
+    <script type="module" src="platform.js"></script>
+  </head>
+  <body class="studio-page platform-world-page">
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <div class="page-shell">
+      <nav class="site-nav" aria-label="Primary">
+        <a class="site-nav-brand" href="/">
+          <span class="site-nav-mark" aria-hidden="true"></span>
+          Latimer Woods
+        </a>
+        <div class="site-nav-links">
+          <a href="/stack/">Stack</a>
+          <a href="/work/">Work</a>
+          <a href="/founder/">Founder</a>
+          <a href="/status/">Status</a>
+          <a href="/platform/" aria-current="page">Platform</a>
+        </div>
+      </nav>
+
+      <main id="main" class="platform-page">
+        <header class="world-hero platform-hero">
+          <p class="eyebrow">Live platform view</p>
+          <h1>The Factory, from two angles.</h1>
+          <p class="world-hero-copy">
+            <strong>Structure</strong> shows what exists — apps, packages, declared dependencies, and health.
+            <strong>Flow</strong> shows what's happening — real traffic moving through the system right now.
+            The roadmap below shows where it's all going, through 2028.
+          </p>
+          <p class="platform-meta" data-platform-meta>Loading…</p>
+        </header>
+
+        <!-- ─── Mode toggle ──────────────────────────────────────────────── -->
+        <div class="platform-mode-bar" role="group" aria-label="Dashboard view mode">
+          <button class="platform-mode-btn platform-mode-btn-active" data-mode="structure" type="button">
+            Structure
+          </button>
+          <button class="platform-mode-btn" data-mode="flow" type="button">
+            Flow
+          </button>
+        </div>
+
+        <!-- ─── Main SVG constellation ──────────────────────────────────── -->
+        <section class="platform-svg-section" aria-labelledby="constellation-title">
+          <h2 id="constellation-title" class="sr-only">App constellation</h2>
+          <div class="platform-svg-wrap" data-platform-svg>
+            <!-- Rendered by platform.js -->
+            <svg class="platform-constellation" viewBox="0 0 800 600" role="img"
+                 aria-label="Factory app constellation — hub-and-spoke diagram showing all platform apps"
+                 preserveAspectRatio="xMidYMid meet">
+              <title>Factory Platform Constellation</title>
+              <text x="400" y="308" class="platform-loading-label" text-anchor="middle">Loading constellation…</text>
+            </svg>
+          </div>
+
+          <!-- Flow mode banner (shown when analytics data is unavailable) -->
+          <p class="platform-flow-notice" data-flow-notice hidden>
+            Live traffic data unavailable — showing topology with synthetic animation.
+          </p>
+        </section>
+
+        <!-- ─── Legend ──────────────────────────────────────────────────── -->
+        <aside class="platform-legend" aria-label="Diagram legend">
+          <div class="platform-legend-group">
+            <p class="platform-legend-label">Maturity</p>
+            <ul class="platform-legend-items">
+              <li><span class="legend-dot" style="background:#d4a017"></span> Revenue</li>
+              <li><span class="legend-dot" style="background:#22c55e"></span> Production</li>
+              <li><span class="legend-dot" style="background:#3b82f6"></span> Beta</li>
+              <li><span class="legend-dot" style="background:#64748b"></span> Foundation</li>
+              <li><span class="legend-dot" style="background:#f59e0b;opacity:.6"></span> On hold</li>
+            </ul>
+          </div>
+          <div class="platform-legend-group">
+            <p class="platform-legend-label">Health (ring)</p>
+            <ul class="platform-legend-items">
+              <li><span class="legend-dot legend-dot-ring" style="border-color:#22c55e"></span> Live</li>
+              <li><span class="legend-dot legend-dot-ring" style="border-color:#eab308"></span> Degraded</li>
+              <li><span class="legend-dot legend-dot-ring" style="border-color:#ef4444"></span> Down</li>
+              <li><span class="legend-dot legend-dot-ring" style="border-color:#475569"></span> Unknown</li>
+            </ul>
+          </div>
+          <div class="platform-legend-group platform-legend-group-flow" hidden>
+            <p class="platform-legend-label">Traffic (flow mode)</p>
+            <ul class="platform-legend-items">
+              <li><span class="legend-dot" style="background:#22c55e"></span> Successful requests</li>
+              <li><span class="legend-dot" style="background:#ef4444"></span> Error requests</li>
+            </ul>
+          </div>
+        </aside>
+
+        <!-- ─── Platform stats strip ────────────────────────────────────── -->
+        <section class="platform-stats-strip" aria-labelledby="platform-stats-title">
+          <h2 id="platform-stats-title" class="sr-only">Platform health summary</h2>
+          <div class="platform-stats-grid" data-platform-stats>
+            <article class="platform-stat">
+              <span class="platform-stat-label">Platform stage</span>
+              <strong class="platform-stat-value" data-stat="stage">—</strong>
+            </article>
+            <article class="platform-stat">
+              <span class="platform-stat-label">Products live</span>
+              <strong class="platform-stat-value" data-stat="products">—</strong>
+            </article>
+            <article class="platform-stat">
+              <span class="platform-stat-label">Cohesion threshold</span>
+              <strong class="platform-stat-value" data-stat="threshold">70</strong>
+            </article>
+            <article class="platform-stat">
+              <span class="platform-stat-label">Open gaps (P0–P1)</span>
+              <strong class="platform-stat-value" data-stat="gaps">—</strong>
+            </article>
+          </div>
+        </section>
+
+        <!-- ─── Roadmap timeline ─────────────────────────────────────────── -->
+        <section class="platform-roadmap-section" aria-labelledby="roadmap-title">
+          <div class="section-heading">
+            <p class="section-eyebrow">Public Roadmap</p>
+            <h2 id="roadmap-title">Where the platform is going, through 2028.</h2>
+          </div>
+          <p class="roadmap-caveat">
+            Stage gates are milestone-driven, not date-driven. Quarters shown are working estimates.
+            Each app's roadmap is maintained in its own <code>feature-registry.yml</code> — this view aggregates them.
+          </p>
+          <div class="platform-timeline-wrap" role="region" aria-label="Platform roadmap timeline 2026–2028" tabindex="0">
+            <svg class="platform-timeline" viewBox="0 0 1200 310" role="img"
+                 aria-label="Platform roadmap timeline showing milestones from Q2 2026 to Q4 2028"
+                 preserveAspectRatio="xMinYMid meet">
+              <title>Platform Roadmap Timeline 2026–2028</title>
+              <text x="600" y="160" class="platform-loading-label" text-anchor="middle">Loading roadmap…</text>
+            </svg>
+          </div>
+          <p class="platform-timeline-scroll-hint" aria-hidden="true">← scroll to see full timeline →</p>
+        </section>
+
+        <!-- ─── App feature breakdown ────────────────────────────────────── -->
+        <section class="platform-apps-section" aria-labelledby="apps-title">
+          <div class="section-heading">
+            <p class="section-eyebrow">Product Registry</p>
+            <h2 id="apps-title">Every app, what it does, what's shipping.</h2>
+          </div>
+          <div class="platform-apps-grid" data-apps-grid>
+            <!-- Rendered by platform.js -->
+            <article class="platform-app-card platform-app-card-skeleton">
+              <div class="app-card-skeleton-line"></div>
+              <div class="app-card-skeleton-line app-card-skeleton-line-short"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section section-footnote platform-footnote">
+          <p>Want the architecture behind this platform, not just the live view?</p>
+          <div class="footnote-actions">
+            <a class="button button-primary" href="/stack/">See the stack</a>
+            <a class="button button-secondary" href="/status/">Surface health →</a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3 class="footer-title">Latimer Woods</h3>
+            <p class="footer-text">Founder-led edge platform studio for healing, media, governance, and lean infrastructure.</p>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Platforms</p>
+            <ul class="footer-links">
+              <li><a href="https://selfprime.net" target="_blank" rel="noreferrer">Prime Self</a></li>
+              <li><a href="https://capricast.com" target="_blank" rel="noreferrer">Capricast</a></li>
+              <li><a href="https://cypherofhealing.com" target="_blank" rel="noreferrer">Cypher of Healing</a></li>
+              <li><a href="https://apunlimited.com" target="_blank" rel="noreferrer">AP Unlimited</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Learn</p>
+            <ul class="footer-links">
+              <li><a href="/stack/">Stack &amp; Architecture</a></li>
+              <li><a href="/work/">How I Work</a></li>
+              <li><a href="/founder/">Founder Profile</a></li>
+              <li><a href="/status/">System Status</a></li>
+              <li><a href="/platform/" aria-current="page">Platform Dashboard</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <p class="footer-label">Contact</p>
+            <p class="footer-availability">Available for founder-led platform and AI pipeline engagements.</p>
+            <ul class="footer-links">
+              <li><a href="mailto:aperry@latwoodtech.com">aperry@latwoodtech.com</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2026 Latimer Woods Technology. <a href="/privacy.html">Privacy Policy</a>.</p>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
