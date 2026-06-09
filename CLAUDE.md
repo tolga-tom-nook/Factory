@@ -183,6 +183,11 @@ Before writing any code:
 
 **Before troubleshooting, check these docs first:**
 
+- **New-Repo Compliance Checklist**: See [docs/COMPLIANCE_CHECKLIST.md](./docs/COMPLIANCE_CHECKLIST.md)
+  - §A–Q checklist for onboarding any new standalone app
+  - Covers infrastructure provisioning, stack, code patterns, tests, observability, security, schema, workflows, network layer, domain policy, and package gates
+  - Conformance score guide at the bottom
+
 - **Secrets & Tokens**: See [docs/runbooks/github-secrets-and-tokens.md](./docs/runbooks/github-secrets-and-tokens.md)
   - Explains CloudFlare token naming (`CF_API_TOKEN` vs. `CLOUDFLARE_API_TOKEN`)
   - Complete GitHub Secrets inventory
