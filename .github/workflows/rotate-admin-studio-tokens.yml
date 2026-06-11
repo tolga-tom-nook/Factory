@@ -75,7 +75,7 @@ jobs:
       # 2) Mint Vertex AI access token from the SA key in GCP SM
       # ──────────────────────────────────────────────────────────────
       - name: Authenticate to GCP via WIF
-        uses: google-github-actions/auth@c200f3691d83b41bf9bbd8638997a462592937ed # v2.1.13
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           workload_identity_provider: projects/891842778224/locations/global/workloadIdentityPools/github-factory/providers/github
           service_account: factory-sa@factory-495015.iam.gserviceaccount.com
