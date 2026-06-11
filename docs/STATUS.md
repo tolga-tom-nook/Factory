@@ -1,24 +1,26 @@
-# Factory Ecosystem — Status
+# Factory Ecosystem Status
 
-> **Status:** Retired as a current-state source on 2026-06-05.  
-> **Why:** This file preserved a May 2 snapshot while newer generated state lived elsewhere. Keeping it as “the single human-readable source of truth” created platform drift.  
-> **Current truth:** Use the generated [`docs/STATE.md`](./STATE.md), live GitHub Actions, [`docs/service-registry.yml`](./service-registry.yml), and the active platform gate issue.
+_Auto-generated hourly by `factory-status-dashboard.yml`. Last update: 2026-06-11T05:21:28Z_
+_Written to the `status-dashboard` branch. View raw:_ [status-dashboard/docs/STATUS.md](https://github.com/Latimer-Woods-Tech/factory/blob/status-dashboard/docs/STATUS.md)
 
-## Where to look now
+| Repo | Latest CI | Last commit | Open PRs |
+|---|---|---|---|
+| [factory](https://github.com/Latimer-Woods-Tech/factory) | 🟡 in_progress - | 2026-06-11 | 30 |
+| [wordis-bond](https://github.com/Latimer-Woods-Tech/wordis-bond) | ✅ completed success | 2026-06-10 | 1 |
+| [cypher-healing](https://github.com/Latimer-Woods-Tech/cypher-healing) | ⏳ queued - | 2026-05-04 | 3 |
+| [ijustus](https://github.com/Latimer-Woods-Tech/ijustus) | ❌ completed failure | 2026-05-09 | 8 |
+| [the-calling](https://github.com/Latimer-Woods-Tech/the-calling) | ❌ completed failure | 2026-05-09 | 8 |
+| [neighbor-aid](https://github.com/Latimer-Woods-Tech/neighbor-aid) | ❌ completed failure | 2026-05-09 | 8 |
+| [xico-city](https://github.com/Latimer-Woods-Tech/xico-city) | ✅ completed success | 2026-06-09 | 22 |
+| [factory-admin](https://github.com/Latimer-Woods-Tech/factory-admin) | ❌ completed failure | 2026-06-03 | 2 |
+| [xpelevator](https://github.com/Latimer-Woods-Tech/xpelevator) | ❌ completed failure | 2026-05-04 | 5 |
+| [capricast](https://github.com/Latimer-Woods-Tech/capricast) | ✅ completed success | 2026-06-11 | 19 |
+| [HumanDesign](https://github.com/Latimer-Woods-Tech/HumanDesign) | ✅ completed success | 2026-06-11 | 2 |
 
-| Need | Source |
-|---|---|
-| Current platform snapshot | [`docs/STATE.md`](./STATE.md) |
-| Platform completion work | [Factory Platform Completion Gate](https://github.com/Latimer-Woods-Tech/Factory/issues/1412) |
-| Worker/domain registry | [`docs/service-registry.yml`](./service-registry.yml) |
-| Workflow health | [Factory Actions](https://github.com/Latimer-Woods-Tech/Factory/actions) |
-| Known platform gaps | [`docs/GAP_REGISTER.md`](./GAP_REGISTER.md) |
-| Roadmap stage | [`docs/ROADMAP.md`](./ROADMAP.md) |
+## Cloudflare Workers
 
-## Historical note
-
-The previous contents of this file were a 2026-05-02 hand-maintained ecosystem snapshot. That snapshot is intentionally no longer treated as current state. If historical context is needed, recover it from git history rather than reusing it as an operating document.
-
-## Policy
-
-Do not add live status tables here. Current-state claims must be generated from executable sources or backed by live links. If `docs/STATE.md` is stale, fix the generator or the auto-merge path, not this file.
+_Inventory snapshot — live count via factory-admin._
+- Total Workers: 19 (after Apr 30 cleanup)
+- R2 buckets: 6
+- Hyperdrive configs: 10
+- Neon databases: 10
